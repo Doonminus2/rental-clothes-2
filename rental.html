@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Clothes – Rental Products</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&family=Headland+One&family=Hedvig+Letters+Serif&family=Radley&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="rental.css" />
+</head>
+<body>
+<div class="Page">
+
+  <!-- ══════════════ HEADER ══════════════ -->
+  <header class="SiteHeader">
+
+    <!-- แถวบน: logo + actions -->
+    <div class="SiteHeader-top">
+      <div class="SiteHeader-logo">
+        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
+        <span class="Logo-text">RENTAL CLOTHES</span>
+      </div>
+      <div class="SiteHeader-actions">
+        <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" />
+        <div class="BtnLogin">
+          <span class="BtnLogin-text">LOGIN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- แถวล่าง: navbar -->
+    <nav class="Navbar">
+      <a href="main.html"   class="NavBtn">HOME</a>
+      <a href="rental.html"  class="NavBtn NavBtn--active">RENTAL PRODUCTS</a>
+      <a href="#"            class="NavBtn">HOW TO RENT</a>
+      <a href="#"            class="NavBtn">REVIEW</a>
+      <a href="#"            class="NavBtn">ARTICLE</a>
+      <a href="#"            class="NavBtn">CONTACT</a>
+      <a href="#"            class="NavBtn">GALLERY</a>
+    </nav>
+
+  </header>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <div class="Content">
+
+    <!-- ── Sidebar ── -->
+    <aside class="Sidebar">
+
+      <!-- TYPE filter -->
+      <div class="Filter-section">
+        <h3 class="Filter-title">TYPE</h3>
+        <div class="Filter-search">
+          <input type="text" placeholder="Search groups..." class="Filter-input" />
+        </div>
+        <ul class="Filter-list">
+          <li class="Filter-item"><input type="checkbox" id="type-shirt"   /><label for="type-shirt">Shirt</label></li>
+          <li class="Filter-item"><input type="checkbox" id="type-wedding" /><label for="type-wedding">Wedding dress</label></li>
+          <li class="Filter-item"><input type="checkbox" id="type-cosplay" /><label for="type-cosplay">Cosplay Costume</label></li>
+          <li class="Filter-item"><input type="checkbox" id="type-sweater" /><label for="type-sweater">Sweater</label></li>
+          <li class="Filter-item"><input type="checkbox" id="type-academic"/><label for="type-academic">Academic gown</label></li>
+          <li class="Filter-item"><input type="checkbox" id="type-thai"    /><label for="type-thai">Thai costume</label></li>
+        </ul>
+      </div>
+
+      <hr class="Filter-divider" />
+
+      <!-- BRAND filter -->
+      <div class="Filter-section">
+        <h3 class="Filter-title">BRAND</h3>
+        <div class="Filter-search">
+          <input type="text" placeholder="Search brands..." class="Filter-input" />
+        </div>
+        <ul class="Filter-list">
+          <li class="Filter-item"><input type="checkbox" id="brand-columbia"/><label for="brand-columbia">Columbia</label></li>
+          <li class="Filter-item"><input type="checkbox" id="brand-adidas"  /><label for="brand-adidas">Adidas</label></li>
+          <li class="Filter-item"><input type="checkbox" id="brand-nike"    /><label for="brand-nike">Nike</label></li>
+          <li class="Filter-item"><input type="checkbox" id="brand-gucci"   /><label for="brand-gucci">Gucci</label></li>
+          <li class="Filter-item"><input type="checkbox" id="brand-dior"    /><label for="brand-dior">Dior</label></li>
+          <li class="Filter-item"><input type="checkbox" id="brand-puma"    /><label for="brand-puma">Puma</label></li>
+        </ul>
+      </div>
+
+      <hr class="Filter-divider" />
+
+      <!-- SEX filter -->
+      <div class="Filter-section">
+        <h3 class="Filter-title">SEX</h3>
+        <div class="Filter-sex-grid">
+          <div class="Filter-item"><input type="checkbox" id="sex-unisex"  /><label for="sex-unisex">Unisex</label></div>
+          <div class="Filter-item"><input type="checkbox" id="sex-male"    /><label for="sex-male">Male</label></div>
+          <div class="Filter-item"><input type="checkbox" id="sex-children"/><label for="sex-children">Children</label></div>
+          <div class="Filter-item"><input type="checkbox" id="sex-female"  /><label for="sex-female">Female</label></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── Product Area ── -->
+    <main class="ProductArea">
+
+      <!-- Toolbar -->
+      <div class="Toolbar">
+        <div class="Toolbar-search">
+          <img src="images/search-icon.png" alt="search" class="Toolbar-search-icon" />
+          <input type="text" placeholder="Search" class="Toolbar-input" />
+        </div>
+        <div class="Toolbar-right">
+          <div class="Toolbar-sort">
+            <span class="Toolbar-sort-label">Sort</span>
+            <span class="Toolbar-sort-arrow">&#8964;</span>
+          </div>
+          <button class="Toolbar-view-btn1" id="btn-grid" title="Grid view">1</button>
+          <button class="Toolbar-view-btn" id="btn-list" title="List view">></button>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="ProductGrid" id="productGrid">
+        <div class="ProductCard">
+          <img src="images/product1.jpg" alt="KAWS x The North Face Jacket" />
+          <p class="ProductCard-name">KAWS x The North Face Retro 1996 Nuptse Jacket</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product2.jpg" alt="Louis Vuitton Monogram" />
+          <p class="ProductCard-name">Louis Vuitton Monogram Quilted Blue Jean Padding Black</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product3.jpg" alt="Columbia Hiking Boots" />
+          <p class="ProductCard-name">Columbia Men's Newton Ridge Plus II Waterproof Hiking Boots</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product4.jpg" alt="The North Face Eco Nuptse" />
+          <p class="ProductCard-name">THE NORTH FACE 1996 Eco Nuptse Orange Unisex Korea Version</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product5.jpg" alt="GSOU One Piece Snowsuit" />
+          <p class="ProductCard-name">GSOU One Piece Snowsuit Women's Snowboard Ski Jumpsuit Waterproof</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product6.jpg" alt="The North Face Ski Pants" />
+          <p class="ProductCard-name">The North Face K'S Downhill Ski Pants</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product7.jpg" alt="ZARA Shearling Jacket" />
+          <p class="ProductCard-name">ZARA WOMAN NWT FW23 Brown Faux Shearling Cropped Biker Jacket</p>
+        </div>
+        <div class="ProductCard">
+          <img src="images/product8.jpg" alt="TSLA Snow Bibs" />
+          <p class="ProductCard-name">TSLA Men's Winter Snow Bibs Waterproof Insulated Snowboard Overalls Freezy Navy</p>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+</body>
+</html>
