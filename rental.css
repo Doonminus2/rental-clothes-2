@@ -306,10 +306,52 @@ button { cursor: pointer; border: none; background: none; }
   font-family: var(--font-main);
   user-select: none;
 }
-
+ 
 .Toolbar-sort-arrow { font-size: 18px; }
+ 
+/* -- Sort dropdown menu -- */
+.Toolbar-sort {
+  position: relative;   /* anchor สำหรับ dropdown */
+}
+ 
+.Sort-dropdown {
+  display: none;        /* ซ่อนไว้ก่อน */
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 180px;
+  background: var(--color-white);
+  border: 1px solid #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 200;
+  list-style: none;
+  padding: 6px 0;
+}
+ 
+.Sort-dropdown.open {
+  display: block;       /* แสดงเมื่อเปิด */
+}
+ 
+.Sort-option {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: var(--font-main);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+ 
+.Sort-option:hover {
+  background: rgba(17, 78, 114, 0.08);
+}
 
 .Toolbar-view-btn1 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 49px;
   height: 48px;
   border-radius: var(--radius-sm);
@@ -317,10 +359,14 @@ button { cursor: pointer; border: none; background: none; }
   background: var(--color-white);
   color: var(--color-primary);
   font-size: 18px;
+  text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
 
 .Toolbar-view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 49px;
   height: 48px;
   border-radius: var(--radius-sm);
@@ -328,6 +374,7 @@ button { cursor: pointer; border: none; background: none; }
   background: var(--color-white);
   color: var(--color-primary);
   font-size: 18px;
+  text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
 

@@ -103,59 +103,134 @@
       <!-- Toolbar -->
       <div class="Toolbar">
         <div class="Toolbar-search">
-          <img src="images/search-icon.png" alt="search" class="Toolbar-search-icon" />
+          <img src="images/search.png" alt="search" class="Toolbar-search-icon" />
           <input type="text" placeholder="Search" class="Toolbar-input" />
         </div>
         <div class="Toolbar-right">
-          <div class="Toolbar-sort">
-            <span class="Toolbar-sort-label">Sort</span>
-            <span class="Toolbar-sort-arrow">&#8964;</span>
+           <div class="Toolbar-sort" id="sortBtn">
+            <span class="Toolbar-sort-label" id="sortLabel">Sort</span>
+            <span class="Toolbar-sort-arrow">∨</span>
+            <ul class="Sort-dropdown" id="sortDropdown">
+              <li class="Sort-option" data-sort="az">ชื่อ A-Z</li>
+              <li class="Sort-option" data-sort="za">ชื่อ Z-A</li>
+              <li class="Sort-option" data-sort="price-asc">ราคา ต่ำ-สูง</li>
+              <li class="Sort-option" data-sort="price-desc">ราคา สูง-ต่ำ</li>
+            </ul>
           </div>
-          <button class="Toolbar-view-btn1" id="btn-grid" title="Grid view">1</button>
-          <button class="Toolbar-view-btn" id="btn-list" title="List view">></button>
+          <span class="Toolbar-view-btn1" >1</span>
+          <a href="#" class="Toolbar-view-btn">></a>
         </div>
       </div>
 
       <!-- Product Grid -->
-      <div class="ProductGrid" id="productGrid">
-        <div class="ProductCard">
+       <div class="ProductGrid" id="productGrid">
+        <div class="ProductCard" data-name="KAWS x The North Face Retro 1996 Nuptse Jacket" data-price="4500">
           <img src="images/product1.jpg" alt="KAWS x The North Face Jacket" />
           <p class="ProductCard-name">KAWS x The North Face Retro 1996 Nuptse Jacket</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="Louis Vuitton Monogram Quilted Blue Jean Padding Black" data-price="12000">
           <img src="images/product2.jpg" alt="Louis Vuitton Monogram" />
           <p class="ProductCard-name">Louis Vuitton Monogram Quilted Blue Jean Padding Black</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="Columbia Mens Newton Ridge Plus II Waterproof Hiking Boots" data-price="2800">
           <img src="images/product3.jpg" alt="Columbia Hiking Boots" />
           <p class="ProductCard-name">Columbia Men's Newton Ridge Plus II Waterproof Hiking Boots</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="THE NORTH FACE 1996 Eco Nuptse Orange Unisex Korea Version" data-price="3900">
           <img src="images/product4.jpg" alt="The North Face Eco Nuptse" />
           <p class="ProductCard-name">THE NORTH FACE 1996 Eco Nuptse Orange Unisex Korea Version</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="GSOU One Piece Snowsuit Womens Snowboard Ski Jumpsuit Waterproof" data-price="3200">
           <img src="images/product5.jpg" alt="GSOU One Piece Snowsuit" />
           <p class="ProductCard-name">GSOU One Piece Snowsuit Women's Snowboard Ski Jumpsuit Waterproof</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="The North Face KS Downhill Ski Pants" data-price="2500">
           <img src="images/product6.jpg" alt="The North Face Ski Pants" />
           <p class="ProductCard-name">The North Face K'S Downhill Ski Pants</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="ZARA WOMAN NWT FW23 Brown Faux Shearling Cropped Biker Jacket" data-price="1800">
           <img src="images/product7.jpg" alt="ZARA Shearling Jacket" />
           <p class="ProductCard-name">ZARA WOMAN NWT FW23 Brown Faux Shearling Cropped Biker Jacket</p>
         </div>
-        <div class="ProductCard">
+        <div class="ProductCard" data-name="TSLA Mens Winter Snow Bibs Waterproof Insulated Snowboard Overalls Freezy Navy" data-price="2100">
           <img src="images/product8.jpg" alt="TSLA Snow Bibs" />
           <p class="ProductCard-name">TSLA Men's Winter Snow Bibs Waterproof Insulated Snowboard Overalls Freezy Navy</p>
         </div>
       </div>
-
+ 
     </main>
-
+ 
   </div>
-
+ 
 </div>
+ 
+<script>
+(function () {
+  /* ── Sort dropdown ── */
+  const sortBtn      = document.getElementById('sortBtn');
+  const sortDropdown = document.getElementById('sortDropdown');
+  const sortLabel    = document.getElementById('sortLabel');
+  const grid         = document.getElementById('productGrid');
+ 
+  // เปิด/ปิด dropdown
+  sortBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    sortDropdown.classList.toggle('open');
+  });
+ 
+  // ปิดเมื่อคลิกที่อื่น
+  document.addEventListener('click', function () {
+    sortDropdown.classList.remove('open');
+  });
+ 
+  // เลือก option
+  sortDropdown.querySelectorAll('.Sort-option').forEach(function (opt) {
+    opt.addEventListener('click', function (e) {
+      e.stopPropagation();
+ 
+      // อัปเดต label
+      sortLabel.textContent = opt.textContent;
+      sortDropdown.classList.remove('open');
+ 
+      // เรียงลำดับ
+      const cards = Array.from(grid.querySelectorAll('.ProductCard'));
+      const type  = opt.dataset.sort;
+ 
+      cards.sort(function (a, b) {
+        if (type === 'az') {
+          return a.dataset.name.localeCompare(b.dataset.name);
+        }
+        if (type === 'za') {
+          return b.dataset.name.localeCompare(a.dataset.name);
+        }
+        if (type === 'price-asc') {
+          return Number(a.dataset.price) - Number(b.dataset.price);
+        }
+        if (type === 'price-desc') {
+          return Number(b.dataset.price) - Number(a.dataset.price);
+        }
+        return 0;
+      });
+ 
+      // render ใหม่
+      cards.forEach(function (card) { grid.appendChild(card); });
+    });
+  });
+ 
+  /* ── Grid / List view toggle ── */
+  document.getElementById('btn-grid').addEventListener('click', function () {
+    grid.classList.remove('list-view');
+    this.classList.add('active');
+    document.getElementById('btn-list').classList.remove('active');
+  });
+ 
+  document.getElementById('btn-list').addEventListener('click', function () {
+    grid.classList.add('list-view');
+    this.classList.add('active');
+    document.getElementById('btn-grid').classList.remove('active');
+  });
+ 
+})();
+</script>
 </body>
 </html>
