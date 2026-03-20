@@ -103,7 +103,7 @@
 }
 
 .HeroImage {
-  width: 217px;
+  width: 222px;
   height: 220px;
   object-fit: cover;
 }
@@ -178,18 +178,29 @@
   line-height: 0.85;
 }
 
-.HeroR-bottom { top: 14%; }
-.HeroC-bottom { top: 25%; }
-
 .HeroSubtitle-bottom {
   position: absolute;
-  color: #114E72;
-  font-size: 40px;
-  font-family: 'Hedvig Letters Serif', serif;
-  font-weight: 400;
-  right: 42%;
+  right: 50%; /* ปรับค่านี้เพื่อให้กึ่งกลางหน้าจอ */
+  transform: translateX(50%); /* ช่วยให้กึ่งกลางเป๊ะขึ้น */
   top: 43%;
+  text-align: center; /* จัดให้ตัวหนังสืออยู่กึ่งกลางระหว่างกัน */
+  color: #114E72;
+  font-family: 'Hedvig Letters Serif', serif;
   white-space: nowrap;
+}
+
+/* ส่วนของตัว RC ด้านบน */
+.rc-logo {
+  font-size: 100px; /* ขยายขนาดให้ใหญ่ขึ้นตามรูป */
+  line-height: 1;   /* ลดระยะห่างบรรทัด */
+  font-weight: 500;
+}
+
+/* ส่วนของคำว่า RENTAL CLOTHES */
+.rc-text {
+  font-size: 55px;  /* ขนาดเล็กลงมาหน่อย */
+  letter-spacing: 2px; /* เพิ่มระยะห่างระหว่างตัวอักษรให้ดูหรู */
+  margin-top: -10px;  /* ขยับให้เข้าไปใกล้ตัว RC มากขึ้น */
 }
 
 /* ─── Carousel Arrows ─── */
