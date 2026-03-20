@@ -33,7 +33,7 @@
         <div class="HeroC-top">C</div>
         <div class="HeroSubtitle-top">RENTAL CLOTHES</div>
       </div>
-      <img class="HeroImage" src="images/logo.png" alt="hero fashion " />
+      <img class="HeroImage" src="images/logo.png" alt="hero fashion" />
     </div>
 
     <!-- Navbar -->
@@ -49,22 +49,40 @@
 
   </header>
 
-  <!-- ── Body Section ── -->
+  <!-- ── Body Section (Carousel) ── -->
   <section class="BodySection">
-    <img class="BodyImage" src="images/main1.jpg" alt="body background" />
 
-    <!-- Hero Text overlay (navy) -->
+    <!-- Carousel -->
+    <div class="Carousel">
+      <div class="Carousel-track">
+        <!-- เพิ่ม/แก้ไข src ของรูปตรงนี้ได้เลย -->
+        <div class="Carousel-slide"><img src="images/main1.jpg" alt="slide 1" /></div>
+        <div class="Carousel-slide"><img src="images/main2.jpg" alt="slide 2" /></div>
+        <div class="Carousel-slide"><img src="images/main3.jpg" alt="slide 3" /></div>
+      </div>
+    </div>
+
+    <!-- Hero Text overlay -->
     <div class="HeroSubtitle-bottom">
-  <div class="rc-logo">RC</div>
-  <div class="rc-text">RENTAL CLOTHES</div>
-</div>
+      <div class="rc-logo">RC</div>
+      <div class="rc-text">RENTAL CLOTHES</div>
+    </div>
 
     <!-- Carousel Arrows -->
-    <div class="ArrowNext">&gt;</div>
-    <div class="ArrowPrev">&lt;</div>
+    <button class="ArrowPrev" aria-label="Previous slide">&#8249;</button>
+    <button class="ArrowNext" aria-label="Next slide">&#8250;</button>
+
+    <!-- Dots indicator -->
+    <div class="Carousel-dots">
+      <span class="Carousel-dot active"></span>
+      <span class="Carousel-dot"></span>
+      <span class="Carousel-dot"></span>
+    </div>
+
   </section>
 
 </div>
 
+<script src="carousel.js"></script>
 </body>
 </html>
