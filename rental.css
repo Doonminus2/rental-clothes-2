@@ -424,7 +424,16 @@ button { cursor: pointer; border: none; background: none; }
   text-align: center;
   color: var(--color-primary);
   font-size: 13px;
-  font-weight: 400;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 0 4px;
+}
+
+.ProductCard-price {
+  text-align: center;
+  color: #6bde6b;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.4;
   padding: 0 4px;
 }
