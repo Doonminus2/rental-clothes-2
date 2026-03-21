@@ -422,7 +422,7 @@ button { cursor: pointer; border: none; background: none; }
 
 .ProductCard-name {
   text-align: center;
-  color: var(--color-primary);
+  color: #000000;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
@@ -430,11 +430,11 @@ button { cursor: pointer; border: none; background: none; }
 }
 
 .ProductCard-price {
-  text-align: center;
-  color: #6bde6b;
+  text-align: left;
+  color: var(--color-primary);
   font-size: 13px;
-  font-weight: 500;
-  line-height: 1.4;
+  font-weight: 515;
+  line-height: 0.7;
   padding: 0 4px;
 }
 
