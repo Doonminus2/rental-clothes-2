@@ -7,279 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
-  <style>
-    /* =========================================================
-       Variables & Reset
-       ========================================================= */
-    :root {
-      --color-primary:    #114E72;
-      --color-header:     #6A8CA0;
-      --color-white:      #ffffff;
-      --color-border:     #D9D9D9;
-      --color-text-muted: #7E7E7E;
-      --color-danger:     #8F2929;
-      --color-bg:         #F1F1F1;
-      --font-main:        'Hanuman', serif;
-      --radius-btn:       20px;
-      --radius-sm:        10px;
-    }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-main);
-      background: #ffffff;
-      color: var(--color-primary);
-    }
-
-    a    { text-decoration: none; color: inherit; }
-    ul   { list-style: none; }
-    img  { display: block; max-width: 100%; }
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-    .SiteHeader {
-      width: 100%;
-      background: var(--color-header);
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .SiteHeader-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 40px;
-    }
-
-    .SiteHeader-logo {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .Logo-img {
-      width: 82px;
-      height: 60px;
-      object-fit: contain;
-    }
-
-    .Logo-text {
-      color: var(--color-white);
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-
-    .SiteHeader-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .Icon-faq {
-      width: 41px;
-      height: 41px;
-      object-fit: contain;
-    }
-
-    .BtnLogin {
-      background: var(--color-white);
-      border-radius: var(--radius-btn);
-      border: 2px solid var(--color-white);
-      padding: 10px 28px;
-      cursor: pointer;
-    }
-
-    .BtnLogin-text {
-      color: var(--color-header);
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    /* Navbar */
-    .Navbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 40px 18px;
-      flex-wrap: nowrap;
-    }
-
-    .NavBtn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 46px;
-      padding: 0 20px;
-      border-radius: var(--radius-btn);
-      border: 2px solid var(--color-white);
-      background: var(--color-header);
-      color: var(--color-white);
-      font-size: 16px;
-      font-family: var(--font-main);
-      font-weight: 700;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: background 0.2s;
-      text-decoration: none;
-    }
-
-    .NavBtn:hover   { background: rgba(255,255,255,0.15); }
-    .NavBtn--active { background: var(--color-primary); }
-
-    /* =========================================================
-       PAGE CONTENT
-       ========================================================= */
-    .PageContent {
-      padding: 40px 98px 60px;
-    }
-
-    /* Search bar */
-    .SearchBar {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 36px;
-    }
-
-    .SearchBar-input {
-      width: 459px;
-      height: 59px;
-      border-radius: var(--radius-sm);
-      border: 2px solid var(--color-header);
-      padding: 0 20px;
-      font-size: 20px;
-      font-family: var(--font-main);
-      font-weight: 700;
-      color: var(--color-text-muted);
-      outline: none;
-      background: var(--color-white);
-    }
-
-    .SearchBar-input::placeholder { color: var(--color-text-muted); }
-    .SearchBar-input:focus { border-color: var(--color-primary); }
-
-    .SearchBar-btn {
-      width: 117px;
-      height: 59px;
-      border-radius: var(--radius-sm);
-      background: var(--color-header);
-      border: none;
-      color: var(--color-white);
-      font-size: 24px;
-      font-family: var(--font-main);
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .SearchBar-btn:hover { background: var(--color-primary); }
-
-    /* Guide card */
-    .GuideCard {
-      background: var(--color-bg);
-      border-radius: 20px;
-      padding: 40px 48px 48px;
-    }
-
-    .GuideCard-title {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .GuideCard-title-th {
-      display: block;
-      color: var(--color-primary);
-      font-size: 35px;
-      font-weight: 700;
-      line-height: 1.3;
-    }
-
-    .GuideCard-title-en {
-      display: block;
-      color: var(--color-header);
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    /* Steps list */
-    .StepList {
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-    }
-
-    .Step {
-      display: flex;
-      align-items: flex-start;
-      gap: 20px;
-    }
-
-    .Step-icon {
-      width: 41px;
-      height: 41px;
-      flex-shrink: 0;
-      object-fit: contain;
-      margin-top: 4px;
-
-      /* placeholder icon style */
-      background: var(--color-header);
-      border-radius: 50%;
-    }
-
-    .Step-body {}
-
-    .Step-heading {
-      color: var(--color-primary);
-      font-size: 25px;
-      font-weight: 700;
-      line-height: 1.4;
-      margin-bottom: 4px;
-    }
-
-    .Step-detail {
-      color: var(--color-text-muted);
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 1.6;
-    }
-
-    /* Divider between steps */
-    .Step-divider {
-      border: none;
-      border-top: 1px solid var(--color-border);
-      margin: 0;
-    }
-
-    /* Note */
-    .GuideNote {
-      margin-top: 28px;
-      padding-left: 48px;
-    }
-
-    .GuideNote-label {
-      color: var(--color-danger);
-      font-size: 25px;
-      font-weight: 700;
-    }
-
-    .GuideNote-text {
-      color: var(--color-text-muted);
-      font-size: 20px;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-  </style>
+  <link rel="stylesheet" href="howtorent.css" />
 </head>
 <body>
 
@@ -317,18 +45,6 @@
 
   <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="PageContent">
-
-    <!-- Search bar -->
-    <div class="SearchBar">
-      <input
-        type="text"
-        class="SearchBar-input"
-        placeholder="Find words on this page..."
-        aria-label="ค้นหาในหน้านี้"
-      />
-      <button class="SearchBar-btn" type="button">Search</button>
-    </div>
-
     <!-- Guide card -->
     <section class="GuideCard">
 
@@ -343,7 +59,7 @@
 
         <!-- Step 1 -->
         <li class="Step">
-          <img class="Step-icon" src="images/step1.png" alt="ขั้นตอนที่ 1" />
+          <img class="Step-icon" src="images/rent1.png" alt="ขั้นตอนที่ 1" />
           <div class="Step-body">
             <p class="Step-heading">1. เลือกสินค้า</p>
             <p class="Step-detail">
@@ -356,7 +72,7 @@
 
         <!-- Step 2 -->
         <li class="Step">
-          <img class="Step-icon" src="images/step2.png" alt="ขั้นตอนที่ 2" />
+          <img class="Step-icon" src="images/rent2.png" alt="ขั้นตอนที่ 2" />
           <div class="Step-body">
             <p class="Step-heading">2. แจ้งรายละเอียด</p>
             <p class="Step-detail">
@@ -372,7 +88,7 @@
 
         <!-- Step 3 -->
         <li class="Step">
-          <img class="Step-icon" src="images/step3.png" alt="ขั้นตอนที่ 3" />
+          <img class="Step-icon" src="images/rent3.png" alt="ขั้นตอนที่ 3" />
           <div class="Step-body">
             <p class="Step-heading">3. ชำระค่าเช่าสินค้าและยืนยันวันจองสินค้า</p>
             <p class="Step-detail">
@@ -385,7 +101,7 @@
 
         <!-- Step 4 -->
         <li class="Step">
-          <img class="Step-icon" src="images/step4.png" alt="ขั้นตอนที่ 4" />
+          <img class="Step-icon" src="images/rent4.png" alt="ขั้นตอนที่ 4" />
           <div class="Step-body">
             <p class="Step-heading">4. วันรับสินค้า</p>
             <p class="Step-detail">
@@ -399,7 +115,7 @@
 
         <!-- Step 5 -->
         <li class="Step">
-          <img class="Step-icon" src="images/step5.png" alt="ขั้นตอนที่ 5" />
+          <img class="Step-icon" src="images/rent5.png" alt="ขั้นตอนที่ 5" />
           <div class="Step-body">
             <p class="Step-heading">5. วันคืนสินค้า</p>
             <p class="Step-detail">
@@ -416,8 +132,11 @@
       <div class="GuideNote">
         <p class="GuideNote-label">หมายเหตุ:</p>
         <p class="GuideNote-text">
-          ลูกค้าสามารถเลือกชำระเงินค่าประกันได้ในวันเช่าสินค้า หรือในวันที่มารับสินค้า
+          ลูกค้าสามารถเลือกชำระเงินค่าประกันได้ในวันเช่าสินค้า หรือในวันที่มารับสินค้า 
+เพื่อให้ได้รับเงินประกันคืนเต็มจำนวน สินค้าที่นำมาคืนจะต้องอยู่ในสภาพเดิม หากสินค้ามีความชำรุดเสียหาย ทางร้านจะคิดค่าซ่อมแซมตามความเป็นจริง **และหากสินค้าไม่สามารถซ่อมแซมได้ ลูกค้าจะต้องชำระค่าสินค้าตามมูลค่าจริง หรืออาจมีค่าใช้จ่ายเพิ่มเติม** 
         </p>
+        <p class="GuideNote-about">
+          **ทางร้านขอสงวนสิทธิ์ในการเปลี่ยนแปลง ยกเลิก ข้อกำหนดต่างๆ ได้ตามความเหมาะสม** 
       </div>
 
     </section>
