@@ -346,3 +346,25 @@ img { display: block; max-width: 100%; }
 }
 
 .Carousel-dot--active { background: var(--color-primary); }
+
+.rc-logo {
+  font-size: 55px;
+  line-height: 1;
+  font-weight: 550;
+  letter-spacing: -2px;
+}
+
+.rc-text {
+  font-size: 45px;
+  letter-spacing: 2px;
+  margin-top: -12px;
+  font-weight: 550;
+  display: flex;
+  align-items: center;
+}
+
+.header-container {
+  display: flex;
+  align-items: center; /* จัดให้ตรงกันในแนวตั้ง */
+  gap: 10px;           /* เว้นระยะห่างระหว่างข้อความกับโลโก้ */
+}
