@@ -50,6 +50,8 @@ img { display: block; max-width: 100%; }
   align-items: center;
   justify-content: space-between;
   padding: 16px 40px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .SiteHeader-logo {

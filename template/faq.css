@@ -16,6 +16,13 @@
   filter: brightness(0.85);
 }
 
+.SiteHeader-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+}
 
 .BtnLogin {
   background: var(--color-white);

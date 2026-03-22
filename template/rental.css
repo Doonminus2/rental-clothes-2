@@ -58,6 +58,8 @@ button { cursor: pointer; border: none; background: none; }
   display: flex;
   align-items: center;
   gap: 16px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .Logo-img {
