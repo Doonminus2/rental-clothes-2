@@ -67,45 +67,47 @@
   background: #6A8CA0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding: 40px 48px;
-  position: relative;
-  gap: 0;
+  padding: 48px;
+  gap: 20px;
+}
+
+.LoginCard-rc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.85;
 }
 
 .LoginCard-letter {
   font-family: 'Headland One', serif;
-  font-size: 96px;
+  font-size: 120px;
   font-weight: 400;
   color: #ffffff;
-  line-height: 1;
-  align-self: flex-end;
-  opacity: 0.85;
+  line-height: 0.9;
+  opacity: 0.9;
 }
 
 .LoginCard-letter--c {
-  margin-top: -16px;
+  margin-top: 0;
+}
+
+.LoginCard-logo {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
 }
 
 .LoginCard-brand {
   font-family: 'Hedvig Letters Serif', serif;
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 400;
   color: #ffffff;
-  text-align: right;
+  text-align: center;
   margin: 0;
-  opacity: 0.85;
-}
-
-
-
-.LoginCard-logo {
-  width: 197px;
-  height: 200px;
-  object-fit: contain;
-  margin-top: 24px;
-  align-self: center;
+  letter-spacing: 0.15em;
+  opacity: 0.9;
 }
 
 /* ── Right panel ── */
