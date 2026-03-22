@@ -109,6 +109,19 @@ button { cursor: pointer; border: none; background: none; }
   flex-wrap: nowrap;
 }
 
+.Icon-faq-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: opacity 0.2s, filter 0.2s;
+  text-decoration: none;
+}
+
+.Icon-faq-link:hover {
+  filter: brightness(0.85);
+}
+
 .NavBtn {
   display: inline-flex;
   align-items: center;

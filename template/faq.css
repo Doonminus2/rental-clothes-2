@@ -2,6 +2,25 @@
    faq.css  –  FAQ Page  (ใช้ร่วมกับ rental.css)
    ========================================================= */
 
+/* ── FAQ icon – clickable link ── */
+.Icon-faq-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: opacity 0.2s, filter 0.2s;
+  text-decoration: none;
+}
+
+.Icon-faq-link:hover {
+  filter: brightness(0.85);
+}
+
+/* active state: อยู่หน้า FAQ → ไอคอนเข้มขึ้น (วงกลมพื้นหลังเข้ม) */
+.Icon-faq-link--active .Icon-faq {
+  filter: brightness(0.6) saturate(1.4);
+}
+
 /* ── Page wrapper ── */
 .FaqPage {
   display: flex;
