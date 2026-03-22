@@ -44,6 +44,39 @@
   height: 41px;
 }
 
+.BtnLogin {
+  background: var(--color-white);
+  border-radius: var(--radius-btn);
+  border: 2px solid var(--color-white);
+  padding: 10px 28px;
+  cursor: pointer;
+}
+
+.BtnLogin-text {
+  color: var(--color-header);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.BtnLogin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px solid #ffffff;
+  padding: 10px 28px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.BtnLogin-text {
+  color: #6A8CA0;
+  font-size: 24px;
+  font-weight: 900;
+  font-family: 'Hanuman', serif;
+}
+
 .Rectangle8 {
   background: white;
   border-radius: 20px;

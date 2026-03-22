@@ -11,6 +11,20 @@
   background: #6A8CA0;   /* fallback หากรูปยังไม่โหลด */
 }
 
+.BtnLogin {
+  background: var(--color-white);
+  border-radius: var(--radius-btn);
+  border: 2px solid var(--color-white);
+  padding: 10px 28px;
+  cursor: pointer;
+}
+
+.BtnLogin-text {
+  color: var(--color-header);
+  font-size: 24px;
+  font-weight: 900;
+}
+
 .ReviewHero-img {
   width: 100%;
   height: 100%;

@@ -109,6 +109,20 @@ button { cursor: pointer; border: none; background: none; }
   flex-wrap: nowrap;
 }
 
+.BtnLogin {
+  background: var(--color-white);
+  border-radius: var(--radius-btn);
+  border: 2px solid var(--color-white);
+  padding: 10px 28px;
+  cursor: pointer;
+}
+
+.BtnLogin-text {
+  color: var(--color-header);
+  font-size: 24px;
+  font-weight: 900;
+}
+
 .Icon-faq-link {
   display: inline-flex;
   align-items: center;

@@ -1,0 +1,264 @@
+/* =========================================================
+   login.css  –  Login Page  (ใช้ร่วมกับ rental.css)
+   ========================================================= */
+
+/* ── LOGIN button active state (เมื่ออยู่หน้า login) ── */
+.BtnLogin--active {
+  background: #114E72;          /* กรมเข้ม */
+  border-color: #114E72;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  border: 2px solid #114E72;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.BtnLogin--active:hover {
+  background: #0d3d5b;
+  border-color: #0d3d5b;
+}
+
+.BtnLogin-text--active {
+  color: #ffffff;               /* ข้อความขาวบนพื้นกรม */
+  font-size: 24px;
+  font-weight: 900;
+  font-family: 'Hanuman', serif;
+}
+
+/* ── Page wrapper ── */
+.LoginPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 80px;
+  min-height: calc(100vh - 140px);
+  background: #ffffff;
+}
+
+/* ── Page title ── */
+.LoginPage-title {
+  font-family: 'Hanuman', serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: #114E72;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* ── Card ── */
+.LoginCard {
+  display: flex;
+  width: 100%;
+  max-width: 1202px;
+  min-height: 662px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #F7F6F6;
+}
+
+/* ── Left panel ── */
+.LoginCard-left {
+  width: 52%;
+  background: #6A8CA0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 40px 48px;
+  position: relative;
+  gap: 0;
+}
+
+.LoginCard-letter {
+  font-family: 'Headland One', serif;
+  font-size: 96px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1;
+  align-self: flex-end;
+  opacity: 0.85;
+}
+
+.LoginCard-letter--c {
+  margin-top: -16px;
+}
+
+.LoginCard-brand {
+  font-family: 'Hedvig Letters Serif', serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: #ffffff;
+  text-align: right;
+  margin: 0;
+  opacity: 0.85;
+}
+
+
+
+.LoginCard-logo {
+  width: 197px;
+  height: 200px;
+  object-fit: contain;
+  margin-top: 24px;
+  align-self: center;
+}
+
+/* ── Right panel ── */
+.LoginCard-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 64px;
+  background: #F7F6F6;
+}
+
+/* ── Form title ── */
+.LoginForm-title {
+  font-family: 'Hanuman', serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: #114E72;
+  margin-bottom: 32px;
+}
+
+/* ── Form ── */
+.LoginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.LoginForm-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.LoginForm-label {
+  font-family: 'Hanuman', serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #114E72;
+}
+
+.LoginForm-required {
+  color: #FE0000;
+}
+
+.LoginForm-input {
+  width: 400px;
+  height: 56px;
+  border-radius: 20px;
+  border: 2px solid #7D7D7D;
+  background: #ffffff;
+  padding: 0 20px;
+  font-family: 'Hanuman', serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #333333;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.LoginForm-input::placeholder {
+  color: #D9D9D9;
+}
+
+.LoginForm-input:focus {
+  border-color: #114E72;
+}
+
+/* ── Sign up ── */
+.LoginForm-signup {
+  font-family: 'Hanuman', serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #114E72;
+  margin-bottom: 28px;
+  width: 400px;
+  text-align: center;
+}
+
+.LoginForm-signup-link {
+  font-weight: 900;
+  color: #114E72;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
+.LoginForm-signup-link:hover {
+  color: #0d3d5b;
+}
+
+/* ── Submit button ── */
+.LoginForm-submit {
+  width: 400px;
+  height: 56px;
+  border-radius: 20px;
+  background: #114E72;
+  border: 2px solid #114E72;
+  color: #ffffff;
+  font-family: 'Hanuman', serif;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 20px;
+}
+
+.LoginForm-submit:hover {
+  background: #0d3d5b;
+  border-color: #0d3d5b;
+}
+
+/* ── Terms ── */
+.LoginForm-terms {
+  font-family: 'Hanuman', serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #000000;
+  width: 400px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.LoginForm-terms-link {
+  font-weight: 700;
+  color: #000000;
+  text-decoration: underline;
+  display: block;        /* ขึ้นบรรทัดใหม่ */
+}
+
+.LoginForm-terms-link:hover {
+  color: #114E72;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .LoginCard {
+    flex-direction: column;
+  }
+
+  .LoginCard-left {
+    width: 100%;
+    min-height: 220px;
+    padding: 28px 32px;
+    align-items: center;
+  }
+
+  .LoginCard-letter  { font-size: 64px; }
+  .LoginCard-brand   { font-size: 32px; text-align: center; }
+  .LoginCard-logo    { width: 120px; height: 120px; }
+
+  .LoginCard-right   { padding: 36px 24px; }
+  .LoginForm-input,
+  .LoginForm-submit  { width: 100%; }
+  .LoginForm-terms   { max-width: 100%; }
+}

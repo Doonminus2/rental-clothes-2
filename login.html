@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Clothes – Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&family=Headland+One&family=Hedvig+Letters+Serif&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="template/rental.css" />
+  <link rel="stylesheet" href="template/login.css" />
+</head>
+<body>
+<div class="Page">
+
+  <!-- ══════════════ HEADER ══════════════ -->
+  <header class="SiteHeader">
+
+    <!-- แถวบน: logo + actions -->
+    <div class="SiteHeader-top">
+      <div class="SiteHeader-logo">
+        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
+        <span class="Logo-text">RENTAL CLOTHES</span>
+      </div>
+      <div class="SiteHeader-actions">
+        <a href="faq.html" class="Icon-faq-link" title="คำถามที่พบบ่อย">
+          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" />
+        </a>
+        <!-- LOGIN button active เมื่ออยู่หน้า login -->
+        <a href="login.html" class="BtnLogin BtnLogin--active">
+          <span class="BtnLogin-text BtnLogin-text--active">LOGIN</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- แถวล่าง: navbar -->
+    <nav class="Navbar">
+      <a href="main.html"      class="NavBtn">HOME</a>
+      <a href="rental.html"    class="NavBtn">RENTAL PRODUCTS</a>
+      <a href="howtorent.html" class="NavBtn">HOW TO RENT</a>
+      <a href="review.html"    class="NavBtn">REVIEW</a>
+      <a href="article.html"   class="NavBtn">ARTICLE</a>
+      <a href="contact.html"   class="NavBtn">CONTACT</a>
+      <a href="gallery.html"   class="NavBtn">GALLERY</a>
+    </nav>
+
+  </header>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="LoginPage">
+
+    <!-- Page title (above card) -->
+    <h1 class="LoginPage-title">RENTAL CLOTHES</h1>
+
+    <!-- Card wrapper -->
+    <div class="LoginCard">
+
+      <!-- ── Left panel (brand) ── -->
+      <div class="LoginCard-left">
+        <span class="LoginCard-letter">R</span>
+        <span class="LoginCard-letter LoginCard-letter--c">C</span>
+        <p class="LoginCard-brand">RENTAL CLOTHES</p>
+        <img class="LoginCard-logo" src="images/logo.png" alt="Rental Clothes logo" />
+      </div>
+
+      <!-- ── Right panel (form) ── -->
+      <div class="LoginCard-right">
+        <h2 class="LoginForm-title">Login</h2>
+
+        <form class="LoginForm" action="#" method="post">
+
+          <!-- Username / Email -->
+          <div class="LoginForm-group">
+            <label class="LoginForm-label" for="username">
+              Username or Email <span class="LoginForm-required">*</span>
+            </label>
+            <input
+              class="LoginForm-input"
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username or Email..."
+              required
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="LoginForm-group">
+            <label class="LoginForm-label" for="password">
+              Password <span class="LoginForm-required">*</span>
+            </label>
+            <input
+              class="LoginForm-input"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password..."
+              required
+            />
+          </div>
+
+          <!-- Sign up link -->
+          
+
+          <!-- Submit -->
+          <button class="LoginForm-submit" type="submit">LOGIN</button>
+          <p class="LoginForm-signup">
+            Don't have an account?
+            <a href="signup.html" class="LoginForm-signup-link">Sign Up</a>
+          </p>
+          <!-- Terms -->
+          <p class="LoginForm-terms">
+            การดำเนินการต่อแสดงว่าคุณยอมรับข้อตกลงการใช้บริการ
+            <a href="#" class="LoginForm-terms-link">นโยบายส่วนตัวของเรา</a>
+          </p>
+
+        </form>
+      </div><!-- /LoginCard-right -->
+
+    </div><!-- /LoginCard -->
+
+  </main>
+
+</div><!-- /Page -->
+</body>
+</html>
