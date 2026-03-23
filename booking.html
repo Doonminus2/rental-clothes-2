@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Order & Booking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="template/booking.css" />
+</head>
+<body>
+
+<!-- ══════════════ TOP BAR ══════════════ -->
+<header class="TopBar">
+  <a href="main.html" class="TopBar-logo">
+    <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
+    <span class="Logo-text">RENTAL CLOTHES</span>
+  </a>
+  <div class="TopBar-actions">
+    <a href="faq.html" class="BtnFaq" title="FAQ">?</a>
+    <a href="login.html" class="BtnLogin"><span class="BtnLogin-text">LOGIN</span></a>
+  </div>
+</header>
+
+<!-- ══════════════ LAYOUT ══════════════ -->
+<div class="Layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="Sidebar">
+    <div class="Sidebar-profile">
+      <div class="Profile-avatar">👤</div>
+      <div class="Profile-info">
+        <div class="Profile-name">NAME ADMIN</div>
+        <div class="Profile-role">PRODUCTION SUPPORT</div>
+      </div>
+    </div>
+    <div class="Sidebar-filters">
+      <div class="Filter-label">CATEGORY</div>
+      <select class="Filter-select">
+        <option value="">Select type...</option>
+        <option>Evening Dress</option><option>Thai Costume</option>
+        <option>Suit / Tuxedo</option><option>Cosplay</option>
+      </select>
+      <div class="Filter-label">OCCASION</div>
+      <select class="Filter-select">
+        <option value="">Select occasion...</option>
+        <option>Wedding</option><option>Party</option><option>Ceremony</option>
+      </select>
+    </div>
+    <nav class="Sidebar-nav">
+      <a href="dashboard.html"    class="NavItem"><span class="NavItem-icon">🏠</span>DASHBOARD</a>
+      <a href="productmanagement.html"  class="NavItem"><span class="NavItem-icon">👗</span>PRODUCTS</a>
+      <a href="booking.html"            class="NavItem NavItem--active"><span class="NavItem-icon">📅</span>BOOKING</a>
+      <a href="admin-return.html"       class="NavItem"><span class="NavItem-icon">🔄</span>RETURN</a>
+      <a href="admin-customers.html"    class="NavItem"><span class="NavItem-icon">👥</span>CUSTOMERS</a>
+      <a href="admin-reports.html"      class="NavItem NavItem--last"><span class="NavItem-icon">📊</span>REPORTS</a>
+    </nav>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="MainContent">
+
+    <div class="PageTitleRow">
+      <h1 class="PageTitle">ORDER &amp; BOOKING</h1>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="StatRow">
+      <div class="StatCard">
+        <div class="StatCard-label">ออเดอร์ทั้งหมด</div>
+        <div class="StatCard-value">248</div>
+        <div class="StatCard-sub">เดือนนี้</div>
+      </div>
+      <div class="StatCard StatCard--waiting">
+        <div class="StatCard-label">รอแพ็ก</div>
+        <div class="StatCard-value">12</div>
+        <div class="StatCard-sub">ต้องดำเนินการ</div>
+      </div>
+      <div class="StatCard StatCard--shipped">
+        <div class="StatCard-label">จัดส่งแล้ว</div>
+        <div class="StatCard-value">34</div>
+        <div class="StatCard-sub">กำลังส่ง</div>
+      </div>
+      <div class="StatCard StatCard--received">
+        <div class="StatCard-label">รับสินค้าแล้ว</div>
+        <div class="StatCard-value">189</div>
+        <div class="StatCard-sub">สำเร็จ</div>
+      </div>
+      <div class="StatCard StatCard--cancelled">
+        <div class="StatCard-label">ยกเลิก</div>
+        <div class="StatCard-value">13</div>
+        <div class="StatCard-sub">เดือนนี้</div>
+      </div>
+    </div>
+
+    <!-- Tab switcher -->
+    <div class="TabRow">
+      <button class="Tab" id="tabCalendar" onclick="switchTab('calendar')">
+        <span class="Tab-icon">📆</span> ปฏิทินการจอง
+      </button>
+      <button class="Tab" id="tabList" onclick="switchTab('list')">
+        <span class="Tab-icon">📋</span> รายการออเดอร์
+      </button>
+    </div>
+
+    <!-- ══ PANEL: Calendar ══ -->
+    <div class="Panel" id="panelCalendar">
+      <div class="CalendarCard">
+        <div class="CalendarCard-header">
+          <span class="CalMonthLabel" id="calMonthLabel">มีนาคม 2568</span>
+          <div class="CalNav">
+            <button class="CalNavBtn" id="calPrev">‹</button>
+            <button class="CalToday" id="calTodayBtn">วันนี้</button>
+            <button class="CalNavBtn" id="calNext">›</button>
+          </div>
+        </div>
+
+        <!-- Day headers -->
+        <div class="CalGrid" id="calDayHeaders">
+          <div class="CalDayHeader">อา</div>
+          <div class="CalDayHeader">จ</div>
+          <div class="CalDayHeader">อ</div>
+          <div class="CalDayHeader">พ</div>
+          <div class="CalDayHeader">พฤ</div>
+          <div class="CalDayHeader">ศ</div>
+          <div class="CalDayHeader">ส</div>
+        </div>
+
+        <!-- Calendar cells rendered by JS -->
+        <div class="CalGrid" id="calBody"></div>
+
+        <!-- Legend -->
+        <div class="CalLegend" id="calLegend"></div>
+      </div>
+    </div>
+
+    <!-- ══ PANEL: Order List ══ -->
+    <div class="Panel" id="panelList">
+
+      <div class="Toolbar">
+        <div class="Toolbar-search">
+          <span class="Toolbar-search-icon">🔍</span>
+          <input type="text" class="Toolbar-input" id="searchInput" placeholder="ค้นหาชื่อลูกค้า, เลข Order..." />
+        </div>
+        <select class="Toolbar-filter" id="filterStatus">
+          <option value="">ทุกสถานะ</option>
+          <option value="waiting">รอแพ็ก</option>
+          <option value="packing">กำลังแพ็ก</option>
+          <option value="shipped">จัดส่งแล้ว</option>
+          <option value="received">รับสินค้าแล้ว</option>
+          <option value="cancelled">ยกเลิก</option>
+        </select>
+        <select class="Toolbar-filter" id="filterMonth">
+          <option value="">ทุกเดือน</option>
+          <option value="3">มีนาคม 2568</option>
+          <option value="2">กุมภาพันธ์ 2568</option>
+          <option value="1">มกราคม 2568</option>
+        </select>
+      </div>
+
+      <div class="TableCard">
+        <div class="TableCard-header">
+          <span class="TableCard-title">รายการออเดอร์ทั้งหมด</span>
+          <span class="TableCard-count" id="orderCount">แสดง 8 รายการ</span>
+        </div>
+
+        <table class="DataTable">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>ลูกค้า</th>
+              <th>สินค้า</th>
+              <th>วันเช่า – คืน</th>
+              <th>หลักฐานโอน</th>
+              <th>สถานะจัดส่ง</th>
+              <th>Tracking</th>
+              <th style="width:90px">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="orderTableBody">
+
+            <!-- #ORD-0091 -->
+            <tr data-status="waiting">
+              <td><span class="OrderId">#ORD-0091</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">สมหญิง รักดี</span>
+                  <span class="CustPhone">081-234-5678</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product2.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">Wedding Dress</div>
+                    <div class="ProdSize">ไซส์ S</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>20 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>23 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--ok" onclick="openModal('ORD-0091')">✅ มีหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--waiting"><span class="ShipBadge-dot"></span>รอแพ็ก</span></td>
+              <td>—</td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" title="ดูรายละเอียด" onclick="openModal('ORD-0091')">👁</button>
+                  <button class="BtnAction BtnAction--ship" title="อัปเดตการจัดส่ง" onclick="openModal('ORD-0091')">📦</button>
+                  <button class="BtnAction BtnAction--cancel" title="ยกเลิก">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0090 -->
+            <tr data-status="shipped">
+              <td><span class="OrderId">#ORD-0090</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">พิมพ์ใจ สวยงาม</span>
+                  <span class="CustPhone">089-876-5432</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product1.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">Contemporary Thai Dress</div>
+                    <div class="ProdSize">ไซส์ M</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>19 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>26 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--ok" onclick="openModal('ORD-0090')">✅ มีหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--shipped"><span class="ShipBadge-dot"></span>จัดส่งแล้ว</span></td>
+              <td><span class="TrackNum">TH123456789</span></td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" title="ดูรายละเอียด" onclick="openModal('ORD-0090')">👁</button>
+                  <button class="BtnAction BtnAction--ship" title="อัปเดต" onclick="openModal('ORD-0090')">📦</button>
+                  <button class="BtnAction BtnAction--cancel" title="ยกเลิก">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0089 -->
+            <tr data-status="received">
+              <td><span class="OrderId">#ORD-0089</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">อนันต์ มีสุข</span>
+                  <span class="CustPhone">062-111-2233</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product7.png" alt="" />
+                  <div>
+                    <div class="ProdName">Wedding Suit / Tuxedo</div>
+                    <div class="ProdSize">ไซส์ L</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>18 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>21 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--ok" onclick="openModal('ORD-0089')">✅ มีหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--received"><span class="ShipBadge-dot"></span>รับสินค้าแล้ว</span></td>
+              <td><span class="TrackNum">TH987654321</span></td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" title="ดูรายละเอียด" onclick="openModal('ORD-0089')">👁</button>
+                  <button class="BtnAction BtnAction--ship" title="อัปเดต" onclick="openModal('ORD-0089')">📦</button>
+                  <button class="BtnAction BtnAction--cancel" title="ยกเลิก">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0088 -->
+            <tr data-status="packing">
+              <td><span class="OrderId">#ORD-0088</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">วารี สดใส</span>
+                  <span class="CustPhone">091-555-6677</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product3.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">Maleficent Costume</div>
+                    <div class="ProdSize">ไซส์ M</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>22 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>25 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--ok" onclick="openModal('ORD-0088')">✅ มีหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--packing"><span class="ShipBadge-dot"></span>กำลังแพ็ก</span></td>
+              <td>—</td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" onclick="openModal('ORD-0088')">👁</button>
+                  <button class="BtnAction BtnAction--ship" onclick="openModal('ORD-0088')">📦</button>
+                  <button class="BtnAction BtnAction--cancel">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0087 -->
+            <tr data-status="waiting">
+              <td><span class="OrderId">#ORD-0087</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">ธนกฤต ใจดี</span>
+                  <span class="CustPhone">083-999-0011</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product5.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">Academic Robe KMITL</div>
+                    <div class="ProdSize">ไซส์ XL</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>25 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>28 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--none" onclick="openModal('ORD-0087')">📎 รอหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--waiting"><span class="ShipBadge-dot"></span>รอแพ็ก</span></td>
+              <td>—</td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" onclick="openModal('ORD-0087')">👁</button>
+                  <button class="BtnAction BtnAction--ship" onclick="openModal('ORD-0087')">📦</button>
+                  <button class="BtnAction BtnAction--cancel">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0086 -->
+            <tr data-status="shipped">
+              <td><span class="OrderId">#ORD-0086</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">นุชนาถ ฟ้าใส</span>
+                  <span class="CustPhone">087-321-6549</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product4.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">Jack &amp; Jones CABLE NECK</div>
+                    <div class="ProdSize">ไซส์ L</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>17 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>24 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--ok" onclick="openModal('ORD-0086')">✅ มีหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--shipped"><span class="ShipBadge-dot"></span>จัดส่งแล้ว</span></td>
+              <td><span class="TrackNum">TH555000111</span></td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" onclick="openModal('ORD-0086')">👁</button>
+                  <button class="BtnAction BtnAction--ship" onclick="openModal('ORD-0086')">📦</button>
+                  <button class="BtnAction BtnAction--cancel">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0085 -->
+            <tr data-status="received">
+              <td><span class="OrderId">#ORD-0085</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">กิตติศักดิ์ แสงทอง</span>
+                  <span class="CustPhone">095-741-8520</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product8.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">PROFUOMO LUXURY Jumper</div>
+                    <div class="ProdSize">ไซส์ M</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>10 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>17 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--ok" onclick="openModal('ORD-0085')">✅ มีหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--received"><span class="ShipBadge-dot"></span>รับสินค้าแล้ว</span></td>
+              <td><span class="TrackNum">TH222333444</span></td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" onclick="openModal('ORD-0085')">👁</button>
+                  <button class="BtnAction BtnAction--ship" onclick="openModal('ORD-0085')">📦</button>
+                  <button class="BtnAction BtnAction--cancel">✕</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- #ORD-0084 -->
+            <tr data-status="cancelled">
+              <td><span class="OrderId">#ORD-0084</span></td>
+              <td>
+                <div class="CustCell">
+                  <span class="CustName">ศิริพร เพชรงาม</span>
+                  <span class="CustPhone">090-123-4567</span>
+                </div>
+              </td>
+              <td>
+                <div class="ProdCell">
+                  <img class="ProdThumb" src="images/product6.jpg" alt="" />
+                  <div>
+                    <div class="ProdName">Holkham Classic Shirt</div>
+                    <div class="ProdSize">ไซส์ S</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="DateRange">
+                  <div class="DateRow"><span class="DateIcon">▶</span><span class="DateLabel">เริ่ม</span>15 มี.ค. 68</div>
+                  <div class="DateRow"><span class="DateIcon">◀</span><span class="DateLabel">คืน</span>18 มี.ค. 68</div>
+                </div>
+              </td>
+              <td><span class="PayProof PayProof--none">📎 รอหลักฐาน</span></td>
+              <td><span class="ShipBadge ShipBadge--cancelled"><span class="ShipBadge-dot"></span>ยกเลิก</span></td>
+              <td>—</td>
+              <td>
+                <div class="ActionGroup">
+                  <button class="BtnAction BtnAction--view" onclick="openModal('ORD-0084')">👁</button>
+                  <button class="BtnAction BtnAction--ship">📦</button>
+                  <button class="BtnAction BtnAction--cancel">✕</button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+        <div class="Pagination">
+          <span class="PagInfo">หน้า 1 / 4</span>
+          <button class="PagBtn PagBtn--nav">‹</button>
+          <button class="PagBtn PagBtn--active">1</button>
+          <button class="PagBtn">2</button>
+          <button class="PagBtn">3</button>
+          <button class="PagBtn">4</button>
+          <button class="PagBtn PagBtn--nav">›</button>
+        </div>
+      </div>
+
+    </div><!-- /panelList -->
+
+  </main>
+</div>
+
+<!-- ══════════════ MODAL: Order Detail ══════════════ -->
+<div class="Modal-overlay" id="orderModal">
+  <div class="Modal">
+    <div class="Modal-header">
+      <span class="Modal-title" id="modalOrderId">รายละเอียดออเดอร์ #ORD-0091</span>
+      <button class="Modal-close" id="btnCloseModal">✕</button>
+    </div>
+
+    <div class="Modal-body">
+
+      <!-- Product -->
+      <div class="DetailSection">
+        <div class="DetailSection-title">🛍 สินค้าที่เช่า</div>
+        <div class="ModalProduct">
+          <img class="ModalProduct-img" src="images/product2.jpg" alt="" id="modalProdImg" />
+          <div class="ModalProduct-info">
+            <div class="ModalProduct-name" id="modalProdName">Wedding Dress</div>
+            <div class="ModalProduct-meta" id="modalProdMeta">ไซส์ S &nbsp;|&nbsp; Dior &nbsp;|&nbsp; ราตรี</div>
+          </div>
+          <div class="ModalProduct-price">
+            <div class="ModalProduct-price-val">5,000 ฿</div>
+            <div class="ModalProduct-price-label">ค่าเช่า 3 วัน</div>
+            <div class="ModalProduct-price-label" style="margin-top:4px">มัดจำ 3,000 ฿</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer info -->
+      <div class="DetailSection">
+        <div class="DetailSection-title">👤 ข้อมูลลูกค้า</div>
+        <div class="DetailGrid">
+          <div class="DetailRow"><div class="DetailLabel">ชื่อ-นามสกุล</div><div class="DetailValue">สมหญิง รักดี</div></div>
+          <div class="DetailRow"><div class="DetailLabel">เบอร์โทร</div><div class="DetailValue">081-234-5678</div></div>
+          <div class="DetailRow"><div class="DetailLabel">วันเริ่มเช่า</div><div class="DetailValue">20 มีนาคม 2568</div></div>
+          <div class="DetailRow"><div class="DetailLabel">วันที่ต้องคืน</div><div class="DetailValue">23 มีนาคม 2568</div></div>
+          <div class="DetailRow"><div class="DetailLabel">ที่อยู่จัดส่ง</div>
+            <div class="DetailValue">123/45 ซอยลาดพร้าว 10 แขวงจอมพล เขตจตุจักร กรุงเทพฯ 10900</div>
+          </div>
+          <div class="DetailRow"><div class="DetailLabel">ช่องทางชำระ</div><div class="DetailValue">โอนธนาคาร</div></div>
+        </div>
+      </div>
+
+      <!-- Payment proof -->
+      <div class="DetailSection">
+        <div class="DetailSection-title">💳 หลักฐานการโอนเงิน</div>
+        <div class="ProofBox">
+          <div style="height:180px;display:flex;align-items:center;justify-content:center;background:#f0f4f7;font-size:48px;">🧾</div>
+          <div class="ProofBox-label">สลิปการโอนเงิน — 20 มี.ค. 68 เวลา 10:23 น. &nbsp;|&nbsp; ยอด 8,000 ฿ (รวมมัดจำ)</div>
+        </div>
+      </div>
+
+      <!-- Shipping update -->
+      <div class="DetailSection">
+        <div class="DetailSection-title">📦 อัปเดตการจัดส่ง</div>
+        <div class="ShipForm">
+          <div class="ShipForm-group">
+            <label class="ShipForm-label">สถานะ</label>
+            <select class="ShipForm-select" id="shipStatusSelect">
+              <option value="waiting">รอแพ็ก</option>
+              <option value="packing">กำลังแพ็ก</option>
+              <option value="shipped">จัดส่งแล้ว</option>
+              <option value="received">ลูกค้ารับสินค้าแล้ว</option>
+            </select>
+          </div>
+          <div class="ShipForm-group">
+            <label class="ShipForm-label">เลข Tracking</label>
+            <input type="text" class="ShipForm-input" placeholder="เช่น TH123456789" id="trackingInput" />
+          </div>
+          <div class="ShipForm-group">
+            <label class="ShipForm-label">ขนส่ง</label>
+            <select class="ShipForm-select">
+              <option>Kerry Express</option>
+              <option>Flash Express</option>
+              <option>J&T Express</option>
+              <option>SCG Express</option>
+              <option>ไปรษณีย์ไทย</option>
+            </select>
+          </div>
+          <button class="BtnUpdateShip" onclick="saveShipping()">💾 บันทึก</button>
+        </div>
+      </div>
+
+      <!-- Order timeline -->
+      <div class="DetailSection">
+        <div class="DetailSection-title">🕐 ไทม์ไลน์ออเดอร์</div>
+        <div class="Timeline">
+          <div class="TL-item">
+            <div class="TL-line">
+              <div class="TL-dot TL-dot--done"></div>
+              <div class="TL-connector TL-connector--done"></div>
+            </div>
+            <div class="TL-content">
+              <div class="TL-title">✅ ลูกค้าสั่งจอง</div>
+              <div class="TL-time">20 มี.ค. 2568 — 09:14 น.</div>
+            </div>
+          </div>
+          <div class="TL-item">
+            <div class="TL-line">
+              <div class="TL-dot TL-dot--done"></div>
+              <div class="TL-connector TL-connector--done"></div>
+            </div>
+            <div class="TL-content">
+              <div class="TL-title">✅ ยืนยันการชำระเงิน</div>
+              <div class="TL-time">20 มี.ค. 2568 — 10:30 น.</div>
+            </div>
+          </div>
+          <div class="TL-item">
+            <div class="TL-line">
+              <div class="TL-dot TL-dot--now"></div>
+              <div class="TL-connector"></div>
+            </div>
+            <div class="TL-content">
+              <div class="TL-title">🔵 รอแพ็กสินค้า (ปัจจุบัน)</div>
+              <div class="TL-time">—</div>
+            </div>
+          </div>
+          <div class="TL-item">
+            <div class="TL-line">
+              <div class="TL-dot"></div>
+              <div class="TL-connector"></div>
+            </div>
+            <div class="TL-content">
+              <div class="TL-title" style="color:#bbb">📦 จัดส่งสินค้า</div>
+              <div class="TL-time">—</div>
+            </div>
+          </div>
+          <div class="TL-item">
+            <div class="TL-line">
+              <div class="TL-dot"></div>
+              <div class="TL-connector"></div>
+            </div>
+            <div class="TL-content">
+              <div class="TL-title" style="color:#bbb">🏠 ลูกค้ารับสินค้า</div>
+              <div class="TL-time">—</div>
+            </div>
+          </div>
+          <div class="TL-item">
+            <div class="TL-line"><div class="TL-dot"></div></div>
+            <div class="TL-content">
+              <div class="TL-title" style="color:#bbb">🔄 คืนสินค้าภายใน 23 มี.ค. 68</div>
+              <div class="TL-time">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /Modal-body -->
+
+    <div class="Modal-footer">
+      <button class="BtnSecondary" id="btnModalCancel">ปิด</button>
+      <button class="BtnPrimary">🖨 พิมพ์ใบสั่ง</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCRIPT ══════════════ -->
+<script>
+(function () {
+
+  /* ─── Tab switch ─── */
+  function switchTab(tab) {
+    document.getElementById('panelCalendar').classList.toggle('active', tab === 'calendar');
+    document.getElementById('panelList').classList.toggle('active', tab === 'list');
+    document.getElementById('tabCalendar').classList.toggle('active', tab === 'calendar');
+    document.getElementById('tabList').classList.toggle('active', tab === 'list');
+  }
+  window.switchTab = switchTab;
+  switchTab('calendar'); // default
+
+  /* ─── Calendar ─── */
+  const thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                      'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+  let curYear = 2025, curMonth = 2; // 0-indexed → March 2025
+
+  // Sample booking data: {name, color, start:[y,m,d], end:[y,m,d]}
+  const bookings = [
+    { id:'ORD-0091', name:'Wedding Dress (สมหญิง)', color:'c1', start:[2025,2,20], end:[2025,2,23] },
+    { id:'ORD-0090', name:'Thai Dress (พิมพ์ใจ)',   color:'c2', start:[2025,2,19], end:[2025,2,26] },
+    { id:'ORD-0089', name:'Tuxedo (อนันต์)',         color:'c3', start:[2025,2,18], end:[2025,2,21] },
+    { id:'ORD-0088', name:'Maleficent (วารี)',        color:'c4', start:[2025,2,22], end:[2025,2,25] },
+    { id:'ORD-0087', name:'Robe (ธนกฤต)',            color:'c5', start:[2025,2,25], end:[2025,2,28] },
+    { id:'ORD-0086', name:'Jack & Jones (นุชนาถ)',    color:'c6', start:[2025,2,17], end:[2025,2,24] },
+  ];
+
+  function toDateNum(y,m,d){ return y*10000 + m*100 + d; }
+
+  function getEventsForDay(y,m,d) {
+    const n = toDateNum(y,m,d);
+    return bookings.filter(b => {
+      const s = toDateNum(...b.start), e = toDateNum(...b.end);
+      return n >= s && n <= e;
+    }).map(b => {
+      const s = toDateNum(...b.start), e = toDateNum(...b.end);
+      let pos = n === s && n === e ? 'single' : n === s ? 'start' : n === e ? 'end' : 'mid';
+      return { ...b, pos };
+    });
+  }
+
+  function renderCalendar() {
+    const label = document.getElementById('calMonthLabel');
+    label.textContent = thaiMonths[curMonth] + ' ' + (curYear + 543);
+
+    const body = document.getElementById('calBody');
+    body.innerHTML = '';
+
+    const firstDay = new Date(curYear, curMonth, 1).getDay();
+    const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+    const today = new Date();
+
+    // prev month padding
+    const prevDays = new Date(curYear, curMonth, 0).getDate();
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const cell = document.createElement('div');
+      cell.className = 'CalCell other-month';
+      cell.innerHTML = `<div class="CalCell-num">${prevDays - i}</div>`;
+      body.appendChild(cell);
+    }
+
+    // current month days
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      const isToday = (curYear === today.getFullYear() && curMonth === today.getMonth() && d === today.getDate());
+      cell.className = 'CalCell' + (isToday ? ' today' : '');
+      cell.innerHTML = `<div class="CalCell-num">${d}</div>`;
+
+      const events = getEventsForDay(curYear, curMonth, d);
+      events.forEach(ev => {
+        const pill = document.createElement('div');
+        pill.className = `CalEvent CalEvent--${ev.color} CalEvent--${ev.pos}`;
+        pill.textContent = ev.pos === 'start' || ev.pos === 'single' ? ev.name : '';
+        pill.title = ev.name + ' (' + ev.id + ')';
+        pill.onclick = () => openModal(ev.id);
+        cell.appendChild(pill);
+      });
+
+      body.appendChild(cell);
+    }
+
+    // next month padding
+    const totalCells = firstDay + daysInMonth;
+    const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    for (let d = 1; d <= remaining; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'CalCell other-month';
+      cell.innerHTML = `<div class="CalCell-num">${d}</div>`;
+      body.appendChild(cell);
+    }
+
+    // legend
+    const legend = document.getElementById('calLegend');
+    legend.innerHTML = '';
+    const colors = { c1:'#114E72', c2:'#2a7d4f', c3:'#b07a00', c4:'#6b3fa0', c5:'#c0392b', c6:'#1a7a9a' };
+    bookings.forEach(b => {
+      const item = document.createElement('div');
+      item.className = 'CalLegend-item';
+      item.innerHTML = `<span class="CalLegend-dot" style="background:${colors[b.color]}"></span>${b.name}`;
+      legend.appendChild(item);
+    });
+  }
+
+  document.getElementById('calPrev').addEventListener('click', () => {
+    curMonth--; if (curMonth < 0) { curMonth = 11; curYear--; } renderCalendar();
+  });
+  document.getElementById('calNext').addEventListener('click', () => {
+    curMonth++; if (curMonth > 11) { curMonth = 0; curYear++; } renderCalendar();
+  });
+  document.getElementById('calTodayBtn').addEventListener('click', () => {
+    const t = new Date(); curYear = t.getFullYear(); curMonth = t.getMonth(); renderCalendar();
+  });
+
+  renderCalendar();
+
+  /* ─── Modal ─── */
+  const modal = document.getElementById('orderModal');
+  function openModal(ordId) {
+    document.getElementById('modalOrderId').textContent = 'รายละเอียดออเดอร์ #' + ordId;
+    modal.classList.add('open');
+  }
+  function closeModal() { modal.classList.remove('open'); }
+
+  window.openModal = openModal;
+  document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+  document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  /* ─── Shipping save (mock) ─── */
+  window.saveShipping = function () {
+    const status  = document.getElementById('shipStatusSelect').value;
+    const track   = document.getElementById('trackingInput').value;
+    const labels  = { waiting:'รอแพ็ก', packing:'กำลังแพ็ก', shipped:'จัดส่งแล้ว', received:'รับสินค้าแล้ว' };
+    alert(`อัปเดตสำเร็จ!\nสถานะ: ${labels[status]}\nTracking: ${track || '—'}`);
+    closeModal();
+  };
+
+  /* ─── Search & filter ─── */
+  document.getElementById('searchInput').addEventListener('input', filterOrders);
+  document.getElementById('filterStatus').addEventListener('change', filterOrders);
+  document.getElementById('filterMonth').addEventListener('change', filterOrders);
+
+  function filterOrders() {
+    const q  = document.getElementById('searchInput').value.toLowerCase();
+    const st = document.getElementById('filterStatus').value;
+    document.querySelectorAll('#orderTableBody tr').forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const rowSt = row.dataset.status || '';
+      row.style.display = (!q || text.includes(q)) && (!st || rowSt === st) ? '' : 'none';
+    });
+    const vis = document.querySelectorAll('#orderTableBody tr:not([style*="display: none"])').length;
+    document.getElementById('orderCount').textContent = `แสดง ${vis} รายการ`;
+  }
+
+})();
+</script>
+
+</body>
+</html>
