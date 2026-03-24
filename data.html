@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Clothes – My Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="template/rental.css" />
+  <style>
+    /* สไตล์สำหรับหน้า Profile */
+    .Profile-container {
+      max-width: 800px;
+      margin: 40px auto 80px;
+      padding: 0 32px;
+      width: 100%;
+    }
+
+    .Profile-header {
+      margin-bottom: 32px;
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: 16px;
+    }
+
+    .Profile-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+    }
+
+    .Profile-subtitle {
+      font-size: 16px;
+      color: var(--color-text-muted);
+    }
+
+    .Form-group-box {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .Form-section-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--color-primary);
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 10px;
+    }
+
+    .Input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .Input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .Input-group label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .Required-star {
+      color: #c0392b;
+      margin-left: 2px;
+    }
+
+    .Profile-input {
+      height: 48px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 0 16px;
+      font-family: var(--font-main);
+      font-size: 15px;
+      outline: none;
+      color: var(--color-primary);
+      transition: border-color 0.2s;
+      background-color: var(--color-white);
+    }
+
+    .Profile-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* ทำให้ช่องที่แก้ไขไม่ได้ดูเป็นสีเทา */
+    .Profile-input:disabled {
+      background-color: #f0f4f7;
+      color: var(--color-text-muted);
+      cursor: not-allowed;
+    }
+
+    .Profile-input.textarea {
+      height: 100px;
+      padding: 16px;
+      resize: vertical;
+    }
+
+    .Note-text {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: -4px;
+    }
+
+    .Btn-submit {
+      width: 100%;
+      height: 54px;
+      background: var(--color-primary);
+      color: var(--color-white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 18px;
+      font-weight: 900;
+      font-family: var(--font-main);
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 10px;
+    }
+
+    .Btn-submit:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 600px) {
+      .Input-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="Page">
+
+  <header class="SiteHeader">
+    <div class="SiteHeader-top">
+      <a href="main.html" class="SiteHeader-logo">
+        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" onerror="this.src='https://via.placeholder.com/82x60?text=LOGO'" />
+        <span class="Logo-text">RENTAL CLOTHES</span>
+      </a>
+      <div class="SiteHeader-actions">
+        <a href="faq.html" class="Icon-faq-link" title="FAQ">
+          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" onerror="this.src='https://via.placeholder.com/41x41?text=?'" />
+        </a>
+        <a href="profile.html" class="BtnLogin">
+          <span class="BtnLogin-text">MY ACCOUNT</span>
+        </a>
+      </div>
+    </div>
+    <nav class="Navbar">
+      <a href="main.html"      class="NavBtn">HOME</a>
+      <a href="rental.html"    class="NavBtn">RENTAL PRODUCTS</a>
+      <a href="howtorent.html" class="NavBtn">HOW TO RENT</a>
+      <a href="review.html"    class="NavBtn">REVIEW</a>
+      <a href="article.html"   class="NavBtn">ARTICLE</a>
+      <a href="contact.html"   class="NavBtn">CONTACT</a>
+      <a href="gallery.html"   class="NavBtn">GALLERY</a>
+    </nav>
+  </header>
+
+  <div class="Profile-container">
+    <div class="Profile-header">
+      <h1 class="Profile-title">จัดการบัญชีผู้ใช้</h1>
+      <p class="Profile-subtitle">แก้ไขข้อมูลบัญชีและที่อยู่สำหรับการจัดส่งสินค้า</p>
+    </div>
+
+    <form id="profileForm" onsubmit="saveProfileData(event)">
+      
+      <div class="Form-group-box">
+        <h2 class="Form-section-title">ข้อมูลบัญชีผู้ใช้ (Account Information)</h2>
+        
+        <div class="Input-row">
+          <div class="Input-group">
+            <label>Username</label>
+            <input type="text" class="Profile-input" id="username" value="Folk_Dev" disabled />
+            <span class="Note-text">ชื่อผู้ใช้ไม่สามารถเปลี่ยนแปลงได้</span>
+          </div>
+          <div class="Input-group">
+            <label>Email <span class="Required-star">*</span></label>
+            <input type="email" class="Profile-input" id="email" value="folk@example.com" required />
+          </div>
+        </div>
+
+        <div class="Input-group" style="margin-bottom: 0;">
+          <label>Password (รหัสผ่านใหม่)</label>
+          <input type="password" class="Profile-input" id="password" placeholder="********" />
+          <span class="Note-text">หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้ปล่อยช่องนี้ว่างไว้</span>
+        </div>
+      </div>
+
+      <div class="Form-group-box">
+        <h2 class="Form-section-title">ข้อมูลสำหรับการจัดส่ง (Shipping Information)</h2>
+        
+        <div class="Input-row">
+          <div class="Input-group">
+            <label>ชื่อ - นามสกุล <span class="Required-star">*</span></label>
+            <input type="text" class="Profile-input" id="fullName" value="นาย รักดี สุขเสมอ" required />
+          </div>
+          <div class="Input-group">
+            <label>เบอร์โทรศัพท์ติดต่อ <span class="Required-star">*</span></label>
+            <input type="tel" class="Profile-input" id="phone" value="081-999-8888" required />
+          </div>
+        </div>
+
+        <div class="Input-group" style="margin-bottom: 0;">
+          <label>ที่อยู่สำหรับจัดส่ง <span class="Required-star">*</span></label>
+          <textarea class="Profile-input textarea" id="address" required>123/45 ซอยสุขุมวิท 10 แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110</textarea>
+          <span class="Note-text">ข้อมูลส่วนนี้จะถูกตั้งเป็นค่าเริ่มต้นในหน้าชำระเงิน (Checkout) ทันที</span>
+        </div>
+      </div>
+
+      <button type="submit" class="Btn-submit">บันทึกการเปลี่ยนแปลง</button>
+    </form>
+
+  </div>
+</div>
+
+<script>
+// ฟังก์ชันจำลองการกดบันทึกข้อมูล
+function saveProfileData(event) {
+  event.preventDefault(); // ป้องกันไม่ให้หน้าเว็บโหลดใหม่
+  
+  // สมมติว่าส่งข้อมูลเข้า Database สำเร็จ
+  alert("บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว ข้อมูลใหม่จะถูกนำไปใช้ในการจัดส่งครับ");
+  
+  // อนาคตสามารถเขียน Fetch API ตรงนี้เพื่อยิงข้อมูลไปหา Backend PHP/Node.js ได้เลย
+}
+</script>
+</body>
+</html>
