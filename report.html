@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Reports & Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="template/report.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="TopBar">
+  <a href="main.html" class="TopBar-logo">
+    <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" onerror="this.src='https://via.placeholder.com/70x55?text=LOGO'" />
+    <span class="Logo-text">RENTAL CLOTHES</span>
+  </a>
+  <div class="TopBar-actions">
+    <a href="faq.html" class="BtnFaq" title="FAQ">?</a>
+    <a href="login.html" class="BtnLogin"><span class="BtnLogin-text">LOGIN</span></a>
+  </div>
+</header>
+
+<div class="Layout">
+  <aside class="Sidebar">
+    <div class="Sidebar-profile">
+      <div class="Profile-avatar">👤</div>
+      <div class="Profile-info">
+        <div class="Profile-name">NAME ADMIN</div>
+        <div class="Profile-role">PRODUCTION SUPPORT</div>
+      </div>
+    </div>
+    <nav class="Sidebar-nav">
+      <a href="dashboard.html"   class="NavItem"><span class="NavItem-icon">🏠</span>DASHBOARD</a>
+      <a href="productmanagement.html" class="NavItem"><span class="NavItem-icon">👗</span>PRODUCTS</a>
+      <a href="booking.html"           class="NavItem"><span class="NavItem-icon">📅</span>BOOKING</a>
+      <a href="return.html"            class="NavItem"><span class="NavItem-icon">🔄</span>RETURN</a>
+      <a href="cus.html"         class="NavItem"><span class="NavItem-icon">👥</span>CUSTOMERS</a>
+      <a href="report.html"     class="NavItem NavItem--active NavItem--last"><span class="NavItem-icon">📊</span>REPORTS</a>
+    </nav>
+  </aside>
+
+  <main class="MainContent">
+    <div class="PageTitleRow">
+      <h1 class="PageTitle">REPORTS & ANALYTICS</h1>
+      <button class="BtnExport" onclick="exportData()">📥 Export เป็น PDF / Excel</button>
+    </div>
+
+    <div class="StatRow">
+      <div class="StatCard StatCard--green">
+        <div class="StatCard-label">รายได้รวม (Gross)</div>
+        <div class="StatCard-value" id="statGross">฿0</div>
+        <div class="StatCard-sub positive" id="statGrossSub">↑ 0% จากเดือนก่อน</div>
+      </div>
+      <div class="StatCard">
+        <div class="StatCard-label">กำไรสุทธิ (Net Profit)</div>
+        <div class="StatCard-value" id="statNet">฿0</div>
+        <div class="StatCard-sub">หลังหักค่าซัก/ค่าส่ง</div>
+      </div>
+      <div class="StatCard StatCard--red">
+        <div class="StatCard-label">ต้นทุน (ซักรีด + ขนส่ง)</div>
+        <div class="StatCard-value" id="statCost">฿0</div>
+        <div class="StatCard-sub negative">คิดเป็น <span id="statCostPercent">0%</span> ของรายได้</div>
+      </div>
+      <div class="StatCard StatCard--orange">
+        <div class="StatCard-label">จำนวนการเช่า (รายการ)</div>
+        <div class="StatCard-value" id="statRents">0</div>
+        <div class="StatCard-sub positive" id="statRentsSub">↑ 0% จากเดือนก่อน</div>
+      </div>
+    </div>
+
+    <div class="TabRow">
+      <button class="Tab active" id="tabRevenue" onclick="switchTab('revenue')">📈 รายงานรายได้ (Revenue)</button>
+      <button class="Tab" id="tabProducts" onclick="switchTab('products')">👗 สินค้าขายดี (Top Products)</button>
+    </div>
+
+    <div class="Panel active" id="panelRevenue">
+      <div class="Toolbar">
+        <div class="Toolbar-left">
+          <select class="Toolbar-filter" id="filterYearRev" onchange="renderRevenueChart()">
+            <option value="2026">ปี 2026</option>
+            <option value="2025">ปี 2025</option>
+          </select>
+          <select class="Toolbar-filter" id="filterViewRev" onchange="renderRevenueChart()">
+            <option value="monthly">ดูแบบ รายเดือน</option>
+            <option value="quarterly">ดูแบบ รายไตรมาส</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ReportCard">
+        <div class="ReportCard-header">
+          <span class="ReportCard-title">สรุปรายได้ vs ต้นทุน vs กำไรสุทธิ</span>
+        </div>
+        <div class="ChartContainer">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="Panel" id="panelProducts">
+      <div class="Toolbar">
+        <div class="Toolbar-left">
+          <select class="Toolbar-filter" id="filterMonthProd" onchange="renderProductsTable()">
+            <option value="all">ทั้งหมด (ปีนี้)</option>
+            <option value="03">มีนาคม</option>
+            <option value="02">กุมภาพันธ์</option>
+            <option value="01">มกราคม</option>
+          </select>
+          <select class="Toolbar-filter" id="filterCatProd" onchange="renderProductsTable()">
+            <option value="all">ทุกหมวดหมู่</option>
+            <option value="evening">ชุดราตรี</option>
+            <option value="thai">ชุดไทย</option>
+            <option value="suit">สูท / ทักซิโด้</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ReportCard">
+        <div class="ReportCard-header">
+          <span class="ReportCard-title">จัดอันดับสินค้าที่ถูกเช่าบ่อยที่สุด</span>
+        </div>
+        <table class="DataTable">
+          <thead>
+            <tr>
+              <th style="width:60px;text-align:center;">อันดับ</th>
+              <th>รายละเอียดชุด</th>
+              <th>จำนวนครั้งที่เช่า</th>
+              <th>สร้างรายได้รวม (฿)</th>
+              <th>สถานะปัจจุบัน</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="topProductsBody">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="Toast" id="toast">
+  <span class="Toast-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">ดำเนินการสำเร็จ</span>
+</div>
+
+<script>
+(function() {
+  // ==========================================
+  // 1. จำลองข้อมูล Database (Mock Data)
+  // ==========================================
+  
+  // ข้อมูลรายได้ (รายเดือน)
+  const revenueData = {
+    "2026": [
+      { month: 'ม.ค.', gross: 125000, laundry: 15000, shipping: 10000, rents: 150 },
+      { month: 'ก.พ.', gross: 140000, laundry: 18000, shipping: 12000, rents: 185 },
+      { month: 'มี.ค.', gross: 185000, laundry: 22000, shipping: 15000, rents: 240 }, // เดือนปัจจุบัน
+      { month: 'เม.ย.', gross: 0, laundry: 0, shipping: 0, rents: 0 },
+      { month: 'พ.ค.', gross: 0, laundry: 0, shipping: 0, rents: 0 },
+      { month: 'มิ.ย.', gross: 0, laundry: 0, shipping: 0, rents: 0 }
+    ],
+    "2025": [
+      { month: 'ม.ค.', gross: 90000, laundry: 10000, shipping: 8000, rents: 110 },
+      { month: 'ก.พ.', gross: 95000, laundry: 11000, shipping: 8500, rents: 120 },
+      { month: 'มี.ค.', gross: 110000, laundry: 13000, shipping: 9000, rents: 145 },
+      { month: 'เม.ย.', gross: 105000, laundry: 12000, shipping: 8500, rents: 130 },
+      { month: 'พ.ค.', gross: 130000, laundry: 15000, shipping: 11000, rents: 160 },
+      { month: 'มิ.ย.', gross: 120000, laundry: 14000, shipping: 10000, rents: 150 },
+      { month: 'ก.ค.', gross: 125000, laundry: 14500, shipping: 10500, rents: 155 },
+      { month: 'ส.ค.', gross: 115000, laundry: 13500, shipping: 9500, rents: 140 },
+      { month: 'ก.ย.', gross: 140000, laundry: 16000, shipping: 12000, rents: 175 },
+      { month: 'ต.ค.', gross: 160000, laundry: 18000, shipping: 13500, rents: 200 },
+      { month: 'พ.ย.', gross: 175000, laundry: 20000, shipping: 14000, rents: 220 },
+      { month: 'ธ.ค.', gross: 210000, laundry: 25000, shipping: 18000, rents: 280 }
+    ]
+  };
+
+  // ข้อมูลสินค้าขายดี
+  const productsData = [
+    { id: 'P01', name: 'Wedding Dress – Dior Edition', cat: 'evening', catName: 'ชุดราตรี', rents: 45, revenue: 112500, status: 'ถูกยืมบ่อยมาก (คิวเต็ม)', img: '👗' },
+    { id: 'P02', name: 'Classic Black Tuxedo', cat: 'suit', catName: 'สูท / ทักซิโด้', rents: 38, revenue: 38000, status: 'มีของพร้อมส่ง', img: '🤵' },
+    { id: 'P03', name: 'Contemporary Thai Dress (Rose Gold)', cat: 'thai', catName: 'ชุดไทย', rents: 32, revenue: 48000, status: 'ชุดเริ่มชำรุด 1 ตัว', img: '👘' },
+    { id: 'P04', name: 'Cinderella Ball Gown (Blue)', cat: 'evening', catName: 'ชุดราตรี', rents: 28, revenue: 56000, status: 'มีของพร้อมส่ง', img: '👗' },
+    { id: 'P05', name: 'Vintage Thai Costume (Chut Thai)', cat: 'thai', catName: 'ชุดไทย', rents: 25, revenue: 37500, status: 'มีของพร้อมส่ง', img: '👘' },
+    { id: 'P06', name: 'Navy Blue Formal Suit', cat: 'suit', catName: 'สูท / ทักซิโด้', rents: 20, revenue: 18000, status: 'มีของพร้อมส่ง', img: '👔' }
+  ];
+
+  // Helper Format Currency
+  const formatMoney = (num) => '฿' + num.toLocaleString('th-TH');
+
+  let revenueChartInstance = null;
+
+  // ==========================================
+  // 2. ฟังก์ชันอัปเดตตัวเลข (Stat Cards)
+  // ==========================================
+  function updateStats() {
+    const year = document.getElementById('filterYearRev').value;
+    const data = revenueData[year];
+    
+    // หาเดือนล่าสุดที่มีข้อมูล (ในที่นี้คือ index 2 = มี.ค.)
+    const currentMonthData = data[2];
+    const prevMonthData = data[1];
+
+    const netProfit = currentMonthData.gross - currentMonthData.laundry - currentMonthData.shipping;
+    const totalCost = currentMonthData.laundry + currentMonthData.shipping;
+    const costPercent = currentMonthData.gross > 0 ? Math.round((totalCost / currentMonthData.gross) * 100) : 0;
+
+    document.getElementById('statGross').textContent = formatMoney(currentMonthData.gross);
+    document.getElementById('statNet').textContent = formatMoney(netProfit);
+    document.getElementById('statCost').textContent = formatMoney(totalCost);
+    document.getElementById('statCostPercent').textContent = costPercent + '%';
+    document.getElementById('statRents').textContent = currentMonthData.rents.toLocaleString();
+
+    // คำนวณ % เทียบเดือนก่อน
+    if(prevMonthData.gross > 0) {
+      const grossGrowth = Math.round(((currentMonthData.gross - prevMonthData.gross) / prevMonthData.gross) * 100);
+      document.getElementById('statGrossSub').textContent = `${grossGrowth >= 0 ? '↑' : '↓'} ${Math.abs(grossGrowth)}% จากเดือนก่อน`;
+      document.getElementById('statGrossSub').className = `StatCard-sub ${grossGrowth >= 0 ? 'positive' : 'negative'}`;
+    }
+  }
+
+  // ==========================================
+  // 3. ฟังก์ชันวาดกราฟ (Chart.js)
+  // ==========================================
+  window.renderRevenueChart = function() {
+    updateStats();
+
+    const year = document.getElementById('filterYearRev').value;
+    const view = document.getElementById('filterViewRev').value;
+    const rawData = revenueData[year];
+
+    let labels = [];
+    let grossData = [];
+    let netData = [];
+    let costData = []; // ซักรีด + ขนส่ง
+
+    if (view === 'monthly') {
+      rawData.forEach(d => {
+        labels.push(d.month);
+        grossData.push(d.gross);
+        const cost = d.laundry + d.shipping;
+        costData.push(cost);
+        netData.push(d.gross - cost);
+      });
+    } else {
+      // ไตรมาส (Q1, Q2, Q3, Q4)
+      labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+      for(let i=0; i<4; i++) {
+        let qGross = 0, qCost = 0, qNet = 0;
+        for(let j=0; j<3; j++) {
+          let idx = (i*3)+j;
+          if(rawData[idx]) {
+            qGross += rawData[idx].gross;
+            qCost += (rawData[idx].laundry + rawData[idx].shipping);
+          }
+        }
+        grossData.push(qGross);
+        costData.push(qCost);
+        netData.push(qGross - qCost);
+      }
+    }
+
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    
+    // ทำลายกราฟเก่าทิ้งก่อนวาดใหม่
+    if(revenueChartInstance) {
+      revenueChartInstance.destroy();
+    }
+
+    revenueChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'กำไรสุทธิ (Net Profit)',
+            data: netData,
+            backgroundColor: '#1a7a48', // สีเขียว
+            borderRadius: 6,
+            order: 2
+          },
+          {
+            label: 'ต้นทุน (ซัก+ขนส่ง)',
+            data: costData,
+            backgroundColor: '#c0392b', // สีแดง
+            borderRadius: 6,
+            order: 3
+          },
+          {
+            label: 'รายได้รวม (Gross Revenue)',
+            data: grossData,
+            type: 'line',
+            borderColor: '#114E72', // สีน้ำเงินหลัก
+            backgroundColor: '#114E72',
+            borderWidth: 3,
+            tension: 0.3,
+            fill: false,
+            pointBackgroundColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { font: { family: "'Hanuman', sans-serif" } } },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) { label += ': '; }
+                if (context.parsed.y !== null) { label += formatMoney(context.parsed.y); }
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false } },
+          y: { 
+            stacked: true, 
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) { return '฿' + (value/1000) + 'k'; }
+            }
+          }
+        }
+      }
+    });
+  };
+
+  // ==========================================
+  // 4. ฟังก์ชันจัดการตาราง Top Products
+  // ==========================================
+  window.renderProductsTable = function() {
+    const tbody = document.getElementById('topProductsBody');
+    const catFilter = document.getElementById('filterCatProd').value;
+    
+    // กรองข้อมูลตาม Category
+    let list = [...productsData];
+    if(catFilter !== 'all') {
+      list = list.filter(p => p.cat === catFilter);
+    }
+
+    // เรียงลำดับตามจำนวนการเช่า (มากไปน้อย)
+    list.sort((a,b) => b.rents - a.rents);
+
+    tbody.innerHTML = list.map((p, index) => {
+      const rank = index + 1;
+      let rankClass = rank <= 3 ? `rank-${rank}` : '';
+      let rankDisplay = rank <= 3 ? `<span class="RankBadge ${rankClass}">${rank}</span>` : `<span style="font-weight:700;color:#7E7E7E">${rank}</span>`;
+
+      return `
+        <tr>
+          <td style="text-align:center;">${rankDisplay}</td>
+          <td>
+            <div class="ProductCell">
+              <div class="ProductImg">${p.img}</div>
+              <div class="ProductInfo">
+                <span class="ProductName">${p.name}</span>
+                <span class="ProductCat">ประเภท: ${p.catName} | ID: ${p.id}</span>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:16px;">${p.rents} ครั้ง</td>
+          <td style="color:#1a7a48;">${formatMoney(p.revenue)}</td>
+          <td><span style="color:${p.status.includes('ชำรุด') ? '#c0392b' : 'var(--color-text-muted)'}">${p.status}</span></td>
+          <td>
+            <button class="BtnAction" onclick="orderMore('${p.name}')">📦 สั่งซื้อเพิ่ม</button>
+          </td>
+        </tr>
+      `;
+    }).join('') || '<tr><td colspan="6" style="text-align:center;padding:30px;">ไม่พบข้อมูลสินค้าในหมวดหมู่นี้</td></tr>';
+  };
+
+  // ==========================================
+  // 5. ระบบ Tab และปุ่ม Action
+  // ==========================================
+  window.switchTab = function(tab) {
+    document.getElementById('tabRevenue').classList.remove('active');
+    document.getElementById('tabProducts').classList.remove('active');
+    document.getElementById('panelRevenue').classList.remove('active');
+    document.getElementById('panelProducts').classList.remove('active');
+
+    if(tab === 'revenue') {
+      document.getElementById('tabRevenue').classList.add('active');
+      document.getElementById('panelRevenue').classList.add('active');
+      renderRevenueChart(); // รีเฟรชกราฟเมื่อเปิดแท็บ
+    } else {
+      document.getElementById('tabProducts').classList.add('active');
+      document.getElementById('panelProducts').classList.add('active');
+      renderProductsTable();
+    }
+  };
+
+  // ฟังก์ชันจำลองการ Export Data
+  window.exportData = function() {
+    showToast('success', '📥', 'ระบบกำลังสร้างไฟล์ PDF และจะดาวน์โหลดอัตโนมัติ...');
+  };
+
+  // ฟังก์ชันปุ่ม "สั่งซื้อเพิ่ม"
+  window.orderMore = function(productName) {
+    showToast('success', '📦', `ส่งแจ้งเตือนการสั่งซื้อ: ${productName} ไปยังฝ่ายจัดซื้อแล้ว`);
+  };
+
+  // Toast แจ้งเตือน
+  function showToast(type, icon, msg) {
+    const toast = document.getElementById('toast');
+    toast.className = `Toast Toast--${type}`;
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent  = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ==========================================
+  // 6. เริ่มต้นการทำงาน (Init)
+  // ==========================================
+  window.onload = function() {
+    renderRevenueChart(); // วาดกราฟและอัปเดตตัวเลข
+    renderProductsTable(); // วาดตารางสินค้า
+  };
+
+})();
+</script>
+</body>
+</html>
