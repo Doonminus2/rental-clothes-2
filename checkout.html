@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/rental.css" />
-  </head>
+</head>
 <body>
 <div class="Page">
 
@@ -49,18 +49,16 @@
       <div class="Checkout-form-section">
         
         <div class="Form-group-box">
-          <h2 class="Form-section-title">1. ข้อมูลผู้เช่า</h2>
-          <div class="Input-row">
-            <div class="Input-group">
-              <label>ชื่อ - นามสกุล</label>
-              <input type="text" placeholder="ชื่อ นามสกุล" class="Checkout-input" />
-            </div>
-            <div class="Input-group">
-              <label>เบอร์โทรศัพท์</label>
-              <input type="tel" placeholder="08X-XXX-XXXX" class="Checkout-input" />
-            </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+            <h2 class="Form-section-title" style="border: none; padding: 0; margin: 0;">1. ข้อมูลผู้เช่าและการจัดส่ง</h2>
+            <a href="#" style="font-size: 14px; color: var(--color-primary); font-weight: 700; text-decoration: none;">✏️ แก้ไขข้อมูล</a>
           </div>
-          <p class="Note-text">* ระบบจะให้กรอกที่อยู่จัดส่งในขั้นตอนถัดไป</p>
+          
+          <div style="background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px solid var(--color-border);">
+            <div style="font-size: 16px; font-weight: 900; color: var(--color-primary); margin-bottom: 8px;" id="displayUserName">ชื่อ-นามสกุล (ดึงจากระบบ)</div>
+            <div style="font-size: 14px; color: var(--color-text-muted); margin-bottom: 8px;">📞 เบอร์โทรศัพท์: <span id="displayUserPhone">-</span></div>
+            <div style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6;">📍 ที่อยู่จัดส่ง: <span id="displayUserAddress">รอเชื่อมต่อข้อมูลจากระบบ...</span></div>
+          </div>
         </div>
 
         <div class="Form-group-box">
@@ -139,25 +137,39 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // ดึงพารามิเตอร์ทั้งหมดจาก URL
+  
+  // ==========================================
+  // ส่วนจำลองข้อมูลผู้ใช้ (Mock User Data)
+  // อนาคตเปลี่ยนเป็นใช้ API Fetch หรือ PHP Echo ได้เลย
+  // ==========================================
+  const loggedInUser = {
+    name: "นาย รักดี สุขเสมอ",
+    phone: "081-999-8888",
+    address: "123/45 ซอยสุขุมวิท 10 แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110"
+  };
+
+  document.getElementById('displayUserName').textContent = loggedInUser.name;
+  document.getElementById('displayUserPhone').textContent = loggedInUser.phone;
+  document.getElementById('displayUserAddress').textContent = loggedInUser.address;
+
+
+  // ==========================================
+  // ดึงข้อมูลสินค้าที่ส่งมาจากหน้า Product
+  // ==========================================
   const params = new URLSearchParams(window.location.search);
   const productName = params.get('name') || 'โปรดเลือกสินค้า';
   const productPrice = parseInt(params.get('price') || '0', 10);
   const productImg = params.get('img') || '';
   
-  // ข้อมูลใหม่ที่รับมาจากหน้า Product
   const productSize = params.get('size') || '-';
   const productDuration = params.get('duration') || '-';
   const productQty = parseInt(params.get('qty') || '1', 10);
 
-  // ค่าจัดส่ง
   const shippingFee = 100;
-
-  // คำนวณราคา
   const subTotal = productPrice * productQty;
   const total = subTotal > 0 ? subTotal + shippingFee : 0;
 
-  // นำข้อมูลไปแสดงผลบนหน้าเว็บ
+  // แปะข้อมูลลงบิลสรุปยอด
   document.getElementById('summaryName').textContent = productName;
   document.getElementById('summaryMeta').textContent = `ขนาด: ${productSize} | เช่า: ${productDuration} | จำนวน: ${productQty} ชุด`;
   document.getElementById('summaryPrice').textContent = productPrice.toLocaleString() + ' ฿ / ชุด';
@@ -171,9 +183,8 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function confirmOrder() {
-  alert("บันทึกข้อมูลสำเร็จ! ระบบจะพาไปหน้ากรอกที่อยู่จัดส่ง");
-  // ใส่ลิงก์ไปหน้ากรอกที่อยู่ของโฟล์คตรงนี้ได้เลย เช่น
-  // window.location.href = "address.html"; 
+  alert("บันทึกข้อมูลและส่งคำสั่งซื้อสำเร็จ! (ส่วนนี้จะนำไปหน้าแจ้งชำระเงินต่อไป)");
+  // window.location.href = "success.html"; 
 }
 </script>
 </body>
