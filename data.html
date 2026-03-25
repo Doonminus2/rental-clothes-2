@@ -4,6 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rental Clothes – My Account</title>
+  
+  <script>
+    // 🛡️ ยามเฝ้าประตูหน้า Data: เช็คทุกครั้งที่หน้าจอโผล่
+    window.onpageshow = function(event) {
+        const token = localStorage.getItem('token');
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        
+        if (!token || isLoggedIn !== 'true') {
+            // ถ้าไม่มี Token หรือไม่ได้ล็อกอิน ให้ดีดไปหน้า login ทันที
+            window.location.replace('login.html');
+        }
+    };
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
@@ -16,25 +30,21 @@
       padding: 0 32px;
       width: 100%;
     }
-
     .Profile-header {
       margin-bottom: 32px;
       border-bottom: 2px solid var(--color-primary);
       padding-bottom: 16px;
     }
-
     .Profile-title {
       font-size: 32px;
       font-weight: 900;
       color: var(--color-primary);
       margin-bottom: 8px;
     }
-
     .Profile-subtitle {
       font-size: 16px;
       color: var(--color-text-muted);
     }
-
     .Form-group-box {
       background: var(--color-white);
       border: 1px solid var(--color-border);
@@ -42,7 +52,6 @@
       padding: 32px;
       margin-bottom: 24px;
     }
-
     .Form-section-title {
       font-size: 18px;
       font-weight: 900;
@@ -51,32 +60,23 @@
       border-bottom: 1px solid var(--color-border);
       padding-bottom: 10px;
     }
-
     .Input-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       margin-bottom: 20px;
     }
-
     .Input-group {
       display: flex;
       flex-direction: column;
       gap: 8px;
       margin-bottom: 20px;
     }
-
     .Input-group label {
       font-size: 14px;
       font-weight: 700;
       color: var(--color-primary);
     }
-
-    .Required-star {
-      color: #c0392b;
-      margin-left: 2px;
-    }
-
     .Profile-input {
       height: 48px;
       border: 1px solid var(--color-border);
@@ -89,30 +89,22 @@
       transition: border-color 0.2s;
       background-color: var(--color-white);
     }
-
-    .Profile-input:focus {
-      border-color: var(--color-primary);
-    }
-
-    /* ทำให้ช่องที่แก้ไขไม่ได้ดูเป็นสีเทา */
+    .Profile-input:focus { border-color: var(--color-primary); }
     .Profile-input:disabled {
       background-color: #f0f4f7;
       color: var(--color-text-muted);
       cursor: not-allowed;
     }
-
     .Profile-input.textarea {
       height: 100px;
       padding: 16px;
       resize: vertical;
     }
-
     .Note-text {
       font-size: 12px;
       color: var(--color-text-muted);
       margin-top: -4px;
     }
-
     .Btn-submit {
       width: 100%;
       height: 54px;
@@ -127,16 +119,25 @@
       transition: opacity 0.2s;
       margin-top: 10px;
     }
+    .Btn-submit:hover { opacity: 0.9; }
 
-    .Btn-submit:hover {
-      opacity: 0.9;
+    .Btn-logout {
+      width: 100%;
+      height: 54px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
     }
+    .Btn-logout:hover { background: #c0392b; }
 
     @media (max-width: 600px) {
-      .Input-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
+      .Input-row { grid-template-columns: 1fr; gap: 0; }
     }
   </style>
 </head>
@@ -146,14 +147,14 @@
   <header class="SiteHeader">
     <div class="SiteHeader-top">
       <a href="main.html" class="SiteHeader-logo">
-        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" onerror="this.src='https://via.placeholder.com/82x60?text=LOGO'" />
+        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
         <span class="Logo-text">RENTAL CLOTHES</span>
       </a>
       <div class="SiteHeader-actions">
         <a href="faq.html" class="Icon-faq-link" title="FAQ">
-          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" onerror="this.src='https://via.placeholder.com/41x41?text=?'" />
+          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" />
         </a>
-        <a href="profile.html" class="BtnLogin">
+        <a href="data.html" class="BtnLogin">
           <span class="BtnLogin-text">MY ACCOUNT</span>
         </a>
       </div>
@@ -176,22 +177,19 @@
     </div>
 
     <form id="profileForm" onsubmit="saveProfileData(event)">
-      
       <div class="Form-group-box">
         <h2 class="Form-section-title">ข้อมูลบัญชีผู้ใช้ (Account Information)</h2>
-        
         <div class="Input-row">
           <div class="Input-group">
             <label>Username</label>
-            <input type="text" class="Profile-input" id="username" value="Folk_Dev" disabled />
+            <input type="text" class="Profile-input" id="username" value="" disabled />
             <span class="Note-text">ชื่อผู้ใช้ไม่สามารถเปลี่ยนแปลงได้</span>
           </div>
           <div class="Input-group">
             <label>Email <span class="Required-star">*</span></label>
-            <input type="email" class="Profile-input" id="email" value="folk@example.com" required />
+            <input type="email" class="Profile-input" id="email" value="" required />
           </div>
         </div>
-
         <div class="Input-group" style="margin-bottom: 0;">
           <label>Password (รหัสผ่านใหม่)</label>
           <input type="password" class="Profile-input" id="password" placeholder="********" />
@@ -201,42 +199,113 @@
 
       <div class="Form-group-box">
         <h2 class="Form-section-title">ข้อมูลสำหรับการจัดส่ง (Shipping Information)</h2>
-        
         <div class="Input-row">
           <div class="Input-group">
             <label>ชื่อ - นามสกุล <span class="Required-star">*</span></label>
-            <input type="text" class="Profile-input" id="fullName" value="นาย รักดี สุขเสมอ" required />
+            <input type="text" class="Profile-input" id="fullName" value="" placeholder="กรุณากรอกชื่อ-นามสกุล..." required />
           </div>
           <div class="Input-group">
             <label>เบอร์โทรศัพท์ติดต่อ <span class="Required-star">*</span></label>
-            <input type="tel" class="Profile-input" id="phone" value="081-999-8888" required />
+            <input type="tel" class="Profile-input" id="phone" value="" placeholder="08x-xxx-xxxx" required />
           </div>
         </div>
-
         <div class="Input-group" style="margin-bottom: 0;">
           <label>ที่อยู่สำหรับจัดส่ง <span class="Required-star">*</span></label>
-          <textarea class="Profile-input textarea" id="address" required>123/45 ซอยสุขุมวิท 10 แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110</textarea>
-          <span class="Note-text">ข้อมูลส่วนนี้จะถูกตั้งเป็นค่าเริ่มต้นในหน้าชำระเงิน (Checkout) ทันที</span>
+          <textarea class="Profile-input textarea" id="address" placeholder="ที่อยู่จัดส่งสินค้า..." required></textarea>
         </div>
       </div>
 
       <button type="submit" class="Btn-submit">บันทึกการเปลี่ยนแปลง</button>
+      <button type="button" class="Btn-logout" onclick="handleLogout()">ออกจากระบบ</button>
     </form>
-
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// ฟังก์ชันจำลองการกดบันทึกข้อมูล
-function saveProfileData(event) {
-  event.preventDefault(); // ป้องกันไม่ให้หน้าเว็บโหลดใหม่
-  
-  // สมมติว่าส่งข้อมูลเข้า Database สำเร็จ
-  alert("บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว ข้อมูลใหม่จะถูกนำไปใช้ในการจัดส่งครับ");
-  
-  // อนาคตสามารถเขียน Fetch API ตรงนี้เพื่อยิงข้อมูลไปหา Backend PHP/Node.js ได้เลย
+// 1. ดึงข้อมูลจริงจาก Database
+async function fetchUserData() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/me', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const user = data.user;
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('fullName').value = user.full_name || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('address').value = user.address || '';
+        } else {
+            localStorage.clear();
+            window.location.replace('login.html');
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
 }
-</script><script src="template/api.js"></script>
-<script src="template/profile.js"></script>
+
+// รันตอนโหลดหน้า
+document.addEventListener("DOMContentLoaded", fetchUserData);
+
+// 2. บันทึกข้อมูล
+async function saveProfileData(event) {
+    event.preventDefault();
+    const token = localStorage.getItem('token');
+
+    const updateData = {
+        email: document.getElementById('email').value,
+        full_name: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        password: document.getElementById('password').value || null 
+    };
+
+    try {
+        Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+        const response = await fetch('/api/me', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateData)
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', timer: 1500, showConfirmButton: false });
+            document.getElementById('password').value = '';
+        } else {
+            Swal.fire('ล้มเหลว', data.message, 'error');
+        }
+    } catch (error) {
+        Swal.fire('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+    }
+}
+
+// 3. Logout
+function handleLogout() {
+    Swal.fire({
+        title: 'ยืนยันการออกจากระบบ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.clear();
+            window.location.replace('main.html');
+        }
+    });
+}
+</script>
 </body>
 </html>

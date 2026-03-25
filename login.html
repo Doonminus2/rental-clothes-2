@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rental Clothes – Login</title>
+  
+  <script>
+    // 🛡️ บรรทัดแรกสุด: เช็คทุกครั้งที่หน้าโผล่ (รวมถึงตอนกด Back)
+    window.onpageshow = function(event) {
+        if (localStorage.getItem('isLoggedIn') === 'true' || localStorage.getItem('token')) {
+            window.location.replace('main.html');
+        }
+    };
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&family=Headland+One&family=Hedvig+Letters+Serif&display=swap" rel="stylesheet" />
@@ -12,10 +22,7 @@
   
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    /* ปรับแต่งฟอนต์ของ Popup ให้เข้ากับธีมเว็บ */
-    .swal2-popup {
-      font-family: 'Hanuman', serif !important;
-    }
+    .swal2-popup { font-family: 'Hanuman', serif !important; }
   </style>
 </head>
 <body>
@@ -93,19 +100,6 @@
 </div>
 
 <script>
-  // ตั้งค่า Toast พื้นฐาน
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer)
-      toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-  });
-
   document.querySelector('.LoginForm').addEventListener('submit', async function(event) {
     event.preventDefault(); 
 
@@ -113,7 +107,6 @@
     const formData = new FormData(form);
 
     try {
-      // แสดง Loading เล็กๆ ระหว่างรอ
       Swal.fire({
         title: 'กำลังตรวจสอบข้อมูล...',
         allowOutsideClick: false,
@@ -128,7 +121,6 @@
       const data = await response.json();
 
       if (data.success) {
-        // ✨ บันทึกข้อมูล
         localStorage.setItem('token', data.token);
         localStorage.setItem('isLoggedIn', 'true');
         if(data.user) {
@@ -136,19 +128,18 @@
            localStorage.setItem('userName', data.user.username);
         }
 
-        // 🟢 เด้งแจ้งเตือนสำเร็จ
         Swal.fire({
           icon: 'success',
           title: 'เข้าสู่ระบบสำเร็จ!',
           text: `ยินดีต้อนรับคุณ ${data.user ? data.user.username : ''}`,
-          timer: 2000,
+          timer: 1500,
           showConfirmButton: false
         }).then(() => {
-          window.location.href = 'main.html'; 
+          // ใช้ replace เพื่อล้าง History
+          window.location.replace('main.html'); 
         });
 
       } else {
-        // 🔴 เด้งแจ้งเตือนผิดพลาด
         Swal.fire({
           icon: 'error',
           title: 'เข้าสู่ระบบไม่สำเร็จ',
@@ -162,7 +153,6 @@
         icon: 'warning',
         title: 'เกิดข้อผิดพลาด',
         text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
-        confirmButtonColor: '#114e72'
       });
     }
   });

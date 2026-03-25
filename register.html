@@ -4,37 +4,46 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rental Clothes – Register</title>
+  
+  <script>
+    // 🛡️ เช็คทุกครั้งที่หน้าโผล่ (รวมถึงตอนกด Back)
+    window.onpageshow = function(event) {
+        if (localStorage.getItem('isLoggedIn') === 'true' || localStorage.getItem('token')) {
+            window.location.replace('main.html');
+        }
+    };
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&family=Headland+One&family=Hedvig+Letters+Serif&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/rental.css" />
-  <link rel="stylesheet" href="template/login.css" /><!-- ใช้ CSS ร่วมกับหน้า login -->
+  <link rel="stylesheet" href="template/login.css" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .swal2-popup { font-family: 'Hanuman', serif !important; }
+  </style>
 </head>
 <body>
 <div class="Page">
 
-  <!-- ══════════════ HEADER ══════════════ -->
   <header class="SiteHeader">
-
-    <!-- แถวบน: logo + actions -->
     <div class="SiteHeader-top">
-  <a href="main.html" class="SiteHeader-logo">
-    <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
-    <span class="Logo-text">RENTAL CLOTHES</span>
-  </a>
-
+      <a href="main.html" class="SiteHeader-logo">
+        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
+        <span class="Logo-text">RENTAL CLOTHES</span>
+      </a>
       <div class="SiteHeader-actions">
         <a href="faq.html" class="Icon-faq-link" title="คำถามที่พบบ่อย">
           <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" />
         </a>
-        <!-- LOGIN button active เพราะมาจากหน้า login/register -->
-        <a href="login.html" class="BtnLogin BtnLogin--active">
-          <span class="BtnLogin-text BtnLogin-text--active">LOGIN</span>
+        <a href="login.html" class="BtnLogin">
+          <span class="BtnLogin-text">LOGIN</span>
         </a>
       </div>
     </div>
 
-    <!-- แถวล่าง: navbar -->
     <nav class="Navbar">
       <a href="main.html"      class="NavBtn">HOME</a>
       <a href="rental.html"    class="NavBtn">RENTAL PRODUCTS</a>
@@ -44,19 +53,12 @@
       <a href="contact.html"   class="NavBtn">CONTACT</a>
       <a href="gallery.html"   class="NavBtn">GALLERY</a>
     </nav>
-
   </header>
 
-  <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="LoginPage">
-
-    <!-- Page title -->
     <h1 class="LoginPage-title">RENTAL CLOTHES</h1>
 
-    <!-- Card wrapper -->
     <div class="LoginCard">
-
-      <!-- ── Left panel (brand) ── -->
       <div class="LoginCard-left">
         <img class="LoginCard-logo" src="images/logo.png" alt="Rental Clothes logo" />
         <div class="LoginCard-rc">
@@ -66,112 +68,78 @@
         <p class="LoginCard-brand">RENTAL CLOTHES</p>
       </div>
 
-      <!-- ── Right panel (form) ── -->
       <div class="LoginCard-right">
         <h2 class="LoginForm-title">Register</h2>
 
         <form class="LoginForm" action="#" method="post">
-
           <div class="LoginForm-group">
-            <label class="LoginForm-label" for="username">
-              Username <span class="LoginForm-required">*</span>
-            </label>
-            <input
-              class="LoginForm-input"
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Username..."
-              required
-            />
+            <label class="LoginForm-label" for="username">Username <span class="LoginForm-required">*</span></label>
+            <input class="LoginForm-input" type="text" id="username" name="username" placeholder="Username..." required />
           </div>
 
           <div class="LoginForm-group">
-            <label class="LoginForm-label" for="email">
-              Email <span class="LoginForm-required">*</span>
-            </label>
-            <input
-              class="LoginForm-input"
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Email..."
-              required
-            />
+            <label class="LoginForm-label" for="email">Email <span class="LoginForm-required">*</span></label>
+            <input class="LoginForm-input" type="email" id="email" name="email" placeholder="Email..." required />
           </div>
 
           <div class="LoginForm-group">
-            <label class="LoginForm-label" for="full_name">
-              Full Name <span class="LoginForm-required">*</span>
-            </label>
-            <input
-              class="LoginForm-input"
-              type="text"
-              id="full_name"
-              name="full_name"
-              placeholder="Full Name..."
-              required
-            />
+            <label class="LoginForm-label" for="full_name">Full Name <span class="LoginForm-required">*</span></label>
+            <input class="LoginForm-input" type="text" id="full_name" name="full_name" placeholder="Full Name..." required />
           </div>
 
           <div class="LoginForm-group">
-            <label class="LoginForm-label" for="password">
-              Password <span class="LoginForm-required">*</span>
-            </label>
-            <input
-              class="LoginForm-input"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Password..."
-              required
-            />
+            <label class="LoginForm-label" for="password">Password <span class="LoginForm-required">*</span></label>
+            <input class="LoginForm-input" type="password" id="password" name="password" placeholder="Password..." required />
           </div>
 
           <div class="LoginForm-group">
-            <label class="LoginForm-label" for="confirm-password">
-              Confirm password <span class="LoginForm-required">*</span>
-            </label>
-            <input
-              class="LoginForm-input"
-              type="password"
-              id="confirm-password"
-              name="confirm_password"
-              placeholder="Confirm password..."
-              required
-            />
+            <label class="LoginForm-label" for="confirm-password">Confirm password <span class="LoginForm-required">*</span></label>
+            <input class="LoginForm-input" type="password" id="confirm-password" name="confirm_password" placeholder="Confirm password..." required />
           </div>
 
           <p class="LoginForm-signup">
-            Already have an account?
-            <a href="login.html" class="LoginForm-signup-link">Login</a>
+            Already have an account? <a href="login.html" class="LoginForm-signup-link">Login</a>
           </p>
 
           <button class="LoginForm-submit" type="submit">REGISTER</button>
 
           <p class="LoginForm-terms">
-            การดำเนินการต่อแสดงว่าคุณยอมรับข้อตกลงการใช้บริการ
+            การดำเนินการต่อแสดงว่าคุณยอมรับข้อตกลงการใช้บริการ 
             <a href="policy.html" class="LoginForm-terms-link">นโยบายส่วนตัวของเรา</a>
           </p>
-
         </form>
       </div>
-
-    </div><!-- /LoginCard -->
-
+    </div>
   </main>
+</div>
 
-</div><!-- /Page -->
 <script>
-  // ดักจับฟอร์มตอนที่กดปุ่ม Submit
   document.querySelector('.LoginForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // ป้องกันไม่ให้เบราว์เซอร์รีเฟรชไปหน้า JSON ดิบๆ
+    event.preventDefault(); 
 
     const form = event.target;
+    const password = form.password.value;
+    const confirmPassword = form.confirm_password.value;
+
+    if (password !== confirmPassword) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'รหัสผ่านไม่ตรงกัน',
+        text: 'กรุณาตรวจสอบการยืนยันรหัสผ่านอีกครั้ง',
+        confirmButtonColor: '#114e72'
+      });
+      return;
+    }
+
     const formData = new FormData(form);
 
     try {
-      // แอบส่งข้อมูลไปหา Backend หลังบ้าน
+      Swal.fire({
+        title: 'กำลังสร้างบัญชี...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() }
+      });
+
       const response = await fetch('/register.html', {
         method: 'POST',
         body: formData
@@ -180,24 +148,37 @@
       const data = await response.json();
 
       if (data.success) {
-        // ถ้าสำเร็จ ให้เก็บ Token ไว้ในระบบ (เอาไว้ยืนยันตัวตอนเข้าหน้าอื่น)
         localStorage.setItem('token', data.token);
-        
-        alert('สมัครสมาชิกสำเร็จ! กำลังพาท่านเข้าสู่ระบบ...');
-        
-        // เด้งกลับไปที่หน้าหลัก (แก้ไขชื่อไฟล์หน้าหลักได้ตามต้องการ)
-        window.location.href = 'main.html'; 
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', form.username.value);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'สมัครสมาชิกสำเร็จ!',
+          text: 'ยินดีต้อนรับเข้าสู่ Rental Clothes ครับ',
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          // ✨ ใช้ replace เพื่อล้างประวัติการย้อนกลับ
+          window.location.replace('main.html'); 
+        });
       } else {
-        // ถ้าไม่สำเร็จ แจ้งเตือนสาเหตุ
-        alert('เกิดข้อผิดพลาด: ' + data.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'สมัครสมาชิกไม่สำเร็จ',
+          text: data.message,
+          confirmButtonColor: '#114e72'
+        });
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+      });
     }
   });
 </script>
-<script src="template/api.js"></script>
-<script src="template/login.js"></script>
 </body>
 </html>

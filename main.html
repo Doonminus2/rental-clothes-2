@@ -13,10 +13,8 @@
 
 <div class="Main">
 
-  <!-- ── Header ── -->
   <header class="SiteHeader">
 
-    <!-- Top bar: icons + login -->
     <div class="TopBar">
       <div class="TopBar-icons">
         <a href="faq.html" class="Icon-faq-link Icon-faq-link--active" title="คำถามที่พบบ่อย">
@@ -24,11 +22,10 @@
         </a>
       </div>
       <a href="login.html" class="BtnLogin">
-  <span class="BtnLogin-text">LOGIN</span>
-</a>
+        <span class="BtnLogin-text">LOGIN</span>
+      </a>
     </div>
 
-    <!-- Hero content -->
     <div class="HeroArea">
       <div class="HeroText">
         <div class="HeroR-top">R </div>
@@ -38,8 +35,7 @@
       <img class="HeroImage" src="images/logo.png" alt="hero fashion" />
     </div>
 
-    <!-- Navbar -->
-     <nav class="Navbar">
+    <nav class="Navbar">
       <a href="main.html"   class="NavBtn NavBtn--active">HOME</a>
       <a href="rental.html"  class="NavBtn">RENTAL PRODUCTS</a>
       <a href="howtorent.html"          class="NavBtn">HOW TO RENT</a>
@@ -51,13 +47,10 @@
 
   </header>
 
-  <!-- ── Body Section (Carousel) ── -->
   <section class="BodySection">
 
-    <!-- Carousel -->
     <div class="Carousel">
       <div class="Carousel-track">
-        <!-- เพิ่ม/แก้ไข src ของรูปตรงนี้ได้เลย -->
          <div class="Carousel-slide"><img src="images/main4.jpg" alt="slide 1" /></div>
         <div class="Carousel-slide"><img src="images/main1.jpg" alt="slide 2" /></div>
         <div class="Carousel-slide"><img src="images/main2.jpg" alt="slide 3" /></div>
@@ -65,17 +58,14 @@
       </div>
     </div>
 
-    <!-- Hero Text overlay -->
     <div class="HeroSubtitle-bottom">
       <div class="rc-logo">RC</div>
       <div class="rc-text">RENTAL CLOTHES</div>
     </div>
 
-    <!-- Carousel Arrows -->
     <button class="ArrowPrev" aria-label="Previous slide">&#8249;</button>
     <button class="ArrowNext" aria-label="Next slide">&#8250;</button>
 
-    <!-- Dots indicator -->
     <div class="Carousel-dots">
       <span class="Carousel-dot active"></span>
       <span class="Carousel-dot"></span>
@@ -86,6 +76,49 @@
 
 </div>
 
+<script>
+// 🛡️ ระบบจัดการสถานะล็อกอินบน Nav Bar
+function updateAuthStatus() {
+    const authBtn = document.querySelector('.BtnLogin');
+    const authText = document.querySelector('.BtnLogin-text');
+    const loginLink = authBtn ? authBtn.closest('a') : null;
+
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const userName = localStorage.getItem('userName');
+
+    if (isLoggedIn === 'true' && userName) {
+        // ✅ ถ้าล็อกอินแล้ว: แสดงชื่อ และลิงก์ไปหน้า My Account
+        if (authText) authText.textContent = userName;
+        if (loginLink) {
+            loginLink.href = "data.html";
+            loginLink.title = "จัดการข้อมูลส่วนตัว";
+        }
+        if (authBtn) {
+            authBtn.style.backgroundColor = "#1a7a48"; // สีเขียวเข้มบอกสถานะ
+            authBtn.style.borderColor = "#1a7a48";
+        }
+    } else {
+        // ❌ ถ้ายังไม่ล็อกอิน: แสดงคำว่า LOGIN
+        if (authText) authText.textContent = "LOGIN";
+        if (loginLink) {
+            loginLink.href = "login.html";
+            loginLink.title = "เข้าสู่ระบบ";
+        }
+        if (authBtn) {
+            authBtn.style.backgroundColor = ""; 
+            authBtn.style.borderColor = "";
+        }
+    }
+}
+
+// เช็คสถานะตอนโหลดหน้าครั้งแรก
+document.addEventListener("DOMContentLoaded", updateAuthStatus);
+
+// ✨ หัวใจสำคัญ: เช็คสถานะทุกครั้งที่หน้าโผล่ (รวมถึงตอนกด Back)
+window.onpageshow = function(event) {
+    updateAuthStatus();
+};
+</script>
 <script src="carousel.js"></script>
 </body>
 </html>
