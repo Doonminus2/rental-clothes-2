@@ -76,49 +76,7 @@
 
 </div>
 
-<script>
-// 🛡️ ระบบจัดการสถานะล็อกอินบน Nav Bar
-function updateAuthStatus() {
-    const authBtn = document.querySelector('.BtnLogin');
-    const authText = document.querySelector('.BtnLogin-text');
-    const loginLink = authBtn ? authBtn.closest('a') : null;
-
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const userName = localStorage.getItem('userName');
-
-    if (isLoggedIn === 'true' && userName) {
-        // ✅ ถ้าล็อกอินแล้ว: แสดงชื่อ และลิงก์ไปหน้า My Account
-        if (authText) authText.textContent = userName;
-        if (loginLink) {
-            loginLink.href = "data.html";
-            loginLink.title = "จัดการข้อมูลส่วนตัว";
-        }
-        if (authBtn) {
-            authBtn.style.backgroundColor = "#1a7a48"; // สีเขียวเข้มบอกสถานะ
-            authBtn.style.borderColor = "#1a7a48";
-        }
-    } else {
-        // ❌ ถ้ายังไม่ล็อกอิน: แสดงคำว่า LOGIN
-        if (authText) authText.textContent = "LOGIN";
-        if (loginLink) {
-            loginLink.href = "login.html";
-            loginLink.title = "เข้าสู่ระบบ";
-        }
-        if (authBtn) {
-            authBtn.style.backgroundColor = ""; 
-            authBtn.style.borderColor = "";
-        }
-    }
-}
-
-// เช็คสถานะตอนโหลดหน้าครั้งแรก
-document.addEventListener("DOMContentLoaded", updateAuthStatus);
-
-// ✨ หัวใจสำคัญ: เช็คสถานะทุกครั้งที่หน้าโผล่ (รวมถึงตอนกด Back)
-window.onpageshow = function(event) {
-    updateAuthStatus();
-};
-</script>
+<script src="user.js"></script>
 <script src="carousel.js"></script>
 </body>
 </html>
