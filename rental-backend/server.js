@@ -11,7 +11,7 @@ const uploadDir = process.env.UPLOAD_PATH || 'uploads/';
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 // ── Middleware ──
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({ origin: 'https://yourdomain.com', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
