@@ -64,13 +64,6 @@ function updateAppStatus() {
     }
 }
 
-// ฟังก์ชัน Logout
-function handleLogout() {
-    if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-        localStorage.clear();
-        window.location.replace('main.html');
-    }
-}
 
 document.addEventListener("DOMContentLoaded", updateAppStatus);
 window.onpageshow = function(event) { updateAppStatus(); };
