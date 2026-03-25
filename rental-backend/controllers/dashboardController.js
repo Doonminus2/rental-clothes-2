@@ -46,7 +46,7 @@ async function getStats(req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดขึ้น' });
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
   }
 }
 
