@@ -9,31 +9,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&family=Headland+One&family=Hedvig+Letters+Serif&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/rental.css" />
   <link rel="stylesheet" href="template/login.css" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* ปรับแต่งฟอนต์ของ Popup ให้เข้ากับธีมเว็บ */
+    .swal2-popup {
+      font-family: 'Hanuman', serif !important;
+    }
+  </style>
 </head>
 <body>
 <div class="Page">
 
-  <!-- ══════════════ HEADER ══════════════ -->
   <header class="SiteHeader">
-
-    <!-- แถวบน: logo + actions -->
     <div class="SiteHeader-top">
-  <a href="main.html" class="SiteHeader-logo">
-    <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
-    <span class="Logo-text">RENTAL CLOTHES</span>
-  </a>
+      <a href="main.html" class="SiteHeader-logo">
+        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
+        <span class="Logo-text">RENTAL CLOTHES</span>
+      </a>
       <div class="SiteHeader-actions">
         <a href="faq.html" class="Icon-faq-link" title="คำถามที่พบบ่อย">
           <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" />
         </a>
-        <!-- LOGIN button active เมื่ออยู่หน้า login -->
         <a href="login.html" class="BtnLogin BtnLogin--active">
           <span class="BtnLogin-text BtnLogin-text--active">LOGIN</span>
         </a>
       </div>
     </div>
-
-    <!-- แถวล่าง: navbar -->
     <nav class="Navbar">
       <a href="main.html"      class="NavBtn">HOME</a>
       <a href="rental.html"    class="NavBtn">RENTAL PRODUCTS</a>
@@ -43,19 +45,11 @@
       <a href="contact.html"   class="NavBtn">CONTACT</a>
       <a href="gallery.html"   class="NavBtn">GALLERY</a>
     </nav>
-
   </header>
 
-  <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="LoginPage">
-
-    <!-- Page title (above card) -->
     <h1 class="LoginPage-title">RENTAL CLOTHES</h1>
-
-    <!-- Card wrapper -->
     <div class="LoginCard">
-
-      <!-- ── Left panel (brand) ── -->
       <div class="LoginCard-left">
         <img class="LoginCard-logo" src="images/logo.png" alt="Rental Clothes logo" />
         <div class="LoginCard-rc">
@@ -65,97 +59,113 @@
         <p class="LoginCard-brand">RENTAL CLOTHES</p>
       </div>
 
-      <!-- ── Right panel (form) ── -->
       <div class="LoginCard-right">
         <h2 class="LoginForm-title">Login</h2>
-
         <form class="LoginForm" action="#" method="post">
-
-          <!-- Username / Email -->
           <div class="LoginForm-group">
             <label class="LoginForm-label" for="username">
               Username or Email <span class="LoginForm-required">*</span>
             </label>
-            <input
-              class="LoginForm-input"
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Username or Email..."
-              required
-            />
+            <input class="LoginForm-input" type="text" id="username" name="username" placeholder="Username or Email..." required />
           </div>
 
-          <!-- Password -->
           <div class="LoginForm-group">
             <label class="LoginForm-label" for="password">
               Password <span class="LoginForm-required">*</span>
             </label>
-            <input
-              class="LoginForm-input"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Password..."
-              required
-            />
+            <input class="LoginForm-input" type="password" id="password" name="password" placeholder="Password..." required />
           </div>
 
-          <!-- Sign up link -->
           <p class="LoginForm-signup">
-            Don't have an account?
-            <a href="register.html" class="LoginForm-signup-link">Sign Up</a>
+            Don't have an account? <a href="register.html" class="LoginForm-signup-link">Sign Up</a>
           </p>
 
-          <!-- Submit -->
           <button class="LoginForm-submit" type="submit">LOGIN</button>
 
-          <!-- Terms -->
           <p class="LoginForm-terms">
-            การดำเนินการต่อแสดงว่าคุณยอมรับข้อตกลงการใช้บริการ
+            การดำเนินการต่อแสดงว่าคุณยอมรับข้อตกลงการใช้บริการ 
             <a href="policy.html" class="LoginForm-terms-link">นโยบายส่วนตัวของเรา</a>
           </p>
-
         </form>
-      </div><!-- /LoginCard-right -->
-
-    </div><!-- /LoginCard -->
-
+      </div>
+    </div>
   </main>
+</div>
 
-</div><!-- /Page -->
 <script>
+  // ตั้งค่า Toast พื้นฐาน
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  });
+
   document.querySelector('.LoginForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // ป้องกันไม่ให้หน้าเว็บรีเฟรช
+    event.preventDefault(); 
 
     const form = event.target;
     const formData = new FormData(form);
 
     try {
+      // แสดง Loading เล็กๆ ระหว่างรอ
+      Swal.fire({
+        title: 'กำลังตรวจสอบข้อมูล...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading() }
+      });
+
       const response = await fetch('/login.html', {
         method: 'POST',
-        body: formData // ส่งไปแบบ FormData ตรงๆ ได้เลย Flask รับได้!
+        body: formData 
       });
 
       const data = await response.json();
 
       if (data.success) {
+        // ✨ บันทึกข้อมูล
         localStorage.setItem('token', data.token);
+        localStorage.setItem('isLoggedIn', 'true');
         if(data.user) {
            localStorage.setItem('user', JSON.stringify(data.user));
+           localStorage.setItem('userName', data.user.username);
         }
-        alert('เข้าสู่ระบบสำเร็จ! 🎉');
-        window.location.href = 'main.html'; // ล็อคอินผ่านแล้วเด้งไปหน้า main
+
+        // 🟢 เด้งแจ้งเตือนสำเร็จ
+        Swal.fire({
+          icon: 'success',
+          title: 'เข้าสู่ระบบสำเร็จ!',
+          text: `ยินดีต้อนรับคุณ ${data.user ? data.user.username : ''}`,
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          window.location.href = 'main.html'; 
+        });
+
       } else {
-        alert('เข้าสู่ระบบไม่สำเร็จ: ' + data.message);
+        // 🔴 เด้งแจ้งเตือนผิดพลาด
+        Swal.fire({
+          icon: 'error',
+          title: 'เข้าสู่ระบบไม่สำเร็จ',
+          text: data.message,
+          confirmButtonColor: '#114e72'
+        });
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+      Swal.fire({
+        icon: 'warning',
+        title: 'เกิดข้อผิดพลาด',
+        text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+        confirmButtonColor: '#114e72'
+      });
     }
   });
 </script>
-<script src="template/api.js"></script>
-<script src="template/login.js"></script>
 </body>
 </html>
