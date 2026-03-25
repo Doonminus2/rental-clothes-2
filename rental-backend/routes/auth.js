@@ -1,12 +1,8 @@
-// routes/auth.js
-const express    = require('express');
-const router     = express.Router();
-const ctrl       = require('../controllers/authController');
-const { authMiddleware } = require('../middleware/auth');
+const express = require('express');
+const router = express.Router();
+const { login, register } = require('../controllers/authController');
 
-router.post('/register', ctrl.register);
-router.post('/login',    ctrl.login);
-router.get('/me',        authMiddleware, ctrl.getMe);
-router.put('/me',        authMiddleware, ctrl.updateMe);
+router.post('/login', login);
+router.post('/register', register);
 
 module.exports = router;

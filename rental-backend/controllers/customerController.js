@@ -1,83 +1,50 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
-// GET /api/customers
-async function getAll(req, res) {
-  const { tier, search, page = 1, limit = 12 } = req.query;
-  const offset = (page - 1) * limit;
-  const params = [];
-  let where = "WHERE u.role = 'customer'";
-
-  if (search) {
-    where += ' AND (u.full_name LIKE ? OR u.phone LIKE ?)';
-    params.push(`%${search}%`, `%${search}%`);
-  }
-  if (tier === 'vip')       { where += ' AND u.rental_count >= 5'; }
-  else if (tier === 'new')  { where += ' AND u.rental_count = 1'; }
-  else if (tier === 'regular') { where += ' AND u.rental_count BETWEEN 2 AND 4'; }
-
+exports.getAll = async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT u.id, u.username, u.full_name, u.email, u.phone, u.address,
-              u.rental_count, u.total_spent, u.late_count, u.is_blacklisted, u.created_at,
-              CASE
-                WHEN u.rental_count >= 5 THEN 'vip'
-                WHEN u.rental_count >= 2 THEN 'regular'
-                ELSE 'new'
-              END AS tier
-       FROM users u
-       ${where}
-       ORDER BY u.created_at DESC
-       LIMIT ? OFFSET ?`,
-      [...params, parseInt(limit), parseInt(offset)]
-    );
-    const [[{ total }]] = await db.query(
-      `SELECT COUNT(*) AS total FROM users u ${where}`, params
-    );
-    res.json({ success: true, data: rows, total, page: +page, limit: +limit });
+    const [rows] = await pool.execute('SELECT id, fullname, email, phone, address, isAdmin FROM users');
+    res.json(rows);
   } catch (err) {
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+    console.error(err);
+    res.status(500).json({ message: 'Cannot fetch customers.' });
   }
-}
+};
 
-// GET /api/customers/:id
-async function getOne(req, res) {
+exports.getById = async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT u.*, 
-              (SELECT COUNT(*) FROM bookings b WHERE b.user_id = u.id) AS booking_count
-       FROM users u WHERE u.id = ? AND u.role = 'customer'`,
-      [req.params.id]
-    );
-    if (!rows.length) return res.status(404).json({ success: false, message: 'ไม่พบลูกค้า' });
-
-    const [history] = await db.query(
-      `SELECT b.*, p.name AS product_name FROM bookings b
-       JOIN products p ON b.product_id = p.id
-       WHERE b.user_id = ?
-       ORDER BY b.created_at DESC LIMIT 10`,
-      [req.params.id]
-    );
-
-    const { password: _, ...safeUser } = rows[0];
-    res.json({ success: true, data: { ...safeUser, history } });
+    const [rows] = await pool.execute('SELECT id, fullname, email, phone, address, isAdmin FROM users WHERE id = ?', [req.params.id]);
+    if (!rows.length) return res.status(404).json({ message: 'Customer not found.' });
+    res.json(rows[0]);
   } catch (err) {
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+    console.error(err);
+    res.status(500).json({ message: 'Cannot fetch customer.' });
   }
-}
+};
 
-// PATCH /api/customers/:id/blacklist  (admin only)
-async function toggleBlacklist(req, res) {
-  const { blacklisted, reason } = req.body;
+exports.update = async (req, res) => {
   try {
-    await db.query(
-      'UPDATE users SET is_blacklisted=?, blacklist_reason=? WHERE id=?',
-      [blacklisted ? 1 : 0, reason || null, req.params.id]
+    const { fullname, phone, address } = req.body;
+    const [result] = await pool.execute(
+      'UPDATE users SET fullname = ?, phone = ?, address = ? WHERE id = ?',
+      [fullname, phone, address, req.params.id]
     );
-    const msg = blacklisted ? 'ขึ้น Blacklist สำเร็จ' : 'ถอด Blacklist สำเร็จ';
-    res.json({ success: true, message: msg });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
-  }
-}
 
-module.exports = { getAll, getOne, toggleBlacklist };
+    if (result.affectedRows === 0) return res.status(404).json({ message: 'Customer not found.' });
+    const [rows] = await pool.execute('SELECT id, fullname, email, phone, address, isAdmin FROM users WHERE id = ?', [req.params.id]);
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Cannot update customer.' });
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const [result] = await pool.execute('DELETE FROM users WHERE id = ?', [req.params.id]);
+    if (result.affectedRows === 0) return res.status(404).json({ message: 'Customer not found.' });
+    res.json({ message: 'Customer deleted.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Cannot delete customer.' });
+  }
+};
