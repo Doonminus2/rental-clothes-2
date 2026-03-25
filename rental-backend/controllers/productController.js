@@ -94,7 +94,7 @@ async function update(req, res) {
     );
     res.json({ success: true, message: 'อัปเดตสินค้าสำเร็จ' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดขึ้น' });
   }
 }
 
