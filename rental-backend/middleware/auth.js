@@ -1,27 +1,12 @@
-const jwt = require('jsonwebtoken');
+// routes/auth.js
+const express    = require('express');
+const router     = express.Router();
+const ctrl       = require('../controllers/authController');
+const { authMiddleware } = require('../middleware/auth');
 
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
+router.post('/register', ctrl.register);
+router.post('/login',    ctrl.login);
+router.get('/me',        authMiddleware, ctrl.getMe);
+router.put('/me',        authMiddleware, ctrl.updateMe);
 
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'กรุณาเข้าสู่ระบบก่อน' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id, username, role }
-    next();
-  } catch (err) {
-    return res.status(403).json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' });
-  }
-}
-
-function adminOnly(req, res, next) {
-  if (req.user?.role !== 'admin') {
-    return res.status(403).json({ success: false, message: 'เฉพาะ Admin เท่านั้น' });
-  }
-  next();
-}
-
-module.exports = { authMiddleware, adminOnly };
+module.exports = router;
