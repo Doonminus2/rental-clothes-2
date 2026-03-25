@@ -1,27 +1,27 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
 
-const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Missing or invalid authorization header' });
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'กรุณาเข้าสู่ระบบก่อน' });
   }
 
-  const token = authHeader.split(' ')[1];
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = payload;
-    return next();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // { id, username, role }
+    next();
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    return res.status(403).json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' });
   }
-};
+}
 
-const adminOnly = async (req, res, next) => {
-  if (!req.user || !req.user.isAdmin) {
-    return res.status(403).json({ message: 'Admin privileges required' });
+function adminOnly(req, res, next) {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'เฉพาะ Admin เท่านั้น' });
   }
   next();
-};
+}
 
 module.exports = { authMiddleware, adminOnly };
