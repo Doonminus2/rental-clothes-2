@@ -181,12 +181,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('summaryImg').src = productImg;
   }
 });
-
-function confirmOrder() {
-  // ดึง URL ปัจจุบันมาแล้วเปลี่ยนแค่ชื่อไฟล์
-  const currentParams = window.location.search;
-  window.location.href = "slip.html" + currentParams; 
-}
-</script>
+</script><script src="template/api.js"></script>
+<script src="template/checkout.js"></script>
 </body>
 </html>
