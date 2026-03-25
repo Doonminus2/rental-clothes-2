@@ -125,7 +125,7 @@ async function uploadPaymentProof(req, res) {
     );
     res.json({ success: true, message: 'อัปโหลดสลิปสำเร็จ', file: req.file.filename });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดขึ้น' });
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
   }
 }
 
