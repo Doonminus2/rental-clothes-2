@@ -104,7 +104,7 @@ async function updateMe(req, res) {
     }
     res.json({ success: true, message: 'อัปเดตข้อมูลสำเร็จ' });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในระบบ' });
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในระบบ-7ho' });
   }
 }
 
