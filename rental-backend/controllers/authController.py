@@ -1,6 +1,7 @@
 import bcrypt
 import jwt
 import os
+import sqlite3
 from datetime import datetime, timedelta
 from flask import request, jsonify
 from config.db import get_connection
@@ -8,9 +9,66 @@ from config.db import get_connection
 JWT_SECRET = os.getenv('JWT_SECRET', 'your-secret-key')
 
 def generate_token(payload):
+    # กำหนดให้ Token หมดอายุใน 7 วัน
     expires = datetime.utcnow() + timedelta(days=7)
     payload['exp'] = expires
     return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
+
+def login():
+    # รองรับทั้ง JSON และ Form Data
+    data = request.get_json(silent=True) or request.form
+    username = data.get('username') or data.get('email') # รองรับทั้งชื่อฟิลด์ username และ email
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'success': False, 'message': 'กรุณากรอก Username และ Password'}), 400
+
+    conn = get_connection()
+    # ตั้งค่า row_factory เพื่อให้ดึงข้อมูลออกมาเป็น Dictionary ได้ง่ายขึ้น
+    conn.row_factory = sqlite3.Row 
+    cursor = conn.cursor()
+    
+    try:
+        # ค้นหาผู้ใช้จาก Username หรือ Email
+        cursor.execute('SELECT * FROM users WHERE username = ? OR email = ?', (username, username))
+        user_row = cursor.fetchone()
+        
+        if not user_row:
+            return jsonify({'success': False, 'message': 'ไม่พบบัญชีผู้ใช้นี้'}), 401
+
+        # แปลง Row เป็น Dict
+        user_dict = dict(user_row)
+
+        if user_dict.get('is_blacklisted'):
+            return jsonify({'success': False, 'message': 'บัญชีนี้ถูกระงับการใช้งาน'}), 403
+
+        # ตรวจสอบรหัสผ่าน
+        if not bcrypt.checkpw(password.encode(), user_dict['password'].encode()):
+            return jsonify({'success': False, 'message': 'รหัสผ่านไม่ถูกต้อง'}), 401
+
+        # สร้าง Token (แก้ไขจุดที่ทำให้ Error 500 ตรง user_id)
+        payload = {
+            'id': user_dict['id'],
+            'username': user_dict['username'],
+            'role': user_role if (user_role := user_dict.get('role')) else 'customer'
+        }
+        token = generate_token(payload)
+
+        # เตรียมข้อมูล User ส่งกลับ (ลบรหัสผ่านออก)
+        safe_user = {k: v for k, v in user_dict.items() if k != 'password'}
+        
+        return jsonify({
+            'success': True, 
+            'message': 'เข้าสู่ระบบสำเร็จ',
+            'token': token, 
+            'user': safe_user
+        })
+
+    except Exception as err:
+        print("Login Error Details:", err) # ดูรายละเอียด Error ใน Terminal
+        return jsonify({'success': False, 'message': 'เกิดข้อผิดพลาดในระบบ'}), 500
+    finally:
+        conn.close()
 
 def register():
     data = request.get_json(silent=True) or request.form
@@ -37,48 +95,14 @@ def register():
             (username, email, hashed.decode(), full_name, phone or None, address or None, 'customer')
         )
         conn.commit()
-        user_id = cursor.lastrowid
-        token = generate_token({'id': user_id, 'username': username, 'role': 'customer'})
-        return jsonify({'success': True, 'message': 'สมัครสมาชิกสำเร็จ', 'token': token}), 201
+        
+        return jsonify({'success': True, 'message': 'สมัครสมาชิกสำเร็จ'}), 201
     except Exception as err:
-        print(err)
+        print("Register Error:", err)
         return jsonify({'success': False, 'message': 'เกิดข้อผิดพลาดในระบบ'}), 500
     finally:
         conn.close()
 
-def login():
-    data = request.get_json(silent=True) or request.form
-    username = data.get('username')
-    password = data.get('password')
-
-    if not username or not password:
-        return jsonify({'success': False, 'message': 'กรุณากรอก Username และ Password'}), 400
-
-    conn = get_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute('SELECT * FROM users WHERE username = ? OR email = ?', (username, username))
-        user = cursor.fetchone()
-        if not user:
-            return jsonify({'success': False, 'message': 'ไม่พบบัญชีผู้ใช้นี้'}), 401
-
-        user_dict = dict(user)
-        if user_dict.get('is_blacklisted'):
-            return jsonify({'success': False, 'message': 'บัญชีนี้ถูกระงับการใช้งาน'}), 403
-
-        if not bcrypt.checkpw(password.encode(), user_dict['password'].encode()):
-            return jsonify({'success': False, 'message': 'รหัสผ่านไม่ถูกต้อง'}), 401
-
-        token = generate_token({'id': user_id, 'username': user_dict['username'], 'role': user_dict['role']}) if (user_id := user_dict.get('id')) else ""
-        safe_user = {k: v for k, v in user_dict.items() if k != 'password'}
-        return jsonify({'success': True, 'token': token, 'user': safe_user})
-    except Exception as err:
-        print("Login Error:", err)
-        return jsonify({'success': False, 'message': 'เกิดข้อผิดพลาดในระบบ'}), 500
-    finally:
-        conn.close()
-
-# 🔧 แก้ไขฟังก์ชัน get_me ให้ดึง Token มาถอดรหัสเอง
 def get_me():
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
@@ -90,6 +114,7 @@ def get_me():
         user_id = payload['id']
 
         conn = get_connection()
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute('SELECT id, username, email, full_name, phone, address, role FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
@@ -104,7 +129,6 @@ def get_me():
     finally:
         if 'conn' in locals(): conn.close()
 
-# 🔧 แก้ไขฟังก์ชัน update_me ให้รองรับการบันทึกข้อมูลจริง
 def update_me():
     auth_header = request.headers.get('Authorization')
     if not auth_header:

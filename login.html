@@ -104,6 +104,7 @@
     event.preventDefault(); 
 
     const form = event.target;
+    // ใช้ FormData เพื่อให้ตรงกับที่ Backend (Python) รอรับ
     const formData = new FormData(form);
 
     try {
@@ -113,7 +114,8 @@
         didOpen: () => { Swal.showLoading() }
       });
 
-      const response = await fetch('/login.html', {
+      // ยิงไปที่ /api/login โดยส่งเป็น FormData
+      const response = await fetch('/api/login', {
         method: 'POST',
         body: formData 
       });
@@ -121,11 +123,13 @@
       const data = await response.json();
 
       if (data.success) {
+        // 1. เก็บข้อมูลลง LocalStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('isLoggedIn', 'true');
+        
         if(data.user) {
-           localStorage.setItem('user', JSON.stringify(data.user));
            localStorage.setItem('userName', data.user.username);
+           localStorage.setItem('userRole', data.user.role); 
         }
 
         Swal.fire({
@@ -135,15 +139,19 @@
           timer: 1500,
           showConfirmButton: false
         }).then(() => {
-          // ใช้ replace เพื่อล้าง History
-          window.location.replace('main.html'); 
+          // 2. เช็ค Role เพื่อเปลี่ยนหน้า
+          if (data.user && data.user.role === 'admin') {
+              window.location.replace('dashboard.html');
+          } else {
+              window.location.replace('main.html');
+          }
         });
 
       } else {
         Swal.fire({
           icon: 'error',
           title: 'เข้าสู่ระบบไม่สำเร็จ',
-          text: data.message,
+          text: data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
           confirmButtonColor: '#114e72'
         });
       }

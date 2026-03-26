@@ -1,96 +1,95 @@
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 import os
+from datetime import datetime
 from dotenv import load_dotenv
+
+# นำเข้า Controllers และ Middleware
 from routes.auth import auth_bp
 from controllers.dashboardController import get_stats
 from middleware.auth import admin_only
+from controllers.authController import get_me, update_me, login, register
 
 load_dotenv()
 
 app = Flask(__name__, static_folder='../', static_url_path='')
-# เปิด CORS ให้รองรับการส่ง Token และ Credentials
-CORS(app, origins='*', supports_credentials=True)
+# เปิด CORS ให้รองรับการส่ง Token
+CORS(app, supports_credentials=True)
 
-# ตรวจสอบว่ามีโฟลเดอร์สำหรับอัปโหลดไฟล์หรือไม่
+# ตรวจสอบโฟลเดอร์อัปโหลด
 upload_dir = os.getenv('UPLOAD_PATH', 'uploads/')
 if not os.path.exists(upload_dir):
     os.makedirs(upload_dir, exist_ok=True)
 
-# ลงทะเบียน Blueprint สำหรับระบบ Auth (Login/Register)
+# ลงทะเบียน Blueprint
 app.register_blueprint(auth_bp)
 
 # ─── API ROUTES ───
 
-# Route สำหรับหน้าจัดการข้อมูลส่วนตัว (ดึงข้อมูล และ อัปเดตข้อมูล)
-@app.route('/api/me', methods=['GET', 'PUT', 'POST'])
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    return login()
+
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    return register()
+
+@app.route('/api/me', methods=['GET', 'PUT'])
 def handle_profile():
-    from controllers.authController import get_me, update_me
     if request.method == 'GET':
         return get_me()
     return update_me()
 
-# Route สำหรับ Dashboard (เฉพาะ Admin)
 @app.route('/api/dashboard', methods=['GET'])
 @admin_only
-def dashboard():
+def dashboard_api():
     return get_stats()
 
-# Route สำหรับเช็คสถานะระบบ
 @app.route('/api/health')
 def health():
-    from datetime import datetime
     return jsonify({
         'success': True, 
         'message': 'Rental Clothes API is running 🚀', 
-        'time': datetime.now()
+        'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
 
 # ─── STATIC FILES & FRONTEND ───
 
-# หน้าหลัก (Home Page)
 @app.route('/')
 def index():
     return send_file('../main.html')
 
-# รองรับการส่ง Form จากหน้า Register/Login โดยตรง
-@app.route('/register.html', methods=['POST'])
-def register_html_post():
-    from controllers.authController import register
-    return register()
+# แก้ไขจุดที่ทำให้ Error 500: แยก Route HTML กับ API ให้ชัดเจน
+@app.route('/login.html', methods=['GET'])
+def serve_login_page():
+    return send_file('../login.html')
 
-@app.route('/login.html', methods=['POST'])
-def login_html_post():
-    from controllers.authController import login
-    return login()
+@app.route('/register.html', methods=['GET'])
+def serve_register_page():
+    return send_file('../register.html')
 
-# จัดการไฟล์ Static (CSS, JS, Images) และป้องกัน Path API
-@app.route('/<path:path>', methods=['GET'])
+@app.route('/dashboard.html', methods=['GET'])
+def serve_dashboard_page():
+    return send_file('../dashboard.html')
+
+@app.route('/<path:path>')
 def serve_static(path):
+    # ป้องกันไม่ให้ Static Route ไปทับ API
     if path.startswith('api/'):
-        return jsonify({'success': False, 'message': 'API route not found'}), 404
+        return jsonify({'success': False, 'message': 'API not found'}), 404
 
-    # รองรับโครงสร้างโฟลเดอร์แบบเก่า
-    if path.startswith('template/'):
-        fallback = path[len('template/'):]
-        if os.path.exists(os.path.join('..', fallback)):
-            return send_from_directory('../', fallback)
-
-    # จัดการชื่อไฟล์ JavaScript ที่อาจจะพิมพ์เล็ก-ใหญ่ไม่ตรงกัน
-    if path == 'carousel.js' and os.path.exists(os.path.join('..', 'Carousel.js')):
-        return send_from_directory('../', 'Carousel.js')
-
-    if os.path.exists(os.path.join('..', path)):
+    # ตรวจสอบไฟล์ในโฟลเดอร์หลัก
+    file_path = os.path.join('..', path)
+    if os.path.exists(file_path):
         return send_from_directory('../', path)
+    
+    # กรณีหาไม่เจอในโฟลเดอร์หลัก ให้หาใน template/
+    template_path = os.path.join('..', 'template', path)
+    if os.path.exists(template_path):
+        return send_from_directory('../template/', path)
 
-    return jsonify({'success': False, 'message': 'File not found'}), 404
-
-# Route สำหรับดึงรูปภาพที่อัปโหลด
-@app.route('/uploads/<path:filename>', methods=['GET'])
-def serve_upload(filename):
-    return send_from_directory(upload_dir, filename)
+    return jsonify({'success': False, 'message': f'File {path} not found'}), 404
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 3001))
-    # รันบน 0.0.0.0 เพื่อให้เข้าถึงได้จากทุก Network ในเครื่อง
     app.run(host='0.0.0.0', port=port, debug=True)
