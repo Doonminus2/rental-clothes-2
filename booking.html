@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/booking.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
 </head>
 <body>
 
@@ -171,6 +172,29 @@
   function closeOrderModal() {
     document.getElementById('orderModal').classList.remove('open');
   }
+</script>
+<script>
+    // 🛡️ ระบบป้องกันการกดย้อนกลับ (Anti-Back Button Cache)
+    window.addEventListener('pageshow', function (event) {
+        const role = localStorage.getItem('userRole');
+        const token = localStorage.getItem('token');
+
+        // ถ้ากดย้อนกลับมา (event.persisted) หรือโหลดหน้าปกติ 
+        // แล้วพบว่าไม่มี Token หรือไม่ใช่ Admin ให้ดีดออกทันที
+        if (!token || role !== 'admin') {
+            // ใช้ replace เพื่อทำลาย History หน้า Admin ทิ้งไปเลย
+            window.location.replace('login.html');
+        }
+    });
+
+    // เช็คซ้ำตอนกด Logout (ย้ำอีกรอบเพื่อความชัวร์)
+    if (document.getElementById('btnLogout')) {
+        document.getElementById('btnLogout').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.replace('login.html');
+        });
+    }
 </script>
 <script src="user.js"></script>
 </body>
