@@ -36,11 +36,6 @@
     <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" />
     <span class="Logo-text">RENTAL CLOTHES</span>
   </a>
-  <div class="TopBar-actions">
-    <a href="main.html" class="BtnFaq" title="ดูหน้าเว็บปกติ">
-      <img src="images/eye.png" alt="view site" style="width: 32px; height: 32px; object-fit: contain;" />
-    </a>
-  </div>
 </header>
 
 <div class="Layout">
@@ -157,25 +152,37 @@
 
 </script>
 <script>
-    // 🛡️ ระบบป้องกันการกดย้อนกลับ (Anti-Back Button Cache)
+    // 🛡️ 1. ระบบป้องกันการกดย้อนกลับ (คงเดิมไว้ เพราะมันได้ผล)
     window.addEventListener('pageshow', function (event) {
         const role = localStorage.getItem('userRole');
         const token = localStorage.getItem('token');
-
-        // ถ้ากดย้อนกลับมา (event.persisted) หรือโหลดหน้าปกติ 
-        // แล้วพบว่าไม่มี Token หรือไม่ใช่ Admin ให้ดีดออกทันที
         if (!token || role !== 'admin') {
-            // ใช้ replace เพื่อทำลาย History หน้า Admin ทิ้งไปเลย
             window.location.replace('login.html');
         }
     });
 
-    // เช็คซ้ำตอนกด Logout (ย้ำอีกรอบเพื่อความชัวร์)
+    // 🔔 2. ระบบ Logout แบบมี Notification (แก้ไขใหม่)
     if (document.getElementById('btnLogout')) {
         document.getElementById('btnLogout').addEventListener('click', function(e) {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.replace('login.html');
+            e.preventDefault(); // หยุดการวาร์ปทันทีไว้ก่อน
+            
+            // เรียกใช้ Swal สวยๆ ของโฟล์ค
+            Swal.fire({
+                title: 'ยืนยันการออกจากระบบ?',
+                text: "คุณต้องการออกจากหน้าจัดการแอดมินใช่หรือไม่",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#114e72',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ✅ ถ้ากดยืนยันค่อยสั่งล้างค่าและวาร์ปแบบ replace
+                    localStorage.clear();
+                    window.location.replace('login.html');
+                }
+            });
         });
     }
 </script>
