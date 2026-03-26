@@ -198,5 +198,5 @@ def serve_pages(path):
     return jsonify({'success': False, 'message': f'File {path} not found'}), 404
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 3001))
+    port = int(os.getenv('PORT', 3002))
     app.run(host='0.0.0.0', port=port, debug=True)
