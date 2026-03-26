@@ -51,13 +51,13 @@
         <div class="Form-group-box">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
             <h2 class="Form-section-title" style="border: none; padding: 0; margin: 0;">1. ข้อมูลผู้เช่าและการจัดส่ง</h2>
-            <a href="#" style="font-size: 14px; color: var(--color-primary); font-weight: 700; text-decoration: none;">✏️ แก้ไขข้อมูล</a>
+            <a href="data.html?from=checkout" style="font-size: 14px; color: var(--color-primary); font-weight: 700; text-decoration: none;">✏️ แก้ไขข้อมูล</a>
           </div>
           
           <div style="background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px solid var(--color-border);">
-            <div style="font-size: 16px; font-weight: 900; color: var(--color-primary); margin-bottom: 8px;" id="displayUserName">ชื่อ-นามสกุล (ดึงจากระบบ)</div>
+            <div style="font-size: 16px; font-weight: 900; color: var(--color-primary); margin-bottom: 8px;" id="displayUserName">กำลังโหลดข้อมูล...</div>
             <div style="font-size: 14px; color: var(--color-text-muted); margin-bottom: 8px;">📞 เบอร์โทรศัพท์: <span id="displayUserPhone">-</span></div>
-            <div style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6;">📍 ที่อยู่จัดส่ง: <span id="displayUserAddress">รอเชื่อมต่อข้อมูลจากระบบ...</span></div>
+            <div style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6;">📍 ที่อยู่จัดส่ง: <span id="displayUserAddress">กำลังโหลดข้อมูลจากระบบ...</span></div>
           </div>
         </div>
 
@@ -66,11 +66,11 @@
           <div class="Input-row">
             <div class="Input-group">
               <label>วันที่ต้องการรับชุด</label>
-              <input type="date" class="Checkout-input" />
+              <input type="date" class="Checkout-input" id="pickupDate" />
             </div>
             <div class="Input-group">
               <label>วันที่คืนชุด</label>
-              <input type="date" class="Checkout-input" />
+              <input type="date" class="Checkout-input" id="returnDate" />
             </div>
           </div>
         </div>
@@ -117,7 +117,7 @@
           </div>
           <div class="Summary-row">
             <span>ค่าจัดส่ง (Kerry Express)</span>
-            <span id="summaryShipping">100 ฿</span>
+            <span>100 ฿</span>
           </div>
           
           <hr class="Summary-divider" />
@@ -135,53 +135,121 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  
-  // ==========================================
-  // ส่วนจำลองข้อมูลผู้ใช้ (Mock User Data)
-  // อนาคตเปลี่ยนเป็นใช้ API Fetch หรือ PHP Echo ได้เลย
-  // ==========================================
-  const loggedInUser = {
-    name: "นาย รักดี สุขเสมอ",
-    phone: "081-999-8888",
-    address: "123/45 ซอยสุขุมวิท 10 แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110"
-  };
+document.addEventListener("DOMContentLoaded", async function() {
+    // 1. ดึงข้อมูล User
+    await loadUserProfile();
 
-  document.getElementById('displayUserName').textContent = loggedInUser.name;
-  document.getElementById('displayUserPhone').textContent = loggedInUser.phone;
-  document.getElementById('displayUserAddress').textContent = loggedInUser.address;
+    // 2. ดึงข้อมูลสินค้าจาก ID ที่ส่งมาจาก URL
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+    const selectedSize = params.get('size') || 'F';
+    const selectedDuration = params.get('duration') || '1 วัน';
+    const selectedQty = parseInt(params.get('qty') || '1', 10);
 
+    if (!productId) {
+        window.location.href = 'rental.html';
+        return;
+    }
 
-  // ==========================================
-  // ดึงข้อมูลสินค้าที่ส่งมาจากหน้า Product
-  // ==========================================
-  const params = new URLSearchParams(window.location.search);
-  const productName = params.get('name') || 'โปรดเลือกสินค้า';
-  const productPrice = parseInt(params.get('price') || '0', 10);
-  const productImg = params.get('img') || '';
-  
-  const productSize = params.get('size') || '-';
-  const productDuration = params.get('duration') || '-';
-  const productQty = parseInt(params.get('qty') || '1', 10);
-
-  const shippingFee = 100;
-  const subTotal = productPrice * productQty;
-  const total = subTotal > 0 ? subTotal + shippingFee : 0;
-
-  // แปะข้อมูลลงบิลสรุปยอด
-  document.getElementById('summaryName').textContent = productName;
-  document.getElementById('summaryMeta').textContent = `ขนาด: ${productSize} | เช่า: ${productDuration} | จำนวน: ${productQty} ชุด`;
-  document.getElementById('summaryPrice').textContent = productPrice.toLocaleString() + ' ฿ / ชุด';
-  
-  document.getElementById('summarySubtotal').textContent = subTotal.toLocaleString() + ' ฿';
-  document.getElementById('summaryTotal').textContent = total.toLocaleString() + ' ฿';
-  
-  if (productImg) {
-    document.getElementById('summaryImg').src = productImg;
-  }
+    await loadProductSummary(productId, selectedSize, selectedDuration, selectedQty);
 });
-</script><script src="template/api.js"></script>
-<script src="template/checkout.js"></script>
+
+async function loadUserProfile() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            const user = result.data;
+            document.getElementById('displayUserName').textContent = user.full_name || user.username;
+            document.getElementById('displayUserPhone').textContent = user.phone || 'ยังไม่ได้ระบุเบอร์โทรศัพท์';
+            document.getElementById('displayUserAddress').textContent = user.address || 'ยังไม่ได้ระบุที่อยู่จัดส่ง';
+        }
+    } catch (err) {
+        console.error("User Load Error:", err);
+    }
+}
+
+async function loadProductSummary(id, size, duration, qty) {
+    try {
+        const response = await fetch(`/api/products/${id}`);
+        const result = await response.json();
+
+        if (result.success) {
+            const p = result.data;
+            const price = Number(p.price_per_day || p.price);
+            const shippingFee = 100;
+            const subTotal = price * qty;
+            const total = subTotal + shippingFee;
+
+            document.getElementById('summaryName').textContent = p.name;
+            document.getElementById('summaryImg').src = p.image_url;
+            document.getElementById('summaryMeta').innerHTML = `
+                <div>ขนาด: ${size}</div>
+                <div>ระยะเวลา: ${duration}</div>
+                <div>จำนวน: ${qty} ชุด</div>
+            `;
+            document.getElementById('summaryPrice').textContent = price.toLocaleString() + ' ฿ / วัน';
+            document.getElementById('summarySubtotal').textContent = subTotal.toLocaleString() + ' ฿';
+            document.getElementById('summaryTotal').textContent = total.toLocaleString() + ' ฿';
+            
+            // เก็บข้อมูลไว้ในตัวแปร Global เพื่อใช้ตอนกด Confirm
+            window.orderData = {
+                product_id: id,
+                size: size,
+                duration: duration,
+                quantity: qty,
+                total_price: total
+            };
+        }
+    } catch (err) {
+        console.error("Product Load Error:", err);
+    }
+}
+
+async function confirmOrder() {
+    if (!window.orderData) return;
+
+    const { isConfirmed } = await Swal.fire({
+        title: 'ยืนยันการเช่าชุด?',
+        text: "เมื่อยืนยันแล้วระบบจะพาไปหน้าชำระเงิน",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#114E72',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ตรวจสอบอีกครั้ง',
+        reverseButtons: true
+    });
+
+    if (isConfirmed) {
+        await Swal.fire({
+            icon: 'success',
+            title: 'สำเร็จ!',
+            text: 'กำลังพาท่านไปยังระบบชำระเงิน...',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        // ✨ แก้ไขจุดสำคัญ: ส่งข้อมูล id, size, duration, qty ต่อไปที่หน้า slip.html
+        const id = window.orderData.product_id;
+        const size = window.orderData.size;
+        const duration = window.orderData.duration;
+        const qty = window.orderData.quantity;
+
+        window.location.href = `slip.html?id=${id}&size=${encodeURIComponent(size)}&duration=${encodeURIComponent(duration)}&qty=${qty}`; 
+    }
+}
+</script>
+<script src="user.js"></script>
 </body>
 </html>

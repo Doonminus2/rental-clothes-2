@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/rental.css" />
   <link rel="stylesheet" href="template/slip.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div class="Page">
@@ -19,12 +20,9 @@
         <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" onerror="this.src='https://via.placeholder.com/82x60?text=LOGO'" />
         <span class="Logo-text">RENTAL CLOTHES</span>
       </a>
-      <div class="SiteHeader-actions">
+      <div class="SiteHeader-actions" id="headerActions">
         <a href="faq.html" class="Icon-faq-link" title="FAQ">
-          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" onerror="this.src='https://via.placeholder.com/41x41?text=?'" />
-        </a>
-        <a href="login.html" class="BtnLogin">
-          <span class="BtnLogin-text">LOGIN</span>
+          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" />
         </a>
       </div>
     </div>
@@ -52,13 +50,13 @@
         <h2 class="Section-title">ข้อมูลผู้เช่าและการจัดส่ง</h2>
         <div class="Info-grid">
           <span class="Info-label">ชื่อลูกค้า:</span>
-          <span id="receiptName">นาย รักดี สุขเสมอ</span>
+          <span id="receiptName">กำลังโหลด...</span>
           
           <span class="Info-label">เบอร์ติดต่อ:</span>
-          <span id="receiptPhone">081-999-8888</span>
+          <span id="receiptPhone">-</span>
 
           <span class="Info-label">ที่อยู่จัดส่ง:</span>
-          <span id="receiptAddress">123/45 ซอยสุขุมวิท 10 แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110</span>
+          <span id="receiptAddress">กำลังโหลดที่อยู่จากระบบ...</span>
         </div>
       </div>
 
@@ -96,17 +94,17 @@
 
       <div class="Upload-section">
         <h2 class="Section-title" style="text-align: center;">แจ้งชำระเงิน (แนบสลิป)</h2>
-        <p style="font-size: 14px; color: var(--color-text-muted); margin-bottom: 16px;">
-          กรุณาโอนเงินเข้าบัญชี: ธนาคารกสิกรไทย 123-4-56789-0 (บริษัท เรนทัล โคลทส์ จำกัด)
+        <p style="text-align: center; font-size: 14px; color: #114E72; font-weight: 700; margin-bottom: 16px;">
+          ธนาคารกสิกรไทย 123-4-56789-0 (บจก. เรนทัล โคลทส์)
         </p>
 
-        <label for="fileInput" class="Upload-box" id="uploadBox">
+        <label for="fileInput" class="Upload-box" id="uploadBox" style="cursor: pointer;">
           <div class="Upload-text">+ คลิกเพื่ออัปโหลดสลิปโอนเงิน</div>
-          <div class="Upload-subtext">รองรับไฟล์ JPG, PNG, PDF ขนาดไม่เกิน 5MB</div>
+          <div class="Upload-subtext">รองรับไฟล์รูปภาพ สลิปโอนเงิน</div>
         </label>
         
-        <input type="file" id="fileInput" accept="image/*" onchange="previewSlip(event)" />
-        <img id="slipPreview" class="Preview-image" alt="Slip Preview" />
+        <input type="file" id="fileInput" accept="image/*" onchange="previewSlip(event)" style="display: none;" />
+        <img id="slipPreview" class="Preview-image" alt="Slip Preview" style="display: none; max-width: 100%; margin: 10px auto; border-radius: 8px;" />
       </div>
 
       <div class="Action-buttons">
@@ -119,60 +117,109 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  // สุ่มเลข Order ID
-  const randomOrder = Math.floor(10000 + Math.random() * 90000);
-  document.getElementById('orderIdText').textContent = `Order ID: #ORD-${randomOrder}`;
+document.addEventListener("DOMContentLoaded", async function() {
+    // 1. สุ่มเลข Order ID
+    const randomOrder = Math.floor(10000 + Math.random() * 90000);
+    document.getElementById('orderIdText').textContent = `Order ID: #ORD-${randomOrder}`;
 
-  // ดึงพารามิเตอร์ที่ส่งมาจากหน้า Checkout
-  const params = new URLSearchParams(window.location.search);
-  const productName = params.get('name') || 'โปรดเลือกสินค้า';
-  const productPrice = parseInt(params.get('price') || '0', 10);
-  const productSize = params.get('size') || '-';
-  const productDuration = params.get('duration') || '-';
-  const productQty = parseInt(params.get('qty') || '1', 10);
+    // 2. ดึงข้อมูล User
+    await loadUserProfile();
 
-  const shippingFee = 100;
-  const subTotal = productPrice * productQty;
-  const total = subTotal > 0 ? subTotal + shippingFee : 0;
+    // 3. ดึงพารามิเตอร์จาก URL
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+    const selectedSize = params.get('size') || '-';
+    const selectedDuration = params.get('duration') || '-';
+    const selectedQty = parseInt(params.get('qty') || '1', 10);
 
-  // เอาข้อมูลมาแสดงผลในบิล
-  document.getElementById('receiptProductName').textContent = productName;
-  document.getElementById('receiptProductMeta').textContent = `ขนาด: ${productSize} | ระยะเวลา: ${productDuration} | จำนวน: ${productQty} ชุด`;
-  document.getElementById('receiptProductPrice').textContent = productPrice.toLocaleString() + ' ฿';
-  
-  document.getElementById('receiptSubtotal').textContent = subTotal.toLocaleString() + ' ฿';
-  document.getElementById('receiptTotal').textContent = total.toLocaleString() + ' ฿';
+    if (productId) {
+        await loadProductInfo(productId, selectedSize, selectedDuration, selectedQty);
+    }
 });
 
-// ฟังก์ชันแสดงพรีวิวรูปสลิปตอนอัปโหลด
-function previewSlip(event) {
-  const input = event.target;
-  const preview = document.getElementById('slipPreview');
-  const uploadBox = document.getElementById('uploadBox');
-
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      preview.src = e.target.result;
-      preview.style.display = 'block';
-      uploadBox.style.display = 'none'; // ซ่อนกล่องอัปโหลดเมื่อมีรูปแล้ว
-    }
-    reader.readAsDataURL(input.files[0]);
-  }
+async function loadUserProfile() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('/api/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.success) {
+            const user = result.data;
+            document.getElementById('receiptName').textContent = user.full_name || user.username;
+            document.getElementById('receiptPhone').textContent = user.phone || '-';
+            document.getElementById('receiptAddress').textContent = user.address || '-';
+        }
+    } catch (err) { console.error("User Load Error:", err); }
 }
 
-// ฟังก์ชันปุ่มยืนยัน
-function submitSlip() {
-  const fileInput = document.getElementById('fileInput');
-  if (fileInput.files.length === 0) {
-    alert("กรุณาแนบสลิปการโอนเงินก่อนกดยืนยันครับ");
-    return;
-  }
-  
-  alert("บันทึกข้อมูลสำเร็จ! แอดมินจะทำการตรวจสอบสลิปและจัดส่งสินค้าให้ท่านโดยเร็วที่สุด");
-  window.location.href = "main.html";
+async function loadProductInfo(id, size, duration, qty) {
+    try {
+        const response = await fetch(`/api/products/${id}`);
+        const result = await response.json();
+        if (result.success) {
+            const p = result.data;
+            const price = Number(p.price_per_day || p.price);
+            const shippingFee = 100;
+            const subTotal = price * qty;
+            const total = subTotal + shippingFee;
+
+            document.getElementById('receiptProductName').textContent = p.name;
+            document.getElementById('receiptProductMeta').textContent = `ขนาด: ${size} | ระยะเวลา: ${duration} | จำนวน: ${qty} ชุด`;
+            document.getElementById('receiptProductPrice').textContent = price.toLocaleString() + ' ฿';
+            document.getElementById('receiptSubtotal').textContent = subTotal.toLocaleString() + ' ฿';
+            document.getElementById('receiptTotal').textContent = total.toLocaleString() + ' ฿';
+        }
+    } catch (err) { console.error("Product Load Error:", err); }
+}
+
+function previewSlip(event) {
+    const input = event.target;
+    const preview = document.getElementById('slipPreview');
+    const uploadBox = document.getElementById('uploadBox');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            uploadBox.innerHTML = '<div class="Upload-text">✓ เลือกรูปภาพเรียบร้อย (คลิกเพื่อเปลี่ยน)</div>';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+async function submitSlip() {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput.files.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'กรุณาแนบสลิป',
+            text: 'โปรดเลือกรูปภาพสลิปโอนเงินก่อนกดยืนยันครับ',
+            confirmButtonColor: '#114E72'
+        });
+        return;
+    }
+
+    // โชว์ Loading แป๊บนึงเพื่อให้ดูสมจริง
+    Swal.fire({
+        title: 'กำลังตรวจสอบสลิป...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    // หน่วงเวลา 1.5 วินาทีแล้วไปหน้าเมน
+    setTimeout(async () => {
+        await Swal.fire({
+            icon: 'success',
+            title: 'ชำระเงินสำเร็จ!',
+            text: 'ขอบคุณที่ใช้บริการ Rental Clothes ครับ แอดมินจะรีบจัดส่งให้ทันที',
+            confirmButtonColor: '#114E72'
+        });
+        window.location.href = "main.html";
+    }, 1500);
 }
 </script>
+<script src="user.js"></script>
 </body>
 </html>

@@ -125,18 +125,23 @@
 </div>
 
 <script>
-// --- 1. ฟังก์ชันดึงข้อมูลผู้ใช้ ---
+// --- 1. ฟังก์ชันดึงข้อมูลผู้ใช้ (แก้ไขคีย์ data) ---
 async function fetchUserData() {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+        window.location.replace('login.html');
+        return;
+    }
     try {
         const response = await fetch('/api/me', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const data = await response.json();
-        if (data.success) {
-            const user = data.user;
+        const result = await response.json();
+        
+        if (result.success) {
+            // ✅ แก้จาก result.user เป็น result.data ให้ตรงกับ Backend
+            const user = result.data; 
             document.getElementById('username').value = user.username || '';
             document.getElementById('email').value = user.email || '';
             document.getElementById('fullName').value = user.full_name || '';
@@ -146,20 +151,26 @@ async function fetchUserData() {
             localStorage.clear();
             window.location.replace('login.html');
         }
-    } catch (error) { console.error('Fetch error:', error); }
+    } catch (error) { 
+        console.error('Fetch error:', error); 
+    }
 }
 
-// --- 2. ฟังก์ชันบันทึกข้อมูล พร้อม Notification ---
+// --- 2. ฟังก์ชันบันทึกข้อมูล พร้อมระบบ Redirect กลับหน้าเดิม ---
 async function saveProfileData(event) {
     event.preventDefault();
     const token = localStorage.getItem('token');
+    
+    // เตรียมข้อมูล (ถ้า Password ว่างไม่ต้องส่งไป)
     const updateData = {
         email: document.getElementById('email').value,
         full_name: document.getElementById('fullName').value,
         phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        password: document.getElementById('password').value || null 
+        address: document.getElementById('address').value
     };
+    
+    const newPass = document.getElementById('password').value;
+    if (newPass) updateData.password = newPass;
 
     try {
         Swal.fire({
@@ -176,37 +187,33 @@ async function saveProfileData(event) {
             },
             body: JSON.stringify(updateData)
         });
-        const data = await response.json();
+        const res = await response.json();
 
-        if (data.success) {
-            Swal.fire({
+        if (res.success) {
+            await Swal.fire({
                 icon: 'success',
                 title: 'บันทึกสำเร็จ!',
                 text: 'ข้อมูลของคุณถูกอัปเดตแล้ว',
                 confirmButtonColor: '#114E72',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500
             });
-            document.getElementById('password').value = '';
+
+            // ✨ เช็คว่าถ้ามาจากหน้า Checkout ให้กลับไปหน้านั้น
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('from') === 'checkout') {
+                window.history.back(); // กลับไปหน้า Checkout ทันที
+            } else {
+                document.getElementById('password').value = '';
+            }
         } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'ล้มเหลว',
-                text: data.message || 'เกิดข้อผิดพลาดในการบันทึก',
-                confirmButtonColor: '#114E72'
-            });
+            Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: res.message });
         }
     } catch (error) { 
-        Swal.fire({
-            icon: 'error',
-            title: 'ผิดพลาด',
-            text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้',
-            confirmButtonColor: '#114E72'
-        }); 
+        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้' }); 
     }
 }
 
-// --- 3. ฟังก์ชัน Logout (แบบ Notification 100%) ---
+// --- 3. ฟังก์ชัน Logout ---
 function handleLogout() {
     Swal.fire({
         title: 'ยืนยันการออกจากระบบ?',
@@ -220,21 +227,13 @@ function handleLogout() {
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({
-                title: 'กำลังออกจากระบบ...',
-                timer: 800,
-                showConfirmButton: false,
-                didOpen: () => { Swal.showLoading(); }
-            }).then(() => {
-                localStorage.clear();
-                window.location.replace('main.html');
-            });
+            localStorage.clear();
+            window.location.replace('main.html');
         }
     });
 }
 
 document.addEventListener("DOMContentLoaded", fetchUserData);
-
 </script>
 
 <script src="account.js"></script>

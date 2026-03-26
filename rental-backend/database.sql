@@ -70,6 +70,20 @@ CREATE TABLE IF NOT EXISTS bookings (
   FOREIGN KEY (user_id)    REFERENCES users(id),
   FOREIGN KEY (product_id) REFERENCES products(id)
 );
+-- Booking --
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    size TEXT,
+    duration TEXT,
+    total_price REAL,
+    slip_image TEXT, -- เก็บชื่อไฟล์สลิป
+    status TEXT DEFAULT 'pending', -- pending, approved, rejected
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
 
 -- ── Seed: default admin account ────────────────────────────
 -- Password: admin1234  (bcrypt hash)
