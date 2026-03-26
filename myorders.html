@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders – ติดตามสถานะการเช่า</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="template/rental.css" />
+  <style>
+    body { font-family: 'Hanuman', serif; background-color: #f4f7f9; }
+    .Order-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .Order-card { background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; transition: transform 0.2s; }
+    .Order-card:hover { transform: translateY(-3px); }
+    .Order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 20px; }
+    .Order-id { font-weight: 900; color: #114E72; font-size: 18px; }
+    .Order-status-badge { padding: 6px 15px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+    
+    .status-pending { background: #fff4e5; color: #d4a017; }
+    .status-packing { background: #e3f2fd; color: #1976d2; }
+    .status-shipped { background: #e8f5e9; color: #2e7d32; }
+    .status-received { background: #f3e5f5; color: #7b1fa2; }
+    .status-rejected { background: #ffebee; color: #c62828; }
+
+    .Order-body { display: flex; gap: 20px; flex-wrap: wrap; }
+    .Prod-img { width: 100px; height: 130px; object-fit: cover; border-radius: 8px; background: #eee; }
+    .Order-details { flex: 1; min-width: 250px; }
+    
+    /* ✨ แก้ไขจุดนี้: เอาที่ครอบสีฟ้าออก */
+    .Tracking-box { 
+        margin-top: 15px; 
+        background: transparent; 
+        padding: 0; 
+        border: none; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+    }
+    .Tracking-number { font-family: 'Hanuman', serif; font-size: 14px; font-weight: bold; color: #114E72; }
+    
+    .No-order { text-align: center; padding: 100px 20px; color: #999; }
+    .Btn-copy { cursor: pointer; border: none; background: #114E72; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-left: 10px; }
+  </style>
+</head>
+<body>
+<div class="Page">
+  <header class="SiteHeader">
+    <div class="SiteHeader-top">
+      <a href="main.html" class="SiteHeader-logo">
+        <img class="Logo-img" src="images/logo.png" alt="Logo" />
+        <span class="Logo-text">RENTAL CLOTHES</span>
+      </a>
+      <div class="SiteHeader-actions">
+        <a href="data.html" class="BtnLogin"><span class="BtnLogin-text">PROFILE</span></a>
+      </div>
+    </div>
+  </header>
+
+  <div class="Order-container">
+    <h1 style="color: #114E72; margin-bottom: 30px; display: flex; align-items: center; gap: 10px;">
+        <span>📦</span> My Order
+    </h1>
+    <div id="orderList">
+      <p style="text-align: center; padding: 50px;">กำลังโหลดข้อมูลรายการเช่า...</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    loadMyOrders();
+});
+
+async function loadMyOrders() {
+    const token = localStorage.getItem('token');
+    // ✨ เปลี่ยนมาใช้ userName ตามที่โฟล์คต้องการ (ดึงค่า "Mo" มาใช้)
+    const userName = localStorage.getItem('userName'); 
+
+    if (!token || !userName) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        // ✨ ส่งพารามิเตอร์ username ไปให้หลังบ้านกรองข้อมูล
+        const response = await fetch(`/api/bookings?username=${encodeURIComponent(userName)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        const container = document.getElementById('orderList');
+        
+        if (result.success && result.data && result.data.length > 0) {
+            const statusTH = {
+                pending: 'รอตรวจสอบสลิป',
+                packing: 'กำลังเตรียมชุด',
+                shipped: 'จัดส่งแล้ว',
+                received: 'รับสินค้าแล้ว',
+                rejected: 'สลิปมีปัญหา/ยกเลิก'
+            };
+
+            container.innerHTML = result.data.map(order => `
+                <div class="Order-card">
+                    <div class="Order-header">
+                        <span class="Order-id">Order #ORD-${String(order.id).padStart(4, '0')}</span>
+                        <span class="Order-status-badge status-${order.status}">
+                            ${statusTH[order.status] || order.status}
+                        </span>
+                    </div>
+                    <div class="Order-body">
+                        <img src="${order.image_url}" class="Prod-img" onerror="this.src='images/logo.png'">
+                        <div class="Order-details">
+                            <h3 style="margin:0 0 10px 0; color: #333;">${order.product_name}</h3>
+                            <p style="margin:5px 0; font-size:14px; color:#666;">
+                                <strong>ช่วงเวลาเช่า:</strong> ${formatDate(order.rental_start)} - ${formatDate(order.rental_end)}
+                            </p>
+                            <p style="margin:5px 0; font-size:14px; color:#666;">
+                                 <strong>ยอดโอนสุทธิ:</strong> <span style="color: #114E72; font-weight: bold;">${Number(order.total_price).toLocaleString()} ฿</span>
+                            </p>
+                            
+                            ${order.tracking_number ? `
+                                <div class="Tracking-box">
+                                    <div>
+                                        <div style="font-size:11px; color:#666; margin-bottom:2px;">หมายเลขพัสดุ</div>
+                                        <span class="Tracking-number">${order.tracking_number}</span>
+                                    </div>
+                                    <button class="Btn-copy" onclick="copyTracking('${order.tracking_number}')"> Copy</button>
+                                </div>
+                            ` : `
+                                <div style="margin-top:15px; padding: 10px; background: #fffcf0; border-radius: 8px; font-size:13px; color:#856404; border: 1px solid #ffeeba;">
+                                    แอดมินจะแจ้งเลขพัสดุหลังจากตรวจสอบสลิปเรียบร้อยแล้ว
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="No-order">
+                    <div style="font-size: 50px; margin-bottom: 20px;">📂</div>
+                    <h3 style="color: #666;">ยังไม่มีรายการสั่งเช่า</h3>
+                    <p>ไปเลือกดูชุดสวยๆ แล้วสั่งจองได้เลย!</p>
+                    <a href="rental.html" style="display: inline-block; margin-top: 20px; padding: 10px 25px; background: #114E72; color: white; text-decoration: none; border-radius: 5px;">ไปที่หน้าเช่าชุด</a>
+                </div>`;
+        }
+    } catch (err) {
+        console.error("Load My Orders Error:", err);
+        document.getElementById('orderList').innerHTML = `
+            <div style="text-align:center; padding: 50px; color: #c62828;">
+                <p>⚠️ เกิดข้อผิดพลาดในการโหลดข้อมูล</p>
+                <button onclick="loadMyOrders()" style="margin-top: 10px; cursor: pointer;">ลองใหม่อีกครั้ง</button>
+            </div>`;
+    }
+}
+
+function formatDate(d) {
+    if (!d) return '-';
+    const date = new Date(d);
+    return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+}
+
+function copyTracking(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        Swal.fire({ 
+            title: 'คัดลอกเลขพัสดุแล้ว!', 
+            text: text,
+            icon: 'success', 
+            timer: 1500, 
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+    });
+}
+</script>
+<script src="user.js"></script>
+</body>
+</html>

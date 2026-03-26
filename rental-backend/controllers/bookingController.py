@@ -41,10 +41,10 @@ def create_booking():
             
         file.save(os.path.join(UPLOAD_SLIP_FOLDER, filename))
 
-        # ✅ ดึงค่า deposit จาก products ก่อน INSERT
+        # ดึงค่า deposit จาก products ก่อน INSERT
         cursor.execute("SELECT deposit FROM products WHERE id = ?", (product_id,))
         product = cursor.fetchone()
-        deposit_amount = product[0] if product else 0  # <-- เพิ่มบรรทัดนี้
+        deposit_amount = product[0] if product else 0
 
         cursor.execute("""
             INSERT INTO bookings 
@@ -52,7 +52,7 @@ def create_booking():
              status, rental_start, rental_end, deposit_amount, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
         """, (user_id, product_id, size, duration, total_price, filename, 
-              'pending', rental_start, rental_end, deposit_amount))  # <-- เพิ่ม deposit_amount
+              'pending', rental_start, rental_end, deposit_amount))
         
         cursor.execute("UPDATE products SET stock = stock - 1 WHERE id = ? AND stock > 0", (product_id,))
 
@@ -63,7 +63,7 @@ def create_booking():
     finally:
         conn.close()
 
-# ─── 1. ดึงรายการการจองทั้งหมด (ใช้ในหน้า Booking และ Return) ───
+# ─── 1. ดึงรายการการจอง (กรองตาม Username สำหรับลูกค้า หรือค้นหาสำหรับ Admin) ───
 def get_bookings():
     conn = get_connection()
     conn.row_factory = sqlite3.Row
@@ -72,7 +72,9 @@ def get_bookings():
     search = request.args.get('search', '')
     status = request.args.get('status', '')
     
-    # ✨ JOIN products เพื่อเอาค่า deposit จากตาราง products มาแสดงผล
+    # ✨ 🚩 รับค่า username จากหน้าบ้าน (ดึงจาก localStorage.getItem('userName'))
+    target_username = request.args.get('username')
+    
     query = """
     SELECT 
         b.*,
@@ -87,10 +89,15 @@ def get_bookings():
     JOIN products p ON b.product_id = p.id
     JOIN users u ON b.user_id = u.id
     WHERE (u.username LIKE ? OR CAST(b.id AS TEXT) LIKE ?)
-"""
+    """
     params = [f'%{search}%', f'%{search}%']
     
-    if status and status != 'ทุกสถานะ':
+    # 🚩 ✨ เงื่อนไขสำคัญ: ถ้าส่ง username มา (จากหน้า My Orders) ให้กรองเฉพาะของคนนั้นเป๊ะๆ
+    if target_username and target_username != 'undefined' and target_username != '':
+        query += " AND u.username = ?"
+        params.append(target_username)
+    
+    if status and status != '' and status != 'ทุกสถานะ':
         query += " AND b.status = ?"
         params.append(status)
         
@@ -99,49 +106,51 @@ def get_bookings():
     try:
         cursor.execute(query, params)
         rows = cursor.fetchall()
-        data = [dict(row) for row in rows]
-        
-        # DEBUG: ตรวจสอบข้อมูลในจอดำ (Terminal)
-        if data:
-            print(f"--- DEBUG: ดึงข้อมูลสำเร็จ ---")
-            print(f"Order: {data[0]['id']} | Deposit from Product: {data[0]['deposit_amount']}")
+        data = []
+        for row in rows:
+            item = dict(row)
+            # สร้าง URL สลิปให้หน้าบ้าน
+            if item.get('slip_image'):
+                item['slip_url'] = f"/static/uploads/slips/{item['slip_image']}"
+            data.append(item)
             
         return jsonify({'success': True, 'data': data})
     except Exception as e:
-        print(f"ERROR: {str(e)}")
         return jsonify({'success': False, 'message': str(e)}), 500
     finally:
         conn.close()
 
-# ─── 2. ดึงรายละเอียดการจองรายชิ้น (สำหรับ Modal) ───
+# ─── 2. ดึงรายละเอียดการจองรายชิ้น ───
 def get_booking_by_id(id):
     conn = get_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     try:
-        # ✨ ดึงค่า deposit จากตาราง products เช่นกัน
         cursor.execute("""
-    SELECT b.*, p.name as product_name, p.image_url, p.brand, p.category,
-           CASE WHEN b.deposit_amount > 0 
-                THEN b.deposit_amount 
-                ELSE p.deposit 
-           END AS deposit_amount,
-           u.username as full_name, u.phone
-    FROM bookings b
-    JOIN products p ON b.product_id = p.id
-    JOIN users u ON b.user_id = u.id
-    WHERE b.id = ?
-""", (id,))
+            SELECT b.*, p.name as product_name, p.image_url, p.brand, p.category,
+                   CASE WHEN b.deposit_amount > 0 
+                        THEN b.deposit_amount 
+                        ELSE p.deposit 
+                   END AS deposit_amount,
+                   u.username as full_name, u.phone, u.address
+            FROM bookings b
+            JOIN products p ON b.product_id = p.id
+            JOIN users u ON b.user_id = u.id
+            WHERE b.id = ?
+        """, (id,))
         row = cursor.fetchone()
         if row:
-            return jsonify({'success': True, 'data': dict(row)})
+            data = dict(row)
+            if data.get('slip_image'):
+                data['slip_url'] = f"/static/uploads/slips/{data['slip_image']}"
+            return jsonify({'success': True, 'data': data})
         return jsonify({'success': False, 'message': 'ไม่พบข้อมูล'}), 404
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
     finally:
         conn.close()
 
-# ─── 3. อัปเดตสถานะและเลข Tracking ───
+# ─── 3. อัปเดตสถานะ ───
 def update_booking_status(id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -157,7 +166,7 @@ def update_booking_status(id):
             WHERE id = ?
         """, (new_status, tracking, carrier, id))
         
-        if new_status in ['rejected', 'cancelled', 'received']:
+        if new_status in ['rejected', 'cancelled']:
             cursor.execute("""
                 UPDATE products 
                 SET stock = stock + 1 
@@ -171,29 +180,25 @@ def update_booking_status(id):
     finally:
         conn.close()
 
-# ─── 4. ดึงสถิติตัวเลข ───
+# ─── 4. สถิติ ───
 def get_booking_stats():
     conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT COUNT(*) FROM bookings WHERE strftime('%m', created_at) = strftime('%m', 'now')")
         total_month = cursor.fetchone()[0] or 0
-
         cursor.execute("SELECT status, COUNT(*) FROM bookings GROUP BY status")
         rows = cursor.fetchall()
-        
         stats = {'total': total_month, 'pending': 0, 'packing': 0, 'shipped': 0, 'received': 0, 'rejected': 0}
         for status, count in rows:
-            if status in stats:
-                stats[status] = count
-                
+            if status in stats: stats[status] = count
         return jsonify({'success': True, 'data': stats})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
     finally:
         conn.close()
 
-# ─── 5. ดึงข้อมูลปฏิทิน ───
+# ─── 5. ปฏิทิน ───
 def get_calendar_bookings():
     conn = get_connection()
     conn.row_factory = sqlite3.Row

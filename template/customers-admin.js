@@ -61,7 +61,7 @@ function renderCustomerTable(customers) {
                         style="padding:5px 10px; border-radius:15px; border:1px solid #ddd; cursor:pointer; font-size:13px;">
                     <option value="user" ${u.role === 'user' ? 'selected' : ''}>User</option>
                     <option value="Member" ${u.role === 'Member' ? 'selected' : ''}>Member</option>
-                    <option value="VIP" ${u.role === 'VIP' ? 'selected' : ''}>⭐ VIP</option>
+                    <option value="VIP" ${u.role === 'VIP' ? 'selected' : ''}>VIP</option>
                 </select>
             </td>
             <td style="padding: 12px; text-align:center;">${u.total_rentals || 0} ครั้ง</td>
@@ -69,7 +69,7 @@ function renderCustomerTable(customers) {
             <td style="padding: 12px;">
                 <button class="BtnAction" onclick="openCusDetail(${u.id})" 
                         style="background:none; border:1px solid #114E72; color:#114E72; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.2s;">
-                    👁️ ประวัติ
+                    👁️
                 </button>
             </td>
         </tr>`;

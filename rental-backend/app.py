@@ -17,7 +17,7 @@ from controllers.productController import (
 )
 from controllers.bookingController import (
     get_bookings, get_booking_by_id, update_booking_status,
-    get_booking_stats, get_calendar_bookings, create_booking # ✨ เพิ่ม create_booking
+    get_booking_stats, get_calendar_bookings, create_booking
 )
 from controllers.returnController import get_pending_returns, process_return
 
@@ -37,7 +37,7 @@ CORS(app, supports_credentials=True)
 # ─── SETUP FOLDERS ───
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 IMAGE_FOLDER = os.path.join(BASE_DIR, 'images')
-SLIP_FOLDER = os.path.join(BASE_DIR, 'static/uploads/slips') # ✨ โฟลเดอร์เก็บสลิป
+SLIP_FOLDER = os.path.join(BASE_DIR, 'static/uploads/slips')
 
 # สร้างโฟลเดอร์ถ้ายังไม่มี
 for folder in [IMAGE_FOLDER, SLIP_FOLDER]:
@@ -99,14 +99,14 @@ def api_update_product_status(id):
     return update_product_status(id)
 
 # 📅 Bookings
-# ✨ สำหรับลูกค้า: กดจองชุดและส่งสลิปจากหน้า slip.html
+# ✨ สำหรับลูกค้า: สร้างการจอง
 @app.route('/api/bookings/create', methods=['POST'])
 def api_create_booking():
     return create_booking()
 
-# สำหรับแอดมิน: ดูและจัดการการจอง
+# ✨ แก้ไขจุดนี้: เอา @admin_only ออกเพื่อให้ลูกค้าดูประวัติการเช่า (My Orders) ได้
+# แต่ใน Controller จะเช็คสิทธิ์เองว่าถ้าไม่ใช้แอดมิน จะเห็นแค่ของตัวเอง
 @app.route('/api/bookings', methods=['GET'])
-@admin_only
 def api_get_bookings():
     return get_bookings()
 
@@ -120,8 +120,8 @@ def api_get_booking_stats():
 def api_get_calendar_bookings():
     return get_calendar_bookings()
 
+# ✨ แก้ไขจุดนี้: ให้ลูกค้าดูรายละเอียดออเดอร์ตัวเองได้
 @app.route('/api/bookings/<int:id>', methods=['GET'])
-@admin_only
 def api_get_booking_detail(id):
     return get_booking_by_id(id)
 
@@ -178,7 +178,6 @@ def health():
 def serve_images(filename):
     return send_from_directory(IMAGE_FOLDER, filename)
 
-# ✨ Route สำหรับดูรูปสลิป (เพื่อให้แอดมินเปิดดูได้)
 @app.route('/static/uploads/slips/<path:filename>')
 def serve_slips(filename):
     return send_from_directory(SLIP_FOLDER, filename)
