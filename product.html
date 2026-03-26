@@ -9,11 +9,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/rental.css" />
   <link rel="stylesheet" href="template/rent.css" />
+  <style>
+    /* สไตล์เพิ่มเติมสำหรับข้อมูลที่ฟิกจาก DB */
+    .PD-info-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      background: #f0f4f7;
+      border-radius: 8px;
+      font-weight: 700;
+      color: #114E72;
+      border: 1px solid #dce3ea;
+    }
+    .PD-btn-rent {
+      width: 100% !important; /* ขยายปุ่มเช่าให้เต็มพื้นที่แทนที่ตะกร้า */
+      height: 55px;
+      font-size: 18px;
+      font-weight: 900;
+      background: #114E72;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .PD-btn-rent:hover { opacity: 0.9; transform: translateY(-2px); }
+  </style>
 </head>
 <body>
 <div class="Page">
 
-  <!-- ══════════════ HEADER ══════════════ -->
   <header class="SiteHeader">
     <div class="SiteHeader-top">
       <a href="main.html" class="SiteHeader-logo">
@@ -30,50 +54,30 @@
       </div>
     </div>
     <nav class="Navbar">
-      <a href="main.html"      class="NavBtn">HOME</a>
-      <a href="rental.html"    class="NavBtn NavBtn--active">RENTAL PRODUCTS</a>
+      <a href="main.html" class="NavBtn">HOME</a>
+      <a href="rental.html" class="NavBtn NavBtn--active">RENTAL PRODUCTS</a>
       <a href="howtorent.html" class="NavBtn">HOW TO RENT</a>
-      <a href="review.html"    class="NavBtn">REVIEW</a>
-      <a href="article.html"   class="NavBtn">ARTICLE</a>
-      <a href="contact.html"   class="NavBtn">CONTACT</a>
-      <a href="gallery.html"   class="NavBtn">GALLERY</a>
+      <a href="review.html" class="NavBtn">REVIEW</a>
+      <a href="article.html" class="NavBtn">ARTICLE</a>
+      <a href="contact.html" class="NavBtn">CONTACT</a>
+      <a href="gallery.html" class="NavBtn">GALLERY</a>
     </nav>
   </header>
 
-  <!-- ══════════════ MAIN CONTENT ══════════════ -->
   <main class="ProductDetailPage">
-
-    <!-- Product Layout -->
     <div class="ProductDetail">
 
-      <!-- ── LEFT: Images ── -->
       <div class="ProductDetail-gallery">
-
-        <!-- Main image -->
         <div class="Gallery-main">
-          <img id="mainImage" src="images/product1.jpg" alt="Product main image" />
+          <img id="mainImage" src="images/logo.png" alt="Product main image" />
         </div>
-
-        <!-- Thumbnails -->
-        <div class="Gallery-thumbs">
-          <img class="Gallery-thumb active" id="thumb1" src="images/product1.jpg" alt="thumb 1" onclick="changeImage(this)" />
-          <img class="Gallery-thumb" id="thumb2" src="images/product2.jpg" alt="thumb 2" onclick="changeImage(this)" />
-          <img class="Gallery-thumb" id="thumb3" src="images/product3.jpg" alt="thumb 3" onclick="changeImage(this)" />
-          <img class="Gallery-thumb" id="thumb4" src="images/product4.jpg" alt="thumb 4" onclick="changeImage(this)" />
-          <img class="Gallery-thumb" id="thumb5" src="images/product5.jpg" alt="thumb 5" onclick="changeImage(this)" />
-        </div>
-
+        <div class="Gallery-thumbs" id="thumbContainer">
+            </div>
       </div>
 
-      <!-- ── RIGHT: Info ── -->
       <div class="ProductDetail-info">
+        <h1 class="PD-title" id="pdTitle">กำลังโหลดชื่อสินค้า...</h1>
 
-        <!-- Title -->
-        <h1 class="PD-title" id="pdTitle">
-          Contemporary Thai Dress: White Lace Top &amp; Red Gold-Thread Sarong
-        </h1>
-
-        <!-- Rating -->
         <div class="PD-rating">
           <span class="PD-stars">★★★★★</span>
           <span class="PD-rating-score">4.9</span>
@@ -81,88 +85,60 @@
           <span class="PD-reviews">242 รีวิว</span>
         </div>
 
-        <!-- Price -->
         <div class="PD-price-block">
-          <span class="PD-price" id="pdPrice">4,500 ฿</span>
-          <span class="PD-price-original">6,000 ฿</span>
+          <span class="PD-price" id="pdPrice">0 ฿</span>
+          <span class="PD-price-original" id="pdOriginalPrice">0 ฿</span>
           <span class="PD-discount">-25%</span>
         </div>
 
         <hr class="PD-divider-line" />
 
-        <!-- Size -->
         <div class="PD-option-group">
-          <span class="PD-option-label">ขนาด</span>
-          <div class="PD-option-btns" id="sizeGroup">
-            <button class="PD-opt-btn active" onclick="selectOption(this, 'sizeGroup')">S</button>
-            <button class="PD-opt-btn" onclick="selectOption(this, 'sizeGroup')">M</button>
-            <button class="PD-opt-btn" onclick="selectOption(this, 'sizeGroup')">L</button>
-            <button class="PD-opt-btn" onclick="selectOption(this, 'sizeGroup')">XL</button>
-          </div>
+          <span class="PD-option-label">ขนาดสินค้า</span>
+          <div id="sizeDisplay" class="PD-info-badge">-</div>
         </div>
 
-        <!-- Duration -->
         <div class="PD-option-group">
-          <span class="PD-option-label">ระยะเวลาเช่า</span>
-          <div class="PD-option-btns" id="durationGroup">
-            <button class="PD-opt-btn active" onclick="selectOption(this, 'durationGroup')">1 วัน</button>
-            <button class="PD-opt-btn" onclick="selectOption(this, 'durationGroup')">3 วัน</button>
-            <button class="PD-opt-btn" onclick="selectOption(this, 'durationGroup')">7 วัน</button>
-          </div>
-        </div>
-
-        <!-- Quantity -->
-        <div class="PD-option-group">
-          <span class="PD-option-label">จำนวน</span>
+          <span class="PD-option-label">จำนวนที่พร้อมเช่า</span>
           <div class="PD-qty">
             <button class="PD-qty-btn" onclick="changeQty(-1)">−</button>
             <span class="PD-qty-val" id="qtyVal">1</span>
-            <button class="PD-qty-btn" onclick="changeQty(1)">+</button>
+            <button class="PD-qty-btn" id="btnAddQty" onclick="changeQty(1)">+</button>
           </div>
+          <small style="color: #666; margin-left: 10px;">คงเหลือในสต็อก: <span id="stockCount">0</span> ชิ้น</small>
         </div>
 
         <hr class="PD-divider-line" />
 
-        <!-- Delivery info -->
         <div class="PD-info-row">
           <span class="PD-info-label">การจัดส่ง</span>
-          <span class="PD-info-value">จัดส่งฟรี · รับภายใน 1–3 วันทำการ</span>
+          <span class="PD-info-value">จัดส่งฟรีทั่วประเทศ · รับภายใน 1–3 วัน</span>
         </div>
         <div class="PD-info-row">
-          <span class="PD-info-label">ข้อปกิการันดี</span>
-          <span class="PD-info-value">ทำความสะอาดก่อนส่ง · ตรวจสอบคุณภาพทุกชิ้น</span>
+          <span class="PD-info-label">การดูแล</span>
+          <span class="PD-info-value">ทำความสะอาดด้วยมาตรฐานโรงแรมก่อนจัดส่งทุกครั้ง</span>
         </div>
 
         <hr class="PD-divider-line" />
 
-        <!-- Action buttons -->
         <div class="PD-actions">
-          <button class="PD-btn-cart">🛒 เพิ่มในรายการ</button>
-          <button class="PD-btn-rent">เช่าเลย</button>
+          <button class="PD-btn-rent" id="btnRentAction">จองคิวเช่าชุดนี้</button>
         </div>
 
-      </div><!-- /ProductDetail-info -->
-
-    </div><!-- /ProductDetail -->
-
+      </div>
+    </div>
   </main>
-
-</div><!-- /Page -->
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  /* ── ตัวแปรกลางเก็บข้อมูลสินค้า ── */
   let currentProduct = null;
+  let maxStock = 1;
 
-  /* ── 1. ดึงข้อมูลจริงจาก Database ── */
   async function loadProductDetail() {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
-
-    if (!productId) {
-      window.location.href = 'rental.html';
-      return;
-    }
+    if (!productId) { window.location.href = 'rental.html'; return; }
 
     try {
       const response = await fetch(`/api/products/${productId}`);
@@ -170,113 +146,74 @@
 
       if (result.success) {
         currentProduct = result.data;
+        maxStock = currentProduct.stock || 1;
         renderProductInfo(currentProduct);
       } else {
-        alert('ไม่พบข้อมูลสินค้า');
-        window.location.href = 'rental.html';
+        Swal.fire('ผิดพลาด', 'ไม่พบข้อมูลสินค้า', 'error').then(() => {
+            window.location.href = 'rental.html';
+        });
       }
     } catch (err) {
       console.error("Error loading product:", err);
     }
   }
 
-  /* ── 2. ฟังก์ชันวาดข้อมูลลงบนหน้าจอ ── */
   function renderProductInfo(p) {
     document.getElementById('pdTitle').textContent = p.name;
     document.title = 'Rental Clothes – ' + p.name;
 
-    const rawPrice = p.price_per_day || p.price; 
-    const price = (rawPrice && !isNaN(rawPrice)) ? Number(rawPrice) : 0;
-    
-    document.getElementById('pdPrice').textContent = price.toLocaleString('th-TH') + ' ฿';
-    document.querySelector('.PD-price-original').textContent = Math.round(price * 1.3).toLocaleString('th-TH') + ' ฿';
+    const price = Number(p.price_per_day || 0);
+    document.getElementById('pdPrice').textContent = price.toLocaleString() + ' ฿';
+    document.getElementById('pdOriginalPrice').textContent = Math.round(price * 1.3).toLocaleString() + ' ฿';
 
-    const mainImg = document.getElementById('mainImage');
-    mainImg.src = p.image_url;
+    document.getElementById('mainImage').src = p.image_url;
+    document.getElementById('sizeDisplay').textContent = p.sizes || p.size || 'Free Size';
+    document.getElementById('stockCount').textContent = maxStock;
     
-    const thumbs = document.querySelectorAll('.Gallery-thumb');
-    thumbs.forEach(t => {
-      t.src = p.image_url;
-      t.onerror = () => t.src = 'images/logo.png';
-    });
-    mainImg.onerror = () => mainImg.src = 'images/logo.png';
-
-    const dbSize = p.size ? p.size.toUpperCase().trim() : '';
-    if (dbSize) {
-      document.querySelectorAll('#sizeGroup .PD-opt-btn').forEach(btn => {
-        if (btn.textContent.toUpperCase().trim() === dbSize) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
+    // ถ้าของหมด ให้ปิดปุ่มเช่า
+    if (maxStock <= 0) {
+        const btn = document.getElementById('btnRentAction');
+        btn.textContent = 'สินค้าหมดชั่วคราว';
+        btn.style.background = '#ccc';
+        btn.disabled = true;
     }
   }
 
-  /* ── 3. ฟังก์ชัน Gallery ── */
-  function changeImage(el) {
-    document.getElementById('mainImage').src = el.src;
-    document.querySelectorAll('.Gallery-thumb').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  /* ── 4. ฟังก์ชันเลือก Option (Size/Duration) ── */
-  function selectOption(el, groupId) {
-    document.querySelectorAll('#' + groupId + ' .PD-opt-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  /* ── 5. ฟังก์ชัน Quantity ── */
   function changeQty(delta) {
     const el = document.getElementById('qtyVal');
-    const val = Math.max(1, parseInt(el.textContent) + delta);
+    let val = parseInt(el.textContent) + delta;
+    
+    if (val < 1) val = 1;
+    if (val > maxStock) {
+        Swal.fire('ขออภัย', `สินค้านี้มีในสต็อกเพียง ${maxStock} ชิ้นครับ`, 'info');
+        val = maxStock;
+    }
     el.textContent = val;
   }
 
-  /* ── 6. ระบบส่งข้อมูลไปหน้า Checkout (พร้อมเช็ค Login แบบหยุดรอ) ── */
   document.addEventListener("DOMContentLoaded", function() {
     loadProductDetail();
 
-    const rentBtn = document.querySelector('.PD-btn-rent');
-    if (rentBtn) {
-      // ⚡ แก้เป็น async function เพื่อใช้ await หยุดรอ Pop-up
-      rentBtn.addEventListener('click', async function(e) {
-        e.preventDefault(); // 🛑 หยุดการเปลี่ยนหน้าทันที
-        
-        // 🛡️ เช็คสถานะ Login
+    const rentBtn = document.getElementById('btnRentAction');
+    rentBtn.addEventListener('click', async function() {
         const token = localStorage.getItem('token');
-        const isLoggedIn = localStorage.getItem('isLoggedIn');
-
-        if (!token || isLoggedIn !== 'true') {
-          // ⚠️ รอ User กดตัดสินใจใน Pop-up ก่อน
-          const result = await Swal.fire({
-            icon: 'warning',
-            title: 'คุณยังไม่ได้เข้าสู่ระบบ',
-            text: 'กรุณาเข้าสู่ระบบก่อนทำการเช่าชุดครับ',
-            confirmButtonText: 'ไปหน้า Login',
-            confirmButtonColor: '#114E72',
-            showCancelButton: true,
-            cancelButtonText: 'ยกเลิก',
-            reverseButtons: true
-          });
-
-          if (result.isConfirmed) {
-            window.location.href = 'login.html';
-          }
-          return; // ✋ ตัดจบฟังก์ชันตรงนี้ ไม่ให้รันโค้ดเปลี่ยนหน้าด้านล่าง
+        if (!token) {
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: 'กรุณาเข้าสู่ระบบ',
+                text: 'คุณต้องเข้าสู่ระบบก่อนทำการจองชุดครับ',
+                confirmButtonText: 'ไปหน้า Login',
+                showCancelButton: true,
+                confirmButtonColor: '#114E72'
+            });
+            if (result.isConfirmed) window.location.href = 'login.html';
+            return;
         }
 
-        if (!currentProduct) return;
-
-        // ✅ ถ้า Login แล้วค่อยทำงานส่วนนี้
-        const selectedSize = document.querySelector('#sizeGroup .active')?.textContent || 'F';
-        const selectedDuration = document.querySelector('#durationGroup .active')?.textContent || '1 วัน';
-        const selectedQty = document.getElementById('qtyVal').textContent;
-
-        const checkoutUrl = `checkout.html?id=${currentProduct.id}&size=${encodeURIComponent(selectedSize)}&duration=${encodeURIComponent(selectedDuration)}&qty=${selectedQty}`;
-        window.location.href = checkoutUrl;
-      });
-    }
+        const qty = document.getElementById('qtyVal').textContent;
+        // ส่งไปหน้า Checkout โดยตัด Duration ออก เพราะจะไปเลือกวันที่ในหน้าถัดไปเอง
+        window.location.href = `checkout.html?id=${currentProduct.id}&qty=${qty}`;
+    });
   });
 </script>
 <script src="user.js"></script>

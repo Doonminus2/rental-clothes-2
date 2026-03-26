@@ -9,7 +9,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/booking.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+  <style>
+    /* ✨ เพิ่ม CSS สำหรับตรวจสอบสลิปใน Modal */
+    .Slip-viewer {
+      text-align: center;
+      background: #f0f4f8;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e0;
+      margin-bottom: 20px;
+    }
+    .Slip-viewer img {
+      max-width: 100%;
+      max-height: 350px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      cursor: zoom-in;
+    }
+    .Status-label {
+      font-weight: 700;
+      color: #114E72;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .Modal-body select, .Modal-body input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 15px;
+      font-family: 'Hanuman', serif;
+    }
+  </style>
 </head>
 <body>
 
@@ -30,9 +62,9 @@
       </div>
     </div>
     <nav class="Sidebar-nav">
-      <a href="dashboard.html" class="NavItem ">DASHBOARD</a>
+      <a href="dashboard.html" class="NavItem">DASHBOARD</a>
       <a href="productmanagement.html" class="NavItem">PRODUCTS</a>
-      <a href="booking.html" class="NavItem NavItem--active" >BOOKING</a>
+      <a href="booking.html" class="NavItem NavItem--active">BOOKING</a>
       <a href="return.html" class="NavItem">RETURN</a>
       <a href="cus.html" class="NavItem">CUSTOMERS</a>
       <a href="report.html" class="NavItem">REPORTS</a>
@@ -49,31 +81,10 @@
     </div>
 
     <div class="StatRow">
-      <div class="StatCard">
-        <div class="StatCard-label">ออเดอร์ทั้งหมด</div>
-        <div class="StatCard-value" id="statTotal">0</div>
-        <div class="StatCard-sub">เดือนนี้</div>
-      </div>
-      <div class="StatCard StatCard--pending" style="border-top: 5px solid #e74c3c;">
-        <div class="StatCard-label">รอตรวจสอบ</div>
-        <div class="StatCard-value" id="statPending">0</div>
-        <div class="StatCard-sub">เช็กสลิปโอน</div>
-      </div>
-      <div class="StatCard StatCard--packing" style="border-top: 5px solid #f39c12;">
-        <div class="StatCard-label">กำลังแพ็ก</div>
-        <div class="StatCard-value" id="statPacking">0</div>
-        <div class="StatCard-sub">เตรียมจัดส่ง</div>
-      </div>
-      <div class="StatCard StatCard--shipped" style="border-top: 5px solid #3498db;">
-        <div class="StatCard-label">จัดส่งแล้ว</div>
-        <div class="StatCard-value" id="statShipped">0</div>
-        <div class="StatCard-sub">กำลังส่ง</div>
-      </div>
-      <div class="StatCard StatCard--received" style="border-top: 5px solid #2ecc71;">
-        <div class="StatCard-label">รับสินค้าแล้ว</div>
-        <div class="StatCard-value" id="statReceived">0</div>
-        <div class="StatCard-sub">สำเร็จ</div>
-      </div>
+      <div class="StatCard"><div class="StatCard-label">ออเดอร์ทั้งหมด</div><div class="StatCard-value" id="statTotal">0</div><div class="StatCard-sub">เดือนนี้</div></div>
+      <div class="StatCard" style="border-top: 5px solid #e74c3c;"><div class="StatCard-label">รอตรวจสอบ</div><div class="StatCard-value" id="statPending">0</div><div class="StatCard-sub">เช็กสลิปโอน</div></div>
+      <div class="StatCard" style="border-top: 5px solid #f39c12;"><div class="StatCard-label">กำลังแพ็ก</div><div class="StatCard-value" id="statPacking">0</div><div class="StatCard-sub">เตรียมจัดส่ง</div></div>
+      <div class="StatCard" style="border-top: 5px solid #3498db;"><div class="StatCard-label">จัดส่งแล้ว</div><div class="StatCard-value" id="statShipped">0</div><div class="StatCard-sub">กำลังส่ง</div></div>
     </div>
 
     <div class="TabRow">
@@ -96,7 +107,6 @@
           <div class="CalDayHeader">พ</div><div class="CalDayHeader">พฤ</div><div class="CalDayHeader">ศ</div><div class="CalDayHeader">ส</div>
         </div>
         <div class="CalGrid" id="calBody"></div>
-        <div class="CalLegend" id="calLegend"></div>
       </div>
     </div>
 
@@ -112,7 +122,6 @@
           <option value="packing">กำลังแพ็ก</option>
           <option value="shipped">จัดส่งแล้ว</option>
           <option value="received">รับแล้ว</option>
-          <option value="rejected">ยกเลิก</option>
         </select>
       </div>
 
@@ -130,8 +139,7 @@
               <th style="width:90px">จัดการ</th>
             </tr>
           </thead>
-          <tbody id="orderTableBody">
-            </tbody>
+          <tbody id="orderTableBody"></tbody>
         </table>
       </div>
     </div>
@@ -145,10 +153,10 @@
       <button class="Modal-close" onclick="closeOrderModal()">✕</button>
     </div>
     <div class="Modal-body" id="modalBodyContent">
-      </div>
+        </div>
     <div class="Modal-footer">
       <button class="BtnSecondary" onclick="closeOrderModal()">ปิด</button>
-      <button class="BtnPrimary" onclick="window.print()">🖨 พิมพ์ใบสั่ง</button>
+      <button class="BtnPrimary" style="background: #34495e;" onclick="window.print()">🖨 พิมพ์ใบสั่ง</button>
     </div>
   </div>
 </div>
@@ -156,7 +164,6 @@
 <script src="template/api.js"></script>
 <script src="template/booking.js"></script>
 <script>
-  // ฟังก์ชันสลับหน้า Tab (Calendar / List)
   function switchTab(tab) {
     document.getElementById('panelCalendar').classList.toggle('active', tab === 'calendar');
     document.getElementById('panelList').classList.toggle('active', tab === 'list');
@@ -167,41 +174,31 @@
   function closeOrderModal() {
     document.getElementById('orderModal').classList.remove('open');
   }
-</script>
-<script>
-    // 🛡️ 1. ระบบป้องกันการกดย้อนกลับ (คงเดิมไว้ เพราะมันได้ผล)
-    window.addEventListener('pageshow', function (event) {
-        const role = localStorage.getItem('userRole');
-        const token = localStorage.getItem('token');
-        if (!token || role !== 'admin') {
-            window.location.replace('login.html');
-        }
-    });
 
-    // 🔔 2. ระบบ Logout แบบมี Notification (แก้ไขใหม่)
-    if (document.getElementById('btnLogout')) {
-        document.getElementById('btnLogout').addEventListener('click', function(e) {
-            e.preventDefault(); // หยุดการวาร์ปทันทีไว้ก่อน
-            
-            // เรียกใช้ Swal สวยๆ ของโฟล์ค
-            Swal.fire({
-                title: 'ยืนยันการออกจากระบบ?',
-                text: "คุณต้องการออกจากหน้าจัดการแอดมินใช่หรือไม่",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#114e72',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ยืนยัน',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // ✅ ถ้ากดยืนยันค่อยสั่งล้างค่าและวาร์ปแบบ replace
-                    localStorage.clear();
-                    window.location.replace('login.html');
-                }
-            });
-        });
-    }
+  // 🛡️ ระบบ Guard & Logout
+  window.addEventListener('pageshow', function (event) {
+      if (localStorage.getItem('userRole') !== 'admin') window.location.replace('login.html');
+      const adminName = localStorage.getItem('userName') || 'ADMIN';
+      document.getElementById('adminNameDisplay').textContent = adminName;
+  });
+
+  if (document.getElementById('btnLogout')) {
+      document.getElementById('btnLogout').addEventListener('click', function(e) {
+          e.preventDefault();
+          Swal.fire({
+              title: 'ยืนยันการออกจากระบบ?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#114E72',
+              confirmButtonText: 'ตกลง'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  localStorage.clear();
+                  window.location.replace('login.html');
+              }
+          });
+      });
+  }
 </script>
 <script src="user.js"></script>
 </body>

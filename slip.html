@@ -27,13 +27,13 @@
       </div>
     </div>
     <nav class="Navbar">
-      <a href="main.html"      class="NavBtn">HOME</a>
-      <a href="rental.html"    class="NavBtn">RENTAL PRODUCTS</a>
+      <a href="main.html" class="NavBtn">HOME</a>
+      <a href="rental.html" class="NavBtn">RENTAL PRODUCTS</a>
       <a href="howtorent.html" class="NavBtn">HOW TO RENT</a>
-      <a href="review.html"    class="NavBtn">REVIEW</a>
-      <a href="article.html"   class="NavBtn">ARTICLE</a>
-      <a href="contact.html"   class="NavBtn">CONTACT</a>
-      <a href="gallery.html"   class="NavBtn">GALLERY</a>
+      <a href="review.html" class="NavBtn">REVIEW</a>
+      <a href="article.html" class="NavBtn">ARTICLE</a>
+      <a href="contact.html" class="NavBtn">CONTACT</a>
+      <a href="gallery.html" class="NavBtn">GALLERY</a>
     </nav>
   </header>
 
@@ -66,7 +66,7 @@
         <div class="Item-row">
           <div class="Item-details">
             <div class="Item-name" id="receiptProductName">กำลังโหลด...</div>
-            <div class="Item-meta" id="receiptProductMeta">ขนาด: - | ระยะเวลา: - | จำนวน: -</div>
+            <div class="Item-meta" id="receiptProductMeta">จำนวน: - | ช่วงเวลา: -</div>
           </div>
           <div class="Item-price" id="receiptProductPrice">0 ฿</div>
         </div>
@@ -76,12 +76,16 @@
             <span>ค่าเช่าสุทธิ</span>
             <span id="receiptSubtotal">0 ฿</span>
           </div>
+          <div class="Total-row" style="color: #e67e22;">
+            <span>ค่ามัดจำชุด (ได้รับคืน)</span>
+            <span id="receiptDeposit">0 ฿</span>
+          </div>
           <div class="Total-row">
             <span>ค่าจัดส่ง (Kerry Express)</span>
             <span>100 ฿</span>
           </div>
           <div class="Total-row grand-total">
-            <span>ยอดชำระสุทธิ</span>
+            <span>ยอดโอนรวมทั้งสิ้น</span>
             <span id="receiptTotal">0 ฿</span>
           </div>
         </div>
@@ -117,39 +121,40 @@
 </div>
 
 <script>
-// ตัวแปรเก็บข้อมูล User ชั่วคราว
 let currentUserId = null;
 
 document.addEventListener("DOMContentLoaded", async function() {
-    // 1. สุ่มเลข Order ID
     const randomOrder = Math.floor(10000 + Math.random() * 90000);
     document.getElementById('orderIdText').textContent = `Order ID: #ORD-${randomOrder}`;
 
-    // 2. ดึงข้อมูล User
     await loadUserProfile();
 
-    // 3. ดึงพารามิเตอร์จาก URL
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
-    const selectedSize = params.get('size') || '-';
-    const selectedDuration = params.get('duration') || '-';
+    const startDate = params.get('start');
+    const endDate = params.get('end');
     const selectedQty = parseInt(params.get('qty') || '1', 10);
 
-    if (productId) {
-        await loadProductInfo(productId, selectedSize, selectedDuration, selectedQty);
+    if (productId && startDate && endDate) {
+        await loadProductAndCalculate(productId, startDate, endDate, selectedQty);
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'ข้อมูลไม่ครบถ้วน',
+            text: 'กรุณากลับไปทำรายการใหม่จากหน้า Checkout ครับ',
+            confirmButtonColor: '#114E72'
+        }).then(() => { window.location.href = 'rental.html'; });
     }
 });
 
 async function loadUserProfile() {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('/api/me', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const response = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
         const result = await response.json();
         if (result.success) {
             const user = result.data;
-            currentUserId = user.id; // เก็บ ID ไว้ส่งตอน Submit
+            currentUserId = user.id;
             document.getElementById('receiptName').textContent = user.full_name || user.username;
             document.getElementById('receiptPhone').textContent = user.phone || '-';
             document.getElementById('receiptAddress').textContent = user.address || '-';
@@ -157,31 +162,38 @@ async function loadUserProfile() {
     } catch (err) { console.error("User Load Error:", err); }
 }
 
-async function loadProductInfo(id, size, duration, qty) {
+async function loadProductAndCalculate(id, start, end, qty) {
     try {
         const response = await fetch(`/api/products/${id}`);
         const result = await response.json();
         if (result.success) {
             const p = result.data;
-            const price = Number(p.price_per_day || p.price);
+            const priceFirstDay = Number(p.price_per_day || 0) * qty;
+            const deposit = Number(p.deposit || 0) * qty; // ✨ ดึงค่ามัดจำ
+            
+            const d1 = new Date(start);
+            const d2 = new Date(end);
+            const diffDays = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+            const extraPrice = (diffDays - 1) * 100;
+            
             const shippingFee = 100;
-            const subTotal = price * qty;
-            const total = subTotal + shippingFee;
+            const subTotal = priceFirstDay + extraPrice;
+            const total = subTotal + deposit + shippingFee; // ✨ รวมมัดจำในยอดโอน
 
             document.getElementById('receiptProductName').textContent = p.name;
-            document.getElementById('receiptProductMeta').textContent = `ขนาด: ${size} | ระยะเวลา: ${duration} | จำนวน: ${qty} ชุด`;
-            document.getElementById('receiptProductPrice').textContent = price.toLocaleString() + ' ฿';
+            document.getElementById('receiptProductMeta').textContent = `จำนวน: ${qty} ชุด | ช่วงเวลา: ${start} ถึง ${end} (${diffDays} วัน)`;
+            document.getElementById('receiptProductPrice').textContent = priceFirstDay.toLocaleString() + ' ฿ (วันแรก)';
             document.getElementById('receiptSubtotal').textContent = subTotal.toLocaleString() + ' ฿';
+            document.getElementById('receiptDeposit').textContent = deposit.toLocaleString() + ' ฿';
             document.getElementById('receiptTotal').textContent = total.toLocaleString() + ' ฿';
         }
-    } catch (err) { console.error("Product Load Error:", err); }
+    } catch (err) { console.error("Calculation Error:", err); }
 }
 
 function previewSlip(event) {
     const input = event.target;
     const preview = document.getElementById('slipPreview');
     const uploadBox = document.getElementById('uploadBox');
-
     if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -196,74 +208,40 @@ function previewSlip(event) {
 async function submitSlip() {
     const fileInput = document.getElementById('fileInput');
     if (fileInput.files.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'กรุณาแนบสลิป',
-            text: 'โปรดเลือกรูปภาพสลิปโอนเงินก่อนกดยืนยันครับ',
-            confirmButtonColor: '#114E72'
-        });
+        Swal.fire({ icon: 'warning', title: 'กรุณาแนบสลิป', text: 'โปรดเลือกรูปภาพสลิปโอนเงินก่อนกดยืนยันครับ', confirmButtonColor: '#114E72' });
         return;
     }
 
-    // ─── เตรียมข้อมูลส่งไป Backend ───
     const params = new URLSearchParams(window.location.search);
     const formData = new FormData();
-    
-    // ดึงค่าจาก URL
-    const pickupDate = params.get('pickup');
-    const returnDate = params.get('return');
-
-    // ตรวจสอบวันที่เผื่อหลุด
-    if (!pickupDate || !returnDate) {
-        Swal.fire('ผิดพลาด', 'ไม่พบข้อมูลวันที่เช่าชุด กรุณากลับไปที่หน้า Checkout อีกครั้ง', 'error');
-        return;
-    }
-
-    // ดึงยอดรวม
+    const startDate = params.get('start');
+    const endDate = params.get('end');
     const totalPrice = document.getElementById('receiptTotal').textContent.replace(/[^0-9.]/g, '');
+    const depositAmount = document.getElementById('receiptDeposit').textContent.replace(/[^0-9.]/g, '');
 
     formData.append('user_id', currentUserId);
     formData.append('product_id', params.get('id'));
-    formData.append('size', params.get('size'));
-    formData.append('duration', params.get('duration'));
+    formData.append('quantity', params.get('qty') || '1');
     formData.append('total_price', totalPrice);
+    formData.append('deposit_amount', depositAmount); // ✨ ส่งค่ามัดจำไปให้แอดมินด้วย
     formData.append('slip', fileInput.files[0]);
+    formData.append('rental_start', startDate);
+    formData.append('rental_end', endDate);
+    formData.append('order_id', document.getElementById('orderIdText').textContent.split(': ')[1]);
 
-    // ✨ เพิ่มการส่งวันที่ไปให้ Backend
-    formData.append('rental_start', pickupDate);
-    formData.append('rental_end', returnDate);
-
-    // แสดงสถานะกำลังบันทึก
-    Swal.fire({
-        title: 'กำลังบันทึกข้อมูลการจอง...',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-    });
+    Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
     try {
-        const response = await fetch('/api/bookings/create', {
-            method: 'POST',
-            body: formData
-        });
+        const response = await fetch('/api/bookings/create', { method: 'POST', body: formData });
         const result = await response.json();
 
         if (result.success) {
-            await Swal.fire({
-                icon: 'success',
-                title: 'ชำระเงินและจองสำเร็จ!',
-                text: 'เราได้รับข้อมูลแล้ว แอดมินจะตรวจสอบและแจ้งผลผ่านระบบโดยเร็วที่สุด',
-                confirmButtonColor: '#114E72',
-                timer: 2000,
-                showConfirmButton: false
-            });
+            await Swal.fire({ icon: 'success', title: 'จองสำเร็จ!', text: 'แอดมินจะตรวจสอบสลิปให้เร็วที่สุดครับ', confirmButtonColor: '#114E72', timer: 2500 });
             window.location.href = "main.html";
         } else {
-            Swal.fire('ผิดพลาด', result.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+            Swal.fire('ผิดพลาด', result.message || 'บันทึกไม่สำเร็จ', 'error');
         }
-    } catch (err) {
-        console.error("Submit Error:", err);
-        Swal.fire('Error', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
-    }
+    } catch (err) { Swal.fire('Error', 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้', 'error'); }
 }
 </script>
 <script src="user.js"></script>

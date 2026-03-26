@@ -6,8 +6,16 @@
   <title>Rental Clothes – Checkout</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&family=Headland+One&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/rental.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    /* บังคับฟอนต์ Hanuman */
+    body, button, input, select, textarea, span, div {
+      font-family: 'Hanuman', serif !important;
+    }
+  </style>
 </head>
 <body>
 <div class="Page">
@@ -15,64 +23,53 @@
   <header class="SiteHeader">
     <div class="SiteHeader-top">
       <a href="main.html" class="SiteHeader-logo">
-        <img class="Logo-img" src="images/logo.png" alt="Rental Clothes logo" onerror="this.src='https://via.placeholder.com/82x60?text=LOGO'" />
+        <img class="Logo-img" src="images/logo.png" alt="Logo" />
         <span class="Logo-text">RENTAL CLOTHES</span>
       </a>
       <div class="SiteHeader-actions">
-        <a href="faq.html" class="Icon-faq-link" title="FAQ">
-          <img class="Icon-faq" src="images/faq.png" alt="FAQ icon" onerror="this.src='https://via.placeholder.com/41x41?text=?'" />
-        </a>
-        <a href="login.html" class="BtnLogin">
-          <span class="BtnLogin-text">LOGIN</span>
-        </a>
+        <a href="faq.html" class="Icon-faq-link"><img class="Icon-faq" src="images/faq.png" alt="FAQ" /></a>
+        <a href="login.html" class="BtnLogin"><span class="BtnLogin-text">LOGIN</span></a>
       </div>
     </div>
     <nav class="Navbar">
-      <a href="main.html"      class="NavBtn">HOME</a>
-      <a href="rental.html"    class="NavBtn">RENTAL PRODUCTS</a>
+      <a href="main.html" class="NavBtn">HOME</a>
+      <a href="rental.html" class="NavBtn">RENTAL PRODUCTS</a>
       <a href="howtorent.html" class="NavBtn">HOW TO RENT</a>
-      <a href="review.html"    class="NavBtn">REVIEW</a>
-      <a href="article.html"   class="NavBtn">ARTICLE</a>
-      <a href="contact.html"   class="NavBtn">CONTACT</a>
-      <a href="gallery.html"   class="NavBtn">GALLERY</a>
+      <a href="review.html" class="NavBtn">REVIEW</a>
+      <a href="article.html" class="NavBtn">ARTICLE</a>
+      <a href="contact.html" class="NavBtn">CONTACT</a>
+      <a href="gallery.html" class="NavBtn">GALLERY</a>
     </nav>
   </header>
 
   <div class="Checkout-container">
     <div class="Checkout-header">
       <h1 class="Checkout-title">Checkout / ชำระเงิน</h1>
-      <p class="Checkout-subtitle">ตรวจสอบรายการสินค้าและเลือกวิธีการชำระเงิน</p>
+      <p class="Checkout-subtitle">เลือกช่วงเวลาเช่าเพื่อคำนวณราคา (วันแรกราคาเต็ม วันถัดไปวันละ 100.-)</p>
     </div>
 
     <div class="Checkout-grid">
-      
       <div class="Checkout-form-section">
         
         <div class="Form-group-box">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 class="Form-section-title" style="border: none; padding: 0; margin: 0;">1. ข้อมูลผู้เช่าและการจัดส่ง</h2>
-            <a href="data.html?from=checkout" style="font-size: 14px; color: var(--color-primary); font-weight: 700; text-decoration: none;">✏️ แก้ไขข้อมูล</a>
+            <a href="data.html" style="font-size: 14px; color: #114E72; font-weight: 700;">✏️ แก้ไขข้อมูล</a>
           </div>
-          
-          <div style="background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px solid var(--color-border);">
-            <div style="font-size: 16px; font-weight: 900; color: var(--color-primary); margin-bottom: 8px;" id="displayUserName">กำลังโหลดข้อมูล...</div>
-            <div style="font-size: 14px; color: var(--color-text-muted); margin-bottom: 8px;">📞 เบอร์โทรศัพท์: <span id="displayUserPhone">-</span></div>
-            <div style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6;">📍 ที่อยู่จัดส่ง: <span id="displayUserAddress">กำลังโหลดข้อมูลจากระบบ...</span></div>
+          <div style="background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+            <div style="font-size: 16px; font-weight: 900; color: #114E72;" id="displayUserName">กำลังโหลด...</div>
+            <div style="font-size: 14px; margin-top: 5px;">📞 เบอร์โทรศัพท์: <span id="displayUserPhone">-</span></div>
+            <div style="font-size: 14px; margin-top: 5px;">📍 ที่อยู่จัดส่ง: <span id="displayUserAddress">-</span></div>
           </div>
         </div>
 
         <div class="Form-group-box">
-          <h2 class="Form-section-title">2. กำหนดวันรับ-คืนชุด</h2>
-          <div class="Input-row">
-            <div class="Input-group">
-              <label>วันที่ต้องการรับชุด</label>
-              <input type="date" class="Checkout-input" id="pickupDate" required />
-            </div>
-            <div class="Input-group">
-              <label>วันที่คืนชุด</label>
-              <input type="date" class="Checkout-input" id="returnDate" required />
-            </div>
+          <h2 class="Form-section-title">2. กำหนดช่วงเวลาเช่าชุด</h2>
+          <div class="Input-group">
+            <label>เลือกวันที่เริ่มเช่า - วันที่คืนชุด (Range)</label>
+            <input type="text" class="Checkout-input" id="dateRangePicker" placeholder="คลิกเพื่อเลือกช่วงเวลา..." readonly />
           </div>
+          <p style="font-size: 12px; color: #666; margin-top: 10px;">* ระบบคิดราคาเต็มในวันแรก และเพิ่มวันละ 100 ฿ ในวันถัดไป</p>
         </div>
 
         <div class="Form-group-box">
@@ -82,41 +79,39 @@
               <input type="radio" name="payment" value="promptpay" checked />
               <span class="Payment-label">PromptPay / QR Code</span>
             </label>
-            <label class="Payment-option">
-              <input type="radio" name="payment" value="creditcard" />
-              <span class="Payment-label">Credit / Debit Card</span>
-            </label>
-            <label class="Payment-option">
-              <input type="radio" name="payment" value="banktransfer" />
-              <span class="Payment-label">Bank Transfer</span>
-            </label>
           </div>
         </div>
-
       </div>
 
       <div class="Checkout-summary-section">
         <div class="Summary-box">
           <h2 class="Summary-title">สรุปคำสั่งซื้อ</h2>
-          
           <div class="Summary-product">
-            <img id="summaryImg" src="images/placeholder.jpg" alt="Product Image" class="Summary-product-img" onerror="this.src='https://via.placeholder.com/80x100?text=IMG'" />
+            <img id="summaryImg" src="" alt="Product" class="Summary-product-img" />
             <div class="Summary-product-info">
-              <div class="Summary-product-name" id="summaryName">กำลังโหลดข้อมูล...</div>
-              <div class="Summary-product-meta" id="summaryMeta" style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 6px;">
-                </div>
-              <div class="Summary-product-price" id="summaryPrice">0 ฿</div>
+              <div class="Summary-product-name" id="summaryName">โหลดชื่อชุด...</div>
+              <div class="Summary-product-meta" id="summaryMeta"></div>
             </div>
           </div>
 
           <hr class="Summary-divider" />
 
           <div class="Summary-row">
-            <span>ค่าเช่าชุด (รวมจำนวน)</span>
-            <span id="summarySubtotal">0 ฿</span>
+            <span>ค่าเช่าวันแรก (Base Price)</span>
+            <span id="txtBasePrice">0 ฿</span>
           </div>
+          <div class="Summary-row" style="color: #2c3e50;">
+            <span>ค่าเช่าวันเพิ่มเติม (<span id="txtExtraDays">0</span> วัน)</span>
+            <span id="txtExtraPrice">0 ฿</span>
+          </div>
+          
+          <div class="Summary-row" style="color: #e67e22; font-weight: 700;">
+            <span>ค่ามัดจำชุด (ได้รับคืนเมื่อคืนชุด)</span>
+            <span id="txtDeposit">0 ฿</span>
+          </div>
+
           <div class="Summary-row">
-            <span>ค่าจัดส่ง (Kerry Express)</span>
+            <span>ค่าจัดส่ง</span>
             <span>100 ฿</span>
           </div>
           
@@ -124,10 +119,10 @@
 
           <div class="Summary-row total">
             <span>ยอดชำระสุทธิ</span>
-            <span id="summaryTotal">0 ฿</span>
+            <span id="summaryTotal" style="color: #114E72;">0 ฿</span>
           </div>
 
-          <button class="Btn-confirm" onclick="confirmOrder()">ยืนยันและชำระเงิน</button>
+          <button class="Btn-confirm" onclick="confirmOrder()" id="btnSubmit">ยืนยันการจอง</button>
         </div>
       </div>
 
@@ -137,122 +132,118 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+let productPrice = 0;
+let productDeposit = 0; // ✨ ตัวแปรเก็บค่ามัดจำ
+let finalTotal = 0;
+let startDate = "";
+let endDate = "";
+
 document.addEventListener("DOMContentLoaded", async function() {
     await loadUserProfile();
-
+    
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
-    const selectedSize = params.get('size') || 'F';
-    const selectedDuration = params.get('duration') || '1 วัน';
-    const selectedQty = parseInt(params.get('qty') || '1', 10);
+    const qty = parseInt(params.get('qty') || '1');
 
-    if (!productId) {
-        window.location.href = 'rental.html';
-        return;
-    }
+    if (!productId) { window.location.href = 'rental.html'; return; }
 
-    await loadProductSummary(productId, selectedSize, selectedDuration, selectedQty);
+    await fetchProduct(productId, qty);
+    initDatePicker();
 });
 
 async function loadUserProfile() {
     const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = 'login.html';
-        return;
-    }
-
     try {
-        const response = await fetch('/api/me', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const response = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
         const result = await response.json();
-
         if (result.success) {
             const user = result.data;
             document.getElementById('displayUserName').textContent = user.full_name || user.username;
-            document.getElementById('displayUserPhone').textContent = user.phone || 'ยังไม่ได้ระบุเบอร์โทรศัพท์';
-            document.getElementById('displayUserAddress').textContent = user.address || 'ยังไม่ได้ระบุที่อยู่จัดส่ง';
+            document.getElementById('displayUserPhone').textContent = user.phone || '-';
+            document.getElementById('displayUserAddress').textContent = user.address || '-';
         }
-    } catch (err) {
-        console.error("User Load Error:", err);
-    }
+    } catch (err) { console.error(err); }
 }
 
-async function loadProductSummary(id, size, duration, qty) {
+async function fetchProduct(id, qty) {
     try {
         const response = await fetch(`/api/products/${id}`);
         const result = await response.json();
-
         if (result.success) {
             const p = result.data;
-            const price = Number(p.price_per_day || p.price);
-            const shippingFee = 100;
-            const subTotal = price * qty;
-            const total = subTotal + shippingFee;
-
+            productPrice = Number(p.price_per_day || 0) * qty;
+            
+            // ✨ ดึงค่ามัดจำจาก DB มาคูณกับจำนวนชุด
+            productDeposit = Number(p.deposit || 0) * qty;
+            
             document.getElementById('summaryName').textContent = p.name;
             document.getElementById('summaryImg').src = p.image_url;
-            document.getElementById('summaryMeta').innerHTML = `
-                <div>ขนาด: ${size}</div>
-                <div>ระยะเวลา: ${duration}</div>
-                <div>จำนวน: ${qty} ชุด</div>
-            `;
-            document.getElementById('summaryPrice').textContent = price.toLocaleString() + ' ฿ / วัน';
-            document.getElementById('summarySubtotal').textContent = subTotal.toLocaleString() + ' ฿';
-            document.getElementById('summaryTotal').textContent = total.toLocaleString() + ' ฿';
+            document.getElementById('txtBasePrice').textContent = productPrice.toLocaleString() + ' ฿';
+            document.getElementById('txtDeposit').textContent = productDeposit.toLocaleString() + ' ฿';
+            document.getElementById('summaryMeta').innerHTML = `จำนวน: ${qty} ชุด`;
             
-            window.orderData = {
-                product_id: id,
-                size: size,
-                duration: duration,
-                quantity: qty,
-                total_price: total
-            };
+            calculateTotal(1); // เริ่มต้นคำนวณที่ 1 วัน
         }
-    } catch (err) {
-        console.error("Product Load Error:", err);
-    }
+    } catch (err) { console.error(err); }
+}
+
+function initDatePicker() {
+    flatpickr("#dateRangePicker", {
+        mode: "range",
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates) {
+            if (selectedDates.length === 2) {
+                const start = selectedDates[0];
+                const end = selectedDates[1];
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                
+                startDate = start.toISOString().split('T')[0];
+                endDate = end.toISOString().split('T')[0];
+                
+                calculateTotal(diffDays);
+            }
+        }
+    });
+}
+
+function calculateTotal(days) {
+    const extraDays = days - 1;
+    const extraPrice = extraDays * 100;
+    const shipping = 100;
+    
+    // 💰 ยอดรวมสุทธิ = ค่าเช่าวันแรก + ค่าเช่าวันเพิ่ม + ค่ามัดจำ + ค่าส่ง
+    finalTotal = productPrice + extraPrice + productDeposit + shipping;
+
+    document.getElementById('txtExtraDays').textContent = extraDays;
+    document.getElementById('txtExtraPrice').textContent = extraPrice.toLocaleString() + ' ฿';
+    document.getElementById('summaryTotal').textContent = finalTotal.toLocaleString() + ' ฿';
 }
 
 async function confirmOrder() {
-    if (!window.orderData) return;
-
-    // ✨ ตรวจสอบว่าเลือกวันที่หรือยัง
-    const pickupDate = document.getElementById('pickupDate').value;
-    const returnDate = document.getElementById('returnDate').value;
-
-    if (!pickupDate || !returnDate) {
-        Swal.fire('แจ้งเตือน', 'กรุณาเลือกวันที่ต้องการรับและคืนชุดให้ครบถ้วน', 'warning');
-        return;
+    if (!startDate || !endDate) {
+        return Swal.fire('แจ้งเตือน', 'กรุณาเลือกช่วงเวลาเช่าในปฏิทินก่อนครับ', 'warning');
     }
 
-    const { isConfirmed } = await Swal.fire({
-        title: 'ยืนยันการเช่าชุด?',
-        text: "เมื่อยืนยันแล้วระบบจะพาไปหน้าชำระเงิน",
+    const result = await Swal.fire({
+        title: 'ยืนยันคำสั่งซื้อ?',
+        text: `รวมยอดชำระทั้งสิ้น ${finalTotal.toLocaleString()} ฿ (รวมมัดจำแล้ว)`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#114E72',
         confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ตรวจสอบอีกครั้ง',
-        reverseButtons: true
+        cancelButtonText: 'ยกเลิก'
     });
 
-    if (isConfirmed) {
-        await Swal.fire({
-            icon: 'success',
-            title: 'สำเร็จ!',
-            text: 'กำลังพาท่านไปยังระบบชำระเงิน...',
-            timer: 1500,
-            showConfirmButton: false
-        });
-
-        const id = window.orderData.product_id;
-        const size = window.orderData.size;
-        const duration = window.orderData.duration;
-        const qty = window.orderData.quantity;
-
-        // ✨ ส่งวันที่ pickup และ return ไปด้วยใน URL
-        window.location.href = `slip.html?id=${id}&size=${encodeURIComponent(size)}&duration=${encodeURIComponent(duration)}&qty=${qty}&pickup=${pickupDate}&return=${returnDate}`; 
+    if (result.isConfirmed) {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+        const qty = params.get('qty');
+        
+        // ✨ ส่งข้อมูลไปยังหน้า Slip (รวมถึงวันที่และยอดมัดจำที่คำนวณแล้ว)
+        const url = `slip.html?id=${productId}&qty=${qty}&start=${startDate}&end=${endDate}&total=${finalTotal}&deposit=${productDeposit}`;
+        window.location.href = url;
     }
 }
 </script>
