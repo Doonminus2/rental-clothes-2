@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin – Product Management</title>
+  
   <script>
+    // 🛡️ ระบบ Guard: เช็คสิทธิ์ก่อนโหลดหน้าจอ
     if (localStorage.getItem('userRole') !== 'admin') window.location.replace('login.html');
   </script>
   
@@ -13,13 +15,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="template/productmanagement.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <style>
-    /* เพิ่ม CSS เล็กน้อยเพื่อให้ Dropdown ในตารางดูสวยขึ้น */
+    /* บังคับฟอนต์ Hanuman ทุกจุด */
+    body, button, input, select, textarea, .NavItem, .Logo-text, .PageTitle {
+      font-family: 'Hanuman', serif !important;
+    }
+
     .StatusSelect {
       padding: 5px 10px;
       border-radius: 20px;
       border: 1px solid #ddd;
-      font-family: 'Hanuman', serif;
       font-size: 14px;
       cursor: pointer;
       outline: none;
@@ -56,7 +62,7 @@
       <a href="cus.html" class="NavItem">CUSTOMERS</a>
       <a href="report.html" class="NavItem">REPORTS</a>
       
-      <a href="#" class="NavItem" id="btnLogout" style="color: #ff4d4d; margin-top: 20px; border-top: 1px solid #444; padding-top: 15px;">
+      <a href="javascript:void(0)" class="NavItem" id="btnLogout" style="color: #ff4d4d; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
         LOGOUT
       </a>
     </nav>
@@ -88,8 +94,7 @@
             <th>จัดการ</th>
           </tr>
         </thead>
-        <tbody id="productTableBody">
-            </tbody>
+        <tbody id="productTableBody"></tbody>
       </table>
     </div>
   </main>
@@ -123,12 +128,14 @@
 
         <div class="FormGrid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
           <div class="FormGroup">
-            <label class="FormLabel">หมวดหมู่</label>
+            <label class="FormLabel">หมวดหมู่ (Category)</label>
             <select id="inputCategory" name="category" class="FormControl">
-              <option value="thai">ชุดไทย</option>
-              <option value="evening">ราตรี</option>
-              <option value="suit">สูท</option>
-              <option value="cosplay">คอสเพลย์</option>
+              <option value="Shirt">Shirt</option>
+              <option value="Weddingdress">Wedding dress</option>
+              <option value="Cosplay">Cosplay Costume</option>
+              <option value="Sweater">Sweater</option>
+              <option value="Academic gown">Academic gown</option>
+              <option value="Thai costume">Thai costume</option>
             </select>
           </div>
           <div class="FormGroup">
@@ -185,9 +192,42 @@
 
 <script src="template/product-management.js"></script>
 <script>
-    // ส่วนควบคุม Modal และ Preview รูปภาพ
+    // 🛡️ ระบบป้องกันการกดย้อนกลับ
+    window.addEventListener('pageshow', function (event) {
+        const role = localStorage.getItem('userRole');
+        const token = localStorage.getItem('token');
+        if (!token || role !== 'admin') window.location.replace('login.html');
+        
+        // แสดงชื่อ Admin
+        const adminName = localStorage.getItem('userName') || 'ADMIN';
+        if(document.getElementById('adminNameDisplay')) 
+           document.getElementById('adminNameDisplay').textContent = adminName;
+    });
+
+    // 🔔 ระบบ Logout แบบมี Notification
+    if (document.getElementById('btnLogout')) {
+        document.getElementById('btnLogout').addEventListener('click', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'ยืนยันการออกจากระบบ?',
+                text: "คุณต้องการออกจากหน้าจัดการแอดมินใช่หรือไม่",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#114e72',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.clear();
+                    window.location.replace('login.html');
+                }
+            });
+        });
+    }
+
+    // Modal Control
     function openProductModal() {
-        editingId = null;
         document.getElementById('productForm').reset();
         document.getElementById('imagePreview').innerHTML = '';
         document.getElementById('modalTitle').textContent = 'เพิ่มสินค้าใหม่';
@@ -206,41 +246,6 @@
             }
             reader.readAsDataURL(input.files[0]);
         }
-    }
-</script>
-<script>
-    // 🛡️ 1. ระบบป้องกันการกดย้อนกลับ (คงเดิมไว้ เพราะมันได้ผล)
-    window.addEventListener('pageshow', function (event) {
-        const role = localStorage.getItem('userRole');
-        const token = localStorage.getItem('token');
-        if (!token || role !== 'admin') {
-            window.location.replace('login.html');
-        }
-    });
-
-    // 🔔 2. ระบบ Logout แบบมี Notification (แก้ไขใหม่)
-    if (document.getElementById('btnLogout')) {
-        document.getElementById('btnLogout').addEventListener('click', function(e) {
-            e.preventDefault(); // หยุดการวาร์ปทันทีไว้ก่อน
-            
-            // เรียกใช้ Swal สวยๆ ของโฟล์ค
-            Swal.fire({
-                title: 'ยืนยันการออกจากระบบ?',
-                text: "คุณต้องการออกจากหน้าจัดการแอดมินใช่หรือไม่",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#114e72',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ยืนยัน',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // ✅ ถ้ากดยืนยันค่อยสั่งล้างค่าและวาร์ปแบบ replace
-                    localStorage.clear();
-                    window.location.replace('login.html');
-                }
-            });
-        });
     }
 </script>
 <script src="user.js"></script>
