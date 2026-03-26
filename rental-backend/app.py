@@ -9,10 +9,15 @@ from routes.auth import auth_bp
 from controllers.dashboardController import get_stats
 from middleware.auth import admin_only
 from controllers.authController import get_me, update_me, login, register
-# ✨ เพิ่มฟังก์ชัน update_product_status เข้าไปในการ import ด้วยครับ
 from controllers.productController import (
     get_products, add_product, get_product_by_id, 
     update_product, delete_product, update_product_status
+)
+
+# ✨ แก้ไขตรงนี้: เพิ่มการนำเข้า get_booking_stats และ get_calendar_bookings
+from controllers.bookingController import (
+    get_bookings, get_booking_by_id, update_booking_status,
+    get_booking_stats, get_calendar_bookings 
 )
 
 load_dotenv()
@@ -49,7 +54,7 @@ def handle_profile():
 def dashboard_api():
     return get_stats()
 
-# 👗 จัดการสินค้าทั้งหมด
+# 👗 [API] จัดการสินค้า (Products)
 @app.route('/api/products', methods=['GET', 'POST'])
 @admin_only
 def handle_products():
@@ -57,7 +62,6 @@ def handle_products():
         return get_products()
     return add_product()
 
-# 👗 จัดการสินค้ารายชิ้น (แก้ไข/ลบ)
 @app.route('/api/products/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 @admin_only
 def handle_single_product(id):
@@ -68,15 +72,42 @@ def handle_single_product(id):
     elif request.method == 'DELETE':
         return delete_product(id)
 
-# ✨ เพิ่ม Route ใหม่สำหรับ "เปลี่ยนสถานะด่วน"
 @app.route('/api/products/<int:id>/status', methods=['PATCH'])
 @admin_only
 def api_update_product_status(id):
     return update_product_status(id)
 
+# 📅 [API] จัดการการจอง (Bookings)
+@app.route('/api/bookings', methods=['GET'])
+@admin_only
+def api_get_bookings():
+    return get_bookings()
+
+# ✨ เพิ่ม: ดึงสถิติตัวเลขสำหรับหน้า Booking (ให้เลข 0 หายไป)
+@app.route('/api/bookings/stats', methods=['GET'])
+@admin_only
+def api_get_booking_stats():
+    return get_booking_stats()
+
+# ✨ เพิ่ม: ดึงข้อมูลรายการจองลงปฏิทิน
+@app.route('/api/bookings/calendar', methods=['GET'])
+@admin_only
+def api_get_calendar_bookings():
+    return get_calendar_bookings()
+
+@app.route('/api/bookings/<int:id>', methods=['GET'])
+@admin_only
+def api_get_booking_detail(id):
+    return get_booking_by_id(id)
+
+@app.route('/api/bookings/<int:id>/status', methods=['PATCH'])
+@admin_only
+def api_update_booking_status(id):
+    return update_booking_status(id)
+
 @app.route('/api/health')
 def health():
-    return jsonify({'success': True, 'message': 'API is running 🚀'})
+    return jsonify({'success': True, 'message': 'Rental Clothes API is running 🚀'})
 
 # ─── STATIC FILES & IMAGES ───
 
