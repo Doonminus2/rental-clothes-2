@@ -21,10 +21,13 @@ from controllers.bookingController import (
 )
 from controllers.returnController import get_pending_returns, process_return
 
-# ✨ นำเข้า Customer Controllers (เพิ่ม get_customer_by_id และ update_customer_role)
+# นำเข้า Customer Controllers
 from controllers.customerController import (
     get_customers, get_customer_by_id, update_customer_status, update_customer_role
 )
+
+# ✨ นำเข้า Report Controller (เพิ่มใหม่)
+from controllers.reportController import get_report_stats
 
 load_dotenv()
 
@@ -41,6 +44,7 @@ app.register_blueprint(auth_bp)
 
 # ─── API ROUTES ───
 
+# 🔐 Auth
 @app.route('/api/login', methods=['POST'])
 def api_login():
     return login()
@@ -55,12 +59,13 @@ def handle_profile():
         return get_me()
     return update_me()
 
+# 📊 Dashboard
 @app.route('/api/dashboard', methods=['GET'])
 @admin_only
 def dashboard_api():
     return get_stats()
 
-# 👗 [API] Products
+# 👗 Products
 @app.route('/api/products', methods=['GET', 'POST'])
 @admin_only
 def handle_products():
@@ -83,7 +88,7 @@ def handle_single_product(id):
 def api_update_product_status(id):
     return update_product_status(id)
 
-# 📅 [API] Bookings
+# 📅 Bookings
 @app.route('/api/bookings', methods=['GET'])
 @admin_only
 def api_get_bookings():
@@ -109,7 +114,7 @@ def api_get_booking_detail(id):
 def api_update_booking_status(id):
     return update_booking_status(id)
 
-# 🔄 [API] Returns
+# 🔄 Returns
 @app.route('/api/returns', methods=['GET'])
 @admin_only
 def api_get_returns():
@@ -120,7 +125,7 @@ def api_get_returns():
 def api_confirm_return(id):
     return process_return(id)
 
-# 👥 [API] จัดการลูกค้า (Customers)
+# 👥 Customers (จัดการลูกค้า)
 @app.route('/api/customers', methods=['GET'])
 @admin_only
 def api_get_customers():
@@ -136,11 +141,16 @@ def api_get_customer_detail(id):
 def api_toggle_blacklist(id):
     return update_customer_status(id)
 
-# ✨ เพิ่ม Route สำหรับเปลี่ยน Role (Member/VIP)
 @app.route('/api/customers/<int:id>/role', methods=['PATCH'])
 @admin_only
 def api_update_customer_role(id):
     return update_customer_role(id)
+
+# 📈 Reports & Analytics (✨ เพิ่มใหม่)
+@app.route('/api/reports/stats', methods=['GET'])
+@admin_only
+def api_get_report_stats():
+    return get_report_stats()
 
 @app.route('/api/health')
 def health():

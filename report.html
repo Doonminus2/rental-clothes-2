@@ -150,286 +150,140 @@
 
 <script>
 (function() {
-  // ==========================================
-  // 1. จำลองข้อมูล Database (Mock Data)
-  // ==========================================
-  
-  // ข้อมูลรายได้ (รายเดือน)
-  const revenueData = {
-    "2026": [
-      { month: 'ม.ค.', gross: 125000, laundry: 15000, shipping: 10000, rents: 150 },
-      { month: 'ก.พ.', gross: 140000, laundry: 18000, shipping: 12000, rents: 185 },
-      { month: 'มี.ค.', gross: 185000, laundry: 22000, shipping: 15000, rents: 240 }, // เดือนปัจจุบัน
-      { month: 'เม.ย.', gross: 0, laundry: 0, shipping: 0, rents: 0 },
-      { month: 'พ.ค.', gross: 0, laundry: 0, shipping: 0, rents: 0 },
-      { month: 'มิ.ย.', gross: 0, laundry: 0, shipping: 0, rents: 0 }
-    ],
-    "2025": [
-      { month: 'ม.ค.', gross: 90000, laundry: 10000, shipping: 8000, rents: 110 },
-      { month: 'ก.พ.', gross: 95000, laundry: 11000, shipping: 8500, rents: 120 },
-      { month: 'มี.ค.', gross: 110000, laundry: 13000, shipping: 9000, rents: 145 },
-      { month: 'เม.ย.', gross: 105000, laundry: 12000, shipping: 8500, rents: 130 },
-      { month: 'พ.ค.', gross: 130000, laundry: 15000, shipping: 11000, rents: 160 },
-      { month: 'มิ.ย.', gross: 120000, laundry: 14000, shipping: 10000, rents: 150 },
-      { month: 'ก.ค.', gross: 125000, laundry: 14500, shipping: 10500, rents: 155 },
-      { month: 'ส.ค.', gross: 115000, laundry: 13500, shipping: 9500, rents: 140 },
-      { month: 'ก.ย.', gross: 140000, laundry: 16000, shipping: 12000, rents: 175 },
-      { month: 'ต.ค.', gross: 160000, laundry: 18000, shipping: 13500, rents: 200 },
-      { month: 'พ.ย.', gross: 175000, laundry: 20000, shipping: 14000, rents: 220 },
-      { month: 'ธ.ค.', gross: 210000, laundry: 25000, shipping: 18000, rents: 280 }
-    ]
-  };
+    let revenueChartInstance = null;
 
-  // ข้อมูลสินค้าขายดี
-  const productsData = [
-    { id: 'P01', name: 'Wedding Dress – Dior Edition', cat: 'evening', catName: 'ชุดราตรี', rents: 45, revenue: 112500, status: 'ถูกยืมบ่อยมาก (คิวเต็ม)', img: '👗' },
-    { id: 'P02', name: 'Classic Black Tuxedo', cat: 'suit', catName: 'สูท / ทักซิโด้', rents: 38, revenue: 38000, status: 'มีของพร้อมส่ง', img: '🤵' },
-    { id: 'P03', name: 'Contemporary Thai Dress (Rose Gold)', cat: 'thai', catName: 'ชุดไทย', rents: 32, revenue: 48000, status: 'ชุดเริ่มชำรุด 1 ตัว', img: '👘' },
-    { id: 'P04', name: 'Cinderella Ball Gown (Blue)', cat: 'evening', catName: 'ชุดราตรี', rents: 28, revenue: 56000, status: 'มีของพร้อมส่ง', img: '👗' },
-    { id: 'P05', name: 'Vintage Thai Costume (Chut Thai)', cat: 'thai', catName: 'ชุดไทย', rents: 25, revenue: 37500, status: 'มีของพร้อมส่ง', img: '👘' },
-    { id: 'P06', name: 'Navy Blue Formal Suit', cat: 'suit', catName: 'สูท / ทักซิโด้', rents: 20, revenue: 18000, status: 'มีของพร้อมส่ง', img: '👔' }
-  ];
+    // ── 1. ฟังก์ชันดึงข้อมูลจริงจาก API ──
+    async function loadReportData() {
+        const year = document.getElementById('filterYearRev').value;
+        try {
+            const response = await fetch(`/api/reports/stats?year=${year}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            const result = await response.json();
 
-  // Helper Format Currency
-  const formatMoney = (num) => '฿' + num.toLocaleString('th-TH');
-
-  let revenueChartInstance = null;
-
-  // ==========================================
-  // 2. ฟังก์ชันอัปเดตตัวเลข (Stat Cards)
-  // ==========================================
-  function updateStats() {
-    const year = document.getElementById('filterYearRev').value;
-    const data = revenueData[year];
-    
-    // หาเดือนล่าสุดที่มีข้อมูล (ในที่นี้คือ index 2 = มี.ค.)
-    const currentMonthData = data[2];
-    const prevMonthData = data[1];
-
-    const netProfit = currentMonthData.gross - currentMonthData.laundry - currentMonthData.shipping;
-    const totalCost = currentMonthData.laundry + currentMonthData.shipping;
-    const costPercent = currentMonthData.gross > 0 ? Math.round((totalCost / currentMonthData.gross) * 100) : 0;
-
-    document.getElementById('statGross').textContent = formatMoney(currentMonthData.gross);
-    document.getElementById('statNet').textContent = formatMoney(netProfit);
-    document.getElementById('statCost').textContent = formatMoney(totalCost);
-    document.getElementById('statCostPercent').textContent = costPercent + '%';
-    document.getElementById('statRents').textContent = currentMonthData.rents.toLocaleString();
-
-    // คำนวณ % เทียบเดือนก่อน
-    if(prevMonthData.gross > 0) {
-      const grossGrowth = Math.round(((currentMonthData.gross - prevMonthData.gross) / prevMonthData.gross) * 100);
-      document.getElementById('statGrossSub').textContent = `${grossGrowth >= 0 ? '↑' : '↓'} ${Math.abs(grossGrowth)}% จากเดือนก่อน`;
-      document.getElementById('statGrossSub').className = `StatCard-sub ${grossGrowth >= 0 ? 'positive' : 'negative'}`;
-    }
-  }
-
-  // ==========================================
-  // 3. ฟังก์ชันวาดกราฟ (Chart.js)
-  // ==========================================
-  window.renderRevenueChart = function() {
-    updateStats();
-
-    const year = document.getElementById('filterYearRev').value;
-    const view = document.getElementById('filterViewRev').value;
-    const rawData = revenueData[year];
-
-    let labels = [];
-    let grossData = [];
-    let netData = [];
-    let costData = []; // ซักรีด + ขนส่ง
-
-    if (view === 'monthly') {
-      rawData.forEach(d => {
-        labels.push(d.month);
-        grossData.push(d.gross);
-        const cost = d.laundry + d.shipping;
-        costData.push(cost);
-        netData.push(d.gross - cost);
-      });
-    } else {
-      // ไตรมาส (Q1, Q2, Q3, Q4)
-      labels = ['Q1', 'Q2', 'Q3', 'Q4'];
-      for(let i=0; i<4; i++) {
-        let qGross = 0, qCost = 0, qNet = 0;
-        for(let j=0; j<3; j++) {
-          let idx = (i*3)+j;
-          if(rawData[idx]) {
-            qGross += rawData[idx].gross;
-            qCost += (rawData[idx].laundry + rawData[idx].shipping);
-          }
+            if (result.success) {
+                // อัปเดตตัวเลข Stats
+                updateStats(result.stats);
+                // วาดกราฟ
+                renderChart(result.monthly_revenue);
+                // วาดตารางสินค้าขายดี
+                renderTopProducts(result.top_products);
+            } else {
+                setEmptyState();
+            }
+        } catch (err) {
+            console.error("Load Report Error:", err);
+            setEmptyState();
         }
-        grossData.push(qGross);
-        costData.push(qCost);
-        netData.push(qGross - qCost);
-      }
     }
 
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    
-    // ทำลายกราฟเก่าทิ้งก่อนวาดใหม่
-    if(revenueChartInstance) {
-      revenueChartInstance.destroy();
+    // ── 2. ฟังก์ชันอัปเดตตัวเลข Stat Cards ──
+    function updateStats(stats) {
+        const gross = stats.gross || 0;
+        const rents = stats.rents || 0;
+        
+        document.getElementById('statGross').textContent = '฿' + gross.toLocaleString();
+        document.getElementById('statRents').textContent = rents.toLocaleString();
+        
+        // คำนวณกำไรและต้นทุน (สมมติ ต้นทุน 15% ของรายได้)
+        const cost = gross * 0.15;
+        const net = gross - cost;
+        
+        document.getElementById('statNet').textContent = '฿' + net.toLocaleString();
+        document.getElementById('statCost').textContent = '฿' + cost.toLocaleString();
+        document.getElementById('statCostPercent').textContent = gross > 0 ? '15%' : '0%';
     }
 
-    revenueChartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'กำไรสุทธิ (Net Profit)',
-            data: netData,
-            backgroundColor: '#1a7a48', // สีเขียว
-            borderRadius: 6,
-            order: 2
-          },
-          {
-            label: 'ต้นทุน (ซัก+ขนส่ง)',
-            data: costData,
-            backgroundColor: '#c0392b', // สีแดง
-            borderRadius: 6,
-            order: 3
-          },
-          {
-            label: 'รายได้รวม (Gross Revenue)',
-            data: grossData,
+    // ── 3. ฟังก์ชันวาดกราฟ (Chart.js) ──
+    function renderChart(revenueData) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        if (revenueChartInstance) {
+            revenueChartInstance.destroy();
+        }
+
+        // ถ้าไม่มีข้อมูล ให้สร้าง Array 0 จำนวน 12 เดือน
+        const dataToShow = revenueData && revenueData.length > 0 ? revenueData : Array(12).fill(0);
+
+        revenueChartInstance = new Chart(ctx, {
             type: 'line',
-            borderColor: '#114E72', // สีน้ำเงินหลัก
-            backgroundColor: '#114E72',
-            borderWidth: 3,
-            tension: 0.3,
-            fill: false,
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            order: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top', labels: { font: { family: "'Hanuman', sans-serif" } } },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-              label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) { label += ': '; }
-                if (context.parsed.y !== null) { label += formatMoney(context.parsed.y); }
-                return label;
-              }
+            data: {
+                labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                datasets: [{
+                    label: 'รายได้จริงจากระบบ (฿)',
+                    data: dataToShow,
+                    borderColor: '#114E72',
+                    backgroundColor: 'rgba(17, 78, 114, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: (v) => '฿' + v.toLocaleString() } }
+                }
             }
-          }
-        },
-        scales: {
-          x: { stacked: true, grid: { display: false } },
-          y: { 
-            stacked: true, 
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) { return '฿' + (value/1000) + 'k'; }
-            }
-          }
+        });
+    }
+
+    // ── 4. ฟังก์ชันวาดตารางสินค้าขายดี ──
+    function renderTopProducts(products) {
+        const tbody = document.getElementById('topProductsBody');
+        if (!products || products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">ยังไม่มีข้อมูลการเช่าชุด</td></tr>';
+            return;
         }
-      }
-    });
-  };
 
-  // ==========================================
-  // 4. ฟังก์ชันจัดการตาราง Top Products
-  // ==========================================
-  window.renderProductsTable = function() {
-    const tbody = document.getElementById('topProductsBody');
-    const catFilter = document.getElementById('filterCatProd').value;
-    
-    // กรองข้อมูลตาม Category
-    let list = [...productsData];
-    if(catFilter !== 'all') {
-      list = list.filter(p => p.cat === catFilter);
+        tbody.innerHTML = products.map((p, index) => `
+            <tr>
+                <td style="text-align:center;"><span class="RankBadge ${index < 3 ? 'rank-' + (index+1) : ''}">${index + 1}</span></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="font-size:24px;">👗</div>
+                        <div>
+                            <strong>${p.name}</strong><br>
+                            <small style="color:#666;">หมวดหมู่: ${p.category}</small>
+                        </div>
+                    </div>
+                </td>
+                <td style="font-size:16px;">${p.rent_count} ครั้ง</td>
+                <td style="color:#1a7a48; font-weight:bold;">฿${(p.total_revenue || 0).toLocaleString()}</td>
+                <td><span style="color:#114E72; font-size:12px;">✅ พร้อมให้บริการ</span></td>
+                <td>
+                    <button class="BtnAction" onclick="alert('สั่งซื้อเพิ่ม: ${p.name}')">📦 สั่งเพิ่ม</button>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    // เรียงลำดับตามจำนวนการเช่า (มากไปน้อย)
-    list.sort((a,b) => b.rents - a.rents);
-
-    tbody.innerHTML = list.map((p, index) => {
-      const rank = index + 1;
-      let rankClass = rank <= 3 ? `rank-${rank}` : '';
-      let rankDisplay = rank <= 3 ? `<span class="RankBadge ${rankClass}">${rank}</span>` : `<span style="font-weight:700;color:#7E7E7E">${rank}</span>`;
-
-      return `
-        <tr>
-          <td style="text-align:center;">${rankDisplay}</td>
-          <td>
-            <div class="ProductCell">
-              <div class="ProductImg">${p.img}</div>
-              <div class="ProductInfo">
-                <span class="ProductName">${p.name}</span>
-                <span class="ProductCat">ประเภท: ${p.catName} | ID: ${p.id}</span>
-              </div>
-            </div>
-          </td>
-          <td style="font-size:16px;">${p.rents} ครั้ง</td>
-          <td style="color:#1a7a48;">${formatMoney(p.revenue)}</td>
-          <td><span style="color:${p.status.includes('ชำรุด') ? '#c0392b' : 'var(--color-text-muted)'}">${p.status}</span></td>
-          <td>
-            <button class="BtnAction" onclick="orderMore('${p.name}')">📦 สั่งซื้อเพิ่ม</button>
-          </td>
-        </tr>
-      `;
-    }).join('') || '<tr><td colspan="6" style="text-align:center;padding:30px;">ไม่พบข้อมูลสินค้าในหมวดหมู่นี้</td></tr>';
-  };
-
-  // ==========================================
-  // 5. ระบบ Tab และปุ่ม Action
-  // ==========================================
-  window.switchTab = function(tab) {
-    document.getElementById('tabRevenue').classList.remove('active');
-    document.getElementById('tabProducts').classList.remove('active');
-    document.getElementById('panelRevenue').classList.remove('active');
-    document.getElementById('panelProducts').classList.remove('active');
-
-    if(tab === 'revenue') {
-      document.getElementById('tabRevenue').classList.add('active');
-      document.getElementById('panelRevenue').classList.add('active');
-      renderRevenueChart(); // รีเฟรชกราฟเมื่อเปิดแท็บ
-    } else {
-      document.getElementById('tabProducts').classList.add('active');
-      document.getElementById('panelProducts').classList.add('active');
-      renderProductsTable();
+    // ── 5. ฟังก์ชันล้างค่าเป็น 0 (เมื่อ Error หรือไม่มีข้อมูล) ──
+    function setEmptyState() {
+        updateStats({ gross: 0, rents: 0 });
+        renderChart(Array(12).fill(0));
+        renderTopProducts([]);
     }
-  };
 
-  // ฟังก์ชันจำลองการ Export Data
-  window.exportData = function() {
-    showToast('success', '📥', 'ระบบกำลังสร้างไฟล์ PDF และจะดาวน์โหลดอัตโนมัติ...');
-  };
+    // ── 6. ระบบสลับแท็บ ──
+    window.switchTab = function(tab) {
+        document.getElementById('tabRevenue').classList.toggle('active', tab === 'revenue');
+        document.getElementById('tabProducts').classList.toggle('active', tab === 'products');
+        document.getElementById('panelRevenue').classList.toggle('active', tab === 'revenue');
+        document.getElementById('panelProducts').classList.toggle('active', tab === 'products');
+        
+        if(tab === 'revenue') renderChart(); // รีเฟรชขนาดกราฟ
+    };
 
-  // ฟังก์ชันปุ่ม "สั่งซื้อเพิ่ม"
-  window.orderMore = function(productName) {
-    showToast('success', '📦', `ส่งแจ้งเตือนการสั่งซื้อ: ${productName} ไปยังฝ่ายจัดซื้อแล้ว`);
-  };
+    // เชื่อมต่อ Dropdown กับการโหลดข้อมูล
+    window.renderRevenueChart = loadReportData;
+    window.renderProductsTable = loadReportData;
 
-  // Toast แจ้งเตือน
-  function showToast(type, icon, msg) {
-    const toast = document.getElementById('toast');
-    toast.className = `Toast Toast--${type}`;
-    document.getElementById('toastIcon').textContent = icon;
-    document.getElementById('toastMsg').textContent  = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }
-
-  // ==========================================
-  // 6. เริ่มต้นการทำงาน (Init)
-  // ==========================================
-  window.onload = function() {
-    renderRevenueChart(); // วาดกราฟและอัปเดตตัวเลข
-    renderProductsTable(); // วาดตารางสินค้า
-  };
+    // เริ่มต้นโหลดข้อมูลเมื่อเปิดหน้า
+    window.onload = loadReportData;
 
 })();
 </script>
