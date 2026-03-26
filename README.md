@@ -715,3 +715,7 @@ __________________________________________________________________________
 
 <br>
 
+# Activity Diagram
+![Activity Diagram](![alt text](<Activity Diagram.jpg>))
+  
+  
