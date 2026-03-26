@@ -66,11 +66,11 @@
           <div class="Input-row">
             <div class="Input-group">
               <label>วันที่ต้องการรับชุด</label>
-              <input type="date" class="Checkout-input" id="pickupDate" />
+              <input type="date" class="Checkout-input" id="pickupDate" required />
             </div>
             <div class="Input-group">
               <label>วันที่คืนชุด</label>
-              <input type="date" class="Checkout-input" id="returnDate" />
+              <input type="date" class="Checkout-input" id="returnDate" required />
             </div>
           </div>
         </div>
@@ -138,10 +138,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async function() {
-    // 1. ดึงข้อมูล User
     await loadUserProfile();
 
-    // 2. ดึงข้อมูลสินค้าจาก ID ที่ส่งมาจาก URL
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
     const selectedSize = params.get('size') || 'F';
@@ -203,7 +201,6 @@ async function loadProductSummary(id, size, duration, qty) {
             document.getElementById('summarySubtotal').textContent = subTotal.toLocaleString() + ' ฿';
             document.getElementById('summaryTotal').textContent = total.toLocaleString() + ' ฿';
             
-            // เก็บข้อมูลไว้ในตัวแปร Global เพื่อใช้ตอนกด Confirm
             window.orderData = {
                 product_id: id,
                 size: size,
@@ -219,6 +216,15 @@ async function loadProductSummary(id, size, duration, qty) {
 
 async function confirmOrder() {
     if (!window.orderData) return;
+
+    // ✨ ตรวจสอบว่าเลือกวันที่หรือยัง
+    const pickupDate = document.getElementById('pickupDate').value;
+    const returnDate = document.getElementById('returnDate').value;
+
+    if (!pickupDate || !returnDate) {
+        Swal.fire('แจ้งเตือน', 'กรุณาเลือกวันที่ต้องการรับและคืนชุดให้ครบถ้วน', 'warning');
+        return;
+    }
 
     const { isConfirmed } = await Swal.fire({
         title: 'ยืนยันการเช่าชุด?',
@@ -240,13 +246,13 @@ async function confirmOrder() {
             showConfirmButton: false
         });
 
-        // ✨ แก้ไขจุดสำคัญ: ส่งข้อมูล id, size, duration, qty ต่อไปที่หน้า slip.html
         const id = window.orderData.product_id;
         const size = window.orderData.size;
         const duration = window.orderData.duration;
         const qty = window.orderData.quantity;
 
-        window.location.href = `slip.html?id=${id}&size=${encodeURIComponent(size)}&duration=${encodeURIComponent(duration)}&qty=${qty}`; 
+        // ✨ ส่งวันที่ pickup และ return ไปด้วยใน URL
+        window.location.href = `slip.html?id=${id}&size=${encodeURIComponent(size)}&duration=${encodeURIComponent(duration)}&qty=${qty}&pickup=${pickupDate}&return=${returnDate}`; 
     }
 }
 </script>

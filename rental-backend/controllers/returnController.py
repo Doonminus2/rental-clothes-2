@@ -8,9 +8,9 @@ def get_pending_returns():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     try:
-        # เราจะดึงเฉพาะรายการที่กางเกง/ชุดถูกส่งออกไปแล้ว แต่ยังไม่มีการบันทึกว่าคืนสำเร็จ
+    # เราจะดึงเฉพาะรายการที่กางเกง/ชุดถูกส่งออกไปแล้ว แต่ยังไม่มีการบันทึกว่าคืนสำเร็จ (เพิ่ม deposit_amount)
         cursor.execute("""
-            SELECT b.*, p.name as product_name, p.image_url, u.username as full_name, u.phone
+            SELECT b.*, p.name as product_name, p.image_url, p.deposit AS deposit_amount, u.username as full_name, u.phone
             FROM bookings b
             JOIN products p ON b.product_id = p.id
             JOIN users u ON b.user_id = u.id

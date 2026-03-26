@@ -117,6 +117,9 @@
 </div>
 
 <script>
+// ตัวแปรเก็บข้อมูล User ชั่วคราว
+let currentUserId = null;
+
 document.addEventListener("DOMContentLoaded", async function() {
     // 1. สุ่มเลข Order ID
     const randomOrder = Math.floor(10000 + Math.random() * 90000);
@@ -146,6 +149,7 @@ async function loadUserProfile() {
         const result = await response.json();
         if (result.success) {
             const user = result.data;
+            currentUserId = user.id; // เก็บ ID ไว้ส่งตอน Submit
             document.getElementById('receiptName').textContent = user.full_name || user.username;
             document.getElementById('receiptPhone').textContent = user.phone || '-';
             document.getElementById('receiptAddress').textContent = user.address || '-';
@@ -201,23 +205,65 @@ async function submitSlip() {
         return;
     }
 
-    // โชว์ Loading แป๊บนึงเพื่อให้ดูสมจริง
+    // ─── เตรียมข้อมูลส่งไป Backend ───
+    const params = new URLSearchParams(window.location.search);
+    const formData = new FormData();
+    
+    // ดึงค่าจาก URL
+    const pickupDate = params.get('pickup');
+    const returnDate = params.get('return');
+
+    // ตรวจสอบวันที่เผื่อหลุด
+    if (!pickupDate || !returnDate) {
+        Swal.fire('ผิดพลาด', 'ไม่พบข้อมูลวันที่เช่าชุด กรุณากลับไปที่หน้า Checkout อีกครั้ง', 'error');
+        return;
+    }
+
+    // ดึงยอดรวม
+    const totalPrice = document.getElementById('receiptTotal').textContent.replace(/[^0-9.]/g, '');
+
+    formData.append('user_id', currentUserId);
+    formData.append('product_id', params.get('id'));
+    formData.append('size', params.get('size'));
+    formData.append('duration', params.get('duration'));
+    formData.append('total_price', totalPrice);
+    formData.append('slip', fileInput.files[0]);
+
+    // ✨ เพิ่มการส่งวันที่ไปให้ Backend
+    formData.append('rental_start', pickupDate);
+    formData.append('rental_end', returnDate);
+
+    // แสดงสถานะกำลังบันทึก
     Swal.fire({
-        title: 'กำลังตรวจสอบสลิป...',
+        title: 'กำลังบันทึกข้อมูลการจอง...',
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading(); }
     });
 
-    // หน่วงเวลา 1.5 วินาทีแล้วไปหน้าเมน
-    setTimeout(async () => {
-        await Swal.fire({
-            icon: 'success',
-            title: 'ชำระเงินสำเร็จ!',
-            text: 'ขอบคุณที่ใช้บริการ Rental Clothes ครับ แอดมินจะรีบจัดส่งให้ทันที',
-            confirmButtonColor: '#114E72'
+    try {
+        const response = await fetch('/api/bookings/create', {
+            method: 'POST',
+            body: formData
         });
-        window.location.href = "main.html";
-    }, 1500);
+        const result = await response.json();
+
+        if (result.success) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'ชำระเงินและจองสำเร็จ!',
+                text: 'เราได้รับข้อมูลแล้ว แอดมินจะตรวจสอบและแจ้งผลผ่านระบบโดยเร็วที่สุด',
+                confirmButtonColor: '#114E72',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            window.location.href = "main.html";
+        } else {
+            Swal.fire('ผิดพลาด', result.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+        }
+    } catch (err) {
+        console.error("Submit Error:", err);
+        Swal.fire('Error', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+    }
 }
 </script>
 <script src="user.js"></script>

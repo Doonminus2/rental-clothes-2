@@ -21,7 +21,6 @@
     <a href="main.html" class="BtnFaq" title="main" style="padding: 0; border: none; background: transparent;">
       <img src="images/eye.png" alt="main" style="width: 40px; height: 40px; object-fit: contain;" />
     </a>
-    <a href="login.html" class="BtnLogin"><span class="BtnLogin-text">LOGIN</span></a>
   </div>
 </header>
 
@@ -66,17 +65,22 @@
         <div class="StatCard-value" id="statTotal">0</div>
         <div class="StatCard-sub">เดือนนี้</div>
       </div>
-      <div class="StatCard StatCard--waiting">
-        <div class="StatCard-label">รอแพ็ก</div>
-        <div class="StatCard-value" id="statWaiting">0</div>
-        <div class="StatCard-sub">ต้องดำเนินการ</div>
+      <div class="StatCard StatCard--pending" style="border-top: 5px solid #e74c3c;">
+        <div class="StatCard-label">รอตรวจสอบ</div>
+        <div class="StatCard-value" id="statPending">0</div>
+        <div class="StatCard-sub">เช็กสลิปโอน</div>
       </div>
-      <div class="StatCard StatCard--shipped">
+      <div class="StatCard StatCard--packing" style="border-top: 5px solid #f39c12;">
+        <div class="StatCard-label">กำลังแพ็ก</div>
+        <div class="StatCard-value" id="statPacking">0</div>
+        <div class="StatCard-sub">เตรียมจัดส่ง</div>
+      </div>
+      <div class="StatCard StatCard--shipped" style="border-top: 5px solid #3498db;">
         <div class="StatCard-label">จัดส่งแล้ว</div>
         <div class="StatCard-value" id="statShipped">0</div>
         <div class="StatCard-sub">กำลังส่ง</div>
       </div>
-      <div class="StatCard StatCard--received">
+      <div class="StatCard StatCard--received" style="border-top: 5px solid #2ecc71;">
         <div class="StatCard-label">รับสินค้าแล้ว</div>
         <div class="StatCard-value" id="statReceived">0</div>
         <div class="StatCard-sub">สำเร็จ</div>
@@ -115,11 +119,11 @@
         </div>
         <select class="Toolbar-filter" id="filterStatus">
           <option value="">ทุกสถานะ</option>
-          <option value="waiting">รอแพ็ก</option>
+          <option value="pending">รอตรวจสอบ</option>
           <option value="packing">กำลังแพ็ก</option>
           <option value="shipped">จัดส่งแล้ว</option>
           <option value="received">รับแล้ว</option>
-          <option value="cancelled">ยกเลิก</option>
+          <option value="rejected">ยกเลิก</option>
         </select>
       </div>
 
@@ -170,6 +174,7 @@
     document.getElementById('tabCalendar').classList.toggle('active', tab === 'calendar');
     document.getElementById('tabList').classList.toggle('active', tab === 'list');
   }
+
   function closeOrderModal() {
     document.getElementById('orderModal').classList.remove('open');
   }

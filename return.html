@@ -21,7 +21,6 @@
     <a href="main.html" class="BtnFaq" title="main">
       <img src="images/eye.png" alt="main" style="width: 40px; height: 40px; object-fit: contain;" />
     </a>
-    <a href="login.html" class="BtnLogin"><span class="BtnLogin-text">LOGIN</span></a>
   </div>
 </header>
 
@@ -50,10 +49,22 @@
     </div>
 
     <div class="StatRow">
-      <div class="StatCard"><div class="StatCard-label">รอรับคืนทั้งหมด</div><div class="StatCard-value" id="statRetTotal">0</div></div>
-      <div class="StatCard StatCard--pending"><div class="StatCard-label">รอตรวจสอบ</div><div class="StatCard-value" id="statRetPending">0</div></div>
-      <div class="StatCard StatCard--pass"><div class="StatCard-label">ผ่านการตรวจ</div><div class="StatCard-value" id="statRetPass">0</div></div>
-      <div class="StatCard StatCard--defect"><div class="StatCard-label">พบตำหนิ</div><div class="StatCard-value" id="statRetDefect">0</div></div>
+      <div class="StatCard">
+        <div class="StatCard-label">รอรับคืนทั้งหมด</div>
+        <div class="StatCard-value" id="statRetTotal">0</div>
+      </div>
+      <div class="StatCard StatCard--pending">
+        <div class="StatCard-label">รอตรวจสอบ</div>
+        <div class="StatCard-value" id="statRetPending">0</div>
+      </div>
+      <div class="StatCard StatCard--pass">
+        <div class="StatCard-label">ผ่านการตรวจ</div>
+        <div class="StatCard-value" id="statRetPass">0</div>
+      </div>
+      <div class="StatCard StatCard--defect">
+        <div class="StatCard-label">พบตำหนิ</div>
+        <div class="StatCard-value" id="statRetDefect">0</div>
+      </div>
     </div>
 
     <div class="Toolbar">
@@ -63,9 +74,9 @@
       </div>
       <select class="Toolbar-filter" id="filterQC">
         <option value="">ทุกสถานะ QC</option>
-        <option value="pending">รอตรวจสอบ</option>
-        <option value="pass">ผ่าน</option>
-        <option value="defect">พบตำหนิ</option>
+        <option value="shipped">รอตรวจสอบ</option>
+        <option value="received">ผ่านการตรวจ</option>
+        <option value="rejected">พบตำหนิ</option>
       </select>
     </div>
 
@@ -83,7 +94,7 @@
           </tr>
         </thead>
         <tbody id="returnTableBody">
-          </tbody>
+            </tbody>
       </table>
     </div>
   </main>
@@ -96,10 +107,12 @@
       <button class="Modal-close" onclick="closeReturnModal()">✕</button>
     </div>
     <div class="Modal-body" id="modalReturnContent">
-      </div>
+        </div>
     <div class="Modal-footer">
       <button class="BtnSecondary" onclick="closeReturnModal()">ปิด</button>
-      <button class="BtnConfirmReturn" id="btnConfirmAction">✅ ยืนยันรับคืน</button>
+      <button class="BtnConfirmReturn" id="btnConfirmAction" style="background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+        ✅ ยืนยันรับคืน
+      </button>
     </div>
   </div>
 </div>
@@ -107,7 +120,9 @@
 <script src="template/api.js"></script>
 <script src="template/return-admin.js"></script>
 <script>
-  function closeReturnModal() { document.getElementById('returnModal').classList.remove('open'); }
+  function closeReturnModal() { 
+    document.getElementById('returnModal').classList.remove('open'); 
+  }
 </script>
 </body>
 </html>

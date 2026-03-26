@@ -17,7 +17,7 @@ from controllers.productController import (
 )
 from controllers.bookingController import (
     get_bookings, get_booking_by_id, update_booking_status,
-    get_booking_stats, get_calendar_bookings 
+    get_booking_stats, get_calendar_bookings, create_booking # ✨ เพิ่ม create_booking
 )
 from controllers.returnController import get_pending_returns, process_return
 
@@ -34,11 +34,15 @@ load_dotenv()
 app = Flask(__name__, static_folder='../', static_url_path='')
 CORS(app, supports_credentials=True)
 
+# ─── SETUP FOLDERS ───
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 IMAGE_FOLDER = os.path.join(BASE_DIR, 'images')
+SLIP_FOLDER = os.path.join(BASE_DIR, 'static/uploads/slips') # ✨ โฟลเดอร์เก็บสลิป
 
-if not os.path.exists(IMAGE_FOLDER):
-    os.makedirs(IMAGE_FOLDER, exist_ok=True)
+# สร้างโฟลเดอร์ถ้ายังไม่มี
+for folder in [IMAGE_FOLDER, SLIP_FOLDER]:
+    if not os.path.exists(folder):
+        os.makedirs(folder, exist_ok=True)
 
 app.register_blueprint(auth_bp)
 
@@ -65,14 +69,12 @@ def handle_profile():
 def dashboard_api():
     return get_stats()
 
-# 👗 Products (แก้ไข: แยกสิทธิ์ GET ให้ User ทั่วไปเข้าถึงได้)
+# 👗 Products
 @app.route('/api/products', methods=['GET', 'POST'])
 def handle_products():
     if request.method == 'GET':
-        # ✅ ปลดล็อก @admin_only เพื่อให้หน้า Rental ดึงข้อมูลไปโชว์ได้
         return get_products()
     
-    # 🔐 สำหรับการเพิ่มสินค้า (POST) ต้องเป็นแอดมินเท่านั้น
     @admin_only
     def protected_add():
         return add_product()
@@ -81,10 +83,8 @@ def handle_products():
 @app.route('/api/products/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def handle_single_product(id):
     if request.method == 'GET':
-        # ✅ ปลดล็อกเพื่อให้ User ดูรายละเอียดสินค้าชิ้นนั้นๆ ได้
         return get_product_by_id(id)
     
-    # 🔐 สำหรับการแก้ไขและลบ ต้องเป็นแอดมินเท่านั้น
     @admin_only
     def protected_action():
         if request.method == 'PUT':
@@ -99,6 +99,12 @@ def api_update_product_status(id):
     return update_product_status(id)
 
 # 📅 Bookings
+# ✨ สำหรับลูกค้า: กดจองชุดและส่งสลิปจากหน้า slip.html
+@app.route('/api/bookings/create', methods=['POST'])
+def api_create_booking():
+    return create_booking()
+
+# สำหรับแอดมิน: ดูและจัดการการจอง
 @app.route('/api/bookings', methods=['GET'])
 @admin_only
 def api_get_bookings():
@@ -135,7 +141,7 @@ def api_get_returns():
 def api_confirm_return(id):
     return process_return(id)
 
-# 👥 Customers (จัดการลูกค้า)
+# 👥 Customers
 @app.route('/api/customers', methods=['GET'])
 @admin_only
 def api_get_customers():
@@ -171,6 +177,11 @@ def health():
 @app.route('/images/<path:filename>')
 def serve_images(filename):
     return send_from_directory(IMAGE_FOLDER, filename)
+
+# ✨ Route สำหรับดูรูปสลิป (เพื่อให้แอดมินเปิดดูได้)
+@app.route('/static/uploads/slips/<path:filename>')
+def serve_slips(filename):
+    return send_from_directory(SLIP_FOLDER, filename)
 
 @app.route('/')
 def index():
