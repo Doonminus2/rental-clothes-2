@@ -80,6 +80,10 @@
             <span>ค่าจัดส่ง (Kerry Express)</span>
             <span>100 ฿</span>
           </div>
+          <div class="Total-row">
+            <span>ค่ามัดจำ</span>
+            <span id="receiptDeposit">0 ฿</span>
+          </div>
           <div class="Total-row grand-total">
             <span>ยอดชำระสุทธิ</span>
             <span id="receiptTotal">0 ฿</span>
@@ -164,14 +168,16 @@ async function loadProductInfo(id, size, duration, qty) {
         if (result.success) {
             const p = result.data;
             const price = Number(p.price_per_day || p.price);
+            const deposit = Number(p.deposit || 0);
             const shippingFee = 100;
             const subTotal = price * qty;
-            const total = subTotal + shippingFee;
+            const total = subTotal + shippingFee + deposit;
 
             document.getElementById('receiptProductName').textContent = p.name;
             document.getElementById('receiptProductMeta').textContent = `ขนาด: ${size} | ระยะเวลา: ${duration} | จำนวน: ${qty} ชุด`;
             document.getElementById('receiptProductPrice').textContent = price.toLocaleString() + ' ฿';
             document.getElementById('receiptSubtotal').textContent = subTotal.toLocaleString() + ' ฿';
+            document.getElementById('receiptDeposit').textContent = deposit.toLocaleString() + ' ฿';
             document.getElementById('receiptTotal').textContent = total.toLocaleString() + ' ฿';
         }
     } catch (err) { console.error("Product Load Error:", err); }

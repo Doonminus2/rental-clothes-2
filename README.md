@@ -717,6 +717,23 @@ __________________________________________________________________________
 <br>
 
 # Activity Diagram
-![Activity Diagram](![alt text](<Activity Diagram.jpg>))
+![Activity Diagram]((<![alt text](<Activity Diagram.png>)>))
   
+    
+# ER Diagram
+![ER Diagram](![alt text](<ER Diagram.png>))
+
+# Use case diagram
+![Use case diagram]((<![alt text](<use case.png>)>))
   
+<br>
+
+# Tech Stack
+  ### Frontend. 
+  - HTML
+  - CSS
+  - JavaScript (Vanilla JS) <br>
+  ### Backend. 
+  - Node.js (Express.js) + Python (Flask) <br>
+  ### Database. 
+  - MySQL (สำหรับ Node.js) + SQLite (สำหรับ Python)
