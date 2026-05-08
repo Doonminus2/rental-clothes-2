@@ -70,27 +70,20 @@ CREATE TABLE IF NOT EXISTS bookings (
   FOREIGN KEY (user_id)    REFERENCES users(id),
   FOREIGN KEY (product_id) REFERENCES products(id)
 );
--- Booking --
-CREATE TABLE IF NOT EXISTS orders (
+-- ── Returns ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS returns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    product_id INTEGER NOT NULL,
-    size TEXT,
-    duration TEXT,
-    total_price REAL,
-    slip_image TEXT, -- เก็บชื่อไฟล์สลิป
-    status TEXT DEFAULT 'pending', -- pending, approved, rejected
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    return_date TEXT NOT NULL,
+    condition TEXT DEFAULT 'good', -- good, damaged, lost
+    damage_description TEXT,
+    refund_status TEXT DEFAULT 'pending', -- pending, approved, rejected
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
--- เพิ่มคอลัมน์ที่ขาดไปในตาราง bookings
-ALTER TABLE bookings ADD COLUMN duration TEXT;
-ALTER TABLE bookings ADD COLUMN slip_image TEXT;
-ALTER TABLE bookings ADD COLUMN total_price REAL;
-ALTER TABLE bookings ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
-
-DROP TABLE IF EXISTS orders;
 -- ── Seed: default admin account ────────────────────────────
 -- Password: admin1234  (bcrypt hash)
 INSERT OR IGNORE INTO users (username, email, password, full_name, phone, role)
