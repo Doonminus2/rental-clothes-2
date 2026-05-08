@@ -1,19 +1,18 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "rental-backend/app.py",
-      "use": "@vercel/python"
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.9"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "rental-backend/app.py"
+      "dest": "/api/index.py"
     },
     {
       "src": "/(.*)",
-      "dest": "main.html"
+      "dest": "/main.html"
     }
   ]
 }
