@@ -1,15 +1,12 @@
 {
   "version": 2,
+  "buildCommand": "npm run vercel-build",
   "builds": [
     {
       "src": "rental-backend/app.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
+      "use": "@vercel/python",
       "config": {
-        "distDir": "."
+        "maxLambdaSize": "50mb"
       }
     }
   ],
@@ -20,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "index.html"
+      "dest": "main.html"
     }
   ]
 }

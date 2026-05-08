@@ -1,4 +1,14 @@
 {
+  "name": "rental-clothes",
+  "version": "1.0.0",
+  "description": "Rental Clothes Management System",
+  "main": "rental-backend/app.py",
+  "scripts": {
+    "dev": "cd rental-backend && python3 app.py",
+    "start": "cd rental-backend && gunicorn -w 1 -b 0.0.0.0:$PORT app:app",
+    "build": "echo 'Build completed'",
+    "vercel-build": "pip install -r rental-backend/requirements.txt"
+  },
   "devDependencies": {
     "live-server": "^1.2.2"
   }
